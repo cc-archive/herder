@@ -1,3 +1,6 @@
 [submodule "bootstrap"]
 	path = bootstrap
 	url = git://code.creativecommons.org/bootstrap.git
+[submodule "i18n.upstream"]
+	path = i18n.upstream
+	url = git://code.creativecommons.org/i18n.git
