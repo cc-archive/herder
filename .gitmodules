@@ -4,3 +4,6 @@
 [submodule "i18n.upstream"]
 	path = i18n.upstream
 	url = git://code.creativecommons.org/i18n.git
+[submodule "po_files/cc_org"]
+	path = po_files/cc_org
+	url = git://code.creativecommons.org/cc_org_txt.git
