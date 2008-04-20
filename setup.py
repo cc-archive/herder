@@ -18,6 +18,7 @@ setup(
                       'SQLAlchemy>=0.4.1',
                       'SQLAlchemyManager',
                       'pysqlite',
+                      'nose'
                       ],
 
     dependency_links=['http://authkit.org/svn/AuthKit/trunk/#egg=AuthKit-dev',
