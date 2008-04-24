@@ -5,3 +5,5 @@
 * Integration testing!
 ** http://pythonpaste.org/testing-applications.html#the-tests-themselves
 
+* I hate Mako templating.
+** Switch to Kid?  Was that actually good?  (Is it abandoned?)
