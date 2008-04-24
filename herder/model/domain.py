@@ -8,7 +8,7 @@ import language
 class Domain(object):
     """A translation domain."""
 
-    _IGNORE_DIRS = ['.svn', 'test', 'templates',]
+    _IGNORE_DIRS = ['.svn', 'test', 'templates', '.git',]
 
     @classmethod
     def by_name(cls, name):
