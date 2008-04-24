@@ -37,6 +37,21 @@ if os.path.exists(DB_FILENAME):
 cmd = paste.script.appinstall.SetupCommand('setup-app')
 cmd.run([test_file])
 
+## FIXME: Use a standard @trace decorator
+def trace(fn):
+    def traced(*argv, **kwargs):
+        print fn.__name__, '(', argv,
+        if kwargs:
+            print '+', kwargs,
+        print ') =>',
+        ret = fn(*argv, **kwargs)
+        print ret
+        return ret
+    return traced
+
+# Now, trace things we know we're interested in seeing more about:
+url_for = trace(url_for)
+
 class TestController(TestCase):
 
     def __init__(self, *args, **kwargs):
