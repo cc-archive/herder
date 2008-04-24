@@ -29,6 +29,11 @@ pkg_resources.require('Paste')
 pkg_resources.require('PasteScript')
 
 test_file = os.path.join(conf_dir, 'test.ini')
+# remove the old database from last test run
+DB_FILENAME = os.path.join(conf_dir, 'herder_test.db') # Pull from conf?
+if os.path.exists(DB_FILENAME):
+    os.unlink(DB_FILENAME)
+
 cmd = paste.script.appinstall.SetupCommand('setup-app')
 cmd.run([test_file])
 
