@@ -1,4 +1,4 @@
-from herder.test import *
+from herder.tests import *
 
 class TestLanguageController(TestController):
     def test_the_works(self):
@@ -7,5 +7,4 @@ class TestLanguageController(TestController):
         # (that is, all == untranslated)
         # Translate one string, and check it goes away from untranslated
         # Check that it gets stored in a way that we can pull it out?
-
-
+        pass
