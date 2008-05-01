@@ -18,12 +18,14 @@ setup(
                       'SQLAlchemy>=0.4.1',
                       'SQLAlchemyManager',
                       'pysqlite',
-                      'nose'
+                      'nose',
+                      'selenium',
                       ],
 
     dependency_links=['http://authkit.org/svn/AuthKit/trunk/#egg=AuthKit-dev',
                       'svn://lesscode.org/pudge/trunk#egg=pudge-dev',
-                      'svn://lesscode.org/buildutils/trunk#egg=buildutils-dev'
+                      'svn://lesscode.org/buildutils/trunk#egg=buildutils-dev',
+                      'http://labs.creativecommons.org/~paulproteus/eggs/',
                       ],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
