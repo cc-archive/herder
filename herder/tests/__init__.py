@@ -10,6 +10,10 @@ setup-app) with the project's test.ini configuration file.
 """
 import os
 import sys
+import time
+import subprocess
+import signal
+import selenium
 from unittest import TestCase
 
 import pkg_resources
@@ -48,6 +52,32 @@ def trace(fn):
         print ret
         return ret
     return traced
+
+SELENIUM_PROCESS = None
+SELENIUM_BROWSER = None
+def start_selenium():
+    global SELENIUM_PROCESS
+    global SELENIUM_BROWSER
+    SELENIUM_PROCESS = subprocess.Popen('./bin/selenium')
+    time.sleep(3) # hopefully long enough for Selenium to start
+
+    # Now, check that the process is still alive:
+    assert SELENIUM_PROCESS.poll() is None
+    # Then let's attach the BROWSER
+    SELENIUM_BROWSER = selenium.selenium('localhost', 4444,
+                    '*firefox', 'http://localhost:5001')
+    SELENIUM_BROWSER.start()
+
+def stop_selenium():
+    global SELENIUM_PROCESS
+    global SELENIUM_BROWSER
+    os.kill(SELENIUM_PROCESS.pid, signal.SIGTERM)
+    time.sleep(1)
+    os.kill(SELENIUM_PROCESS.pid, signal.SIGKILL)
+    time.sleep(1)
+    assert SELENIUM_PROCESS.poll() is not None
+    SELENIUM_PROCESS = None
+    SELENIUM_BROWSER = None
 
 # Now, trace things we know we're interested in seeing more about:
 url_for = trace(url_for)
