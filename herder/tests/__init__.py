@@ -23,7 +23,7 @@ import paste.script.appinstall
 from paste.deploy import loadapp
 from routes import url_for
 
-__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium']
+__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium', 'start_test_app_process', 'stop_test_app_process']
 
 here_dir = os.path.dirname(os.path.abspath(__file__))
 conf_dir = os.path.dirname(os.path.dirname(here_dir))
