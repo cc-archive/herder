@@ -88,16 +88,18 @@ def start_test_app_process():
 
 SELENIUM_PROCESS = None
 SELENIUM_BROWSER = None
+SELENIUM_PORT = 4444
 def start_selenium():
     global SELENIUM_PROCESS
     global SELENIUM_BROWSER
     SELENIUM_PROCESS = subprocess.Popen('./bin/selenium')
-    time.sleep(3) # hopefully long enough for Selenium to start
+    assert not socket_works('localhost', SELENIUM_PORT)
+    spin_loop_until_listening_on_localhost_port(SELENIUM_PORT)
 
     # Now, check that the process is still alive:
     assert SELENIUM_PROCESS.poll() is None
     # Then let's attach the BROWSER
-    SELENIUM_BROWSER = selenium.selenium('localhost', 4444,
+    SELENIUM_BROWSER = selenium.selenium('localhost', SELENIUM_PORT,
                     '*firefox', 'http://localhost:5001')
     SELENIUM_BROWSER.start()
 
