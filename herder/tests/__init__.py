@@ -80,6 +80,7 @@ def spin_loop_until_listening_on_localhost_port(port,
 TEST_APP_PROCESS = None
 TEST_APP_PORT = 5001
 def start_test_app_process():
+    assert not socket_works('localhost', TEST_APP_PORT)
     # LAME copy-pasta
     global TEST_APP_PROCESS
     # No need to setup-app because the test module will setup-app for us
