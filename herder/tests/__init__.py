@@ -8,6 +8,7 @@ pkg_resources, in case the project hasn't been installed with
 setuptools. It also initializes the application via websetup (paster
 setup-app) with the project's test.ini configuration file.
 """
+import socket
 import os
 import sys
 import time
@@ -52,6 +53,38 @@ def trace(fn):
         print ret
         return ret
     return traced
+
+def socket_works(host, port, verbose = False):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # for TCP IPv4
+    try:
+        sock.connect( (host, port) )
+        return True
+    except socket.error, sock_err:
+        if verbose:
+            print sock_err
+        return False
+
+# FIXME: Create a version of this that spin-loops until not listening
+def spin_loop_until_listening_on_localhost_port(port,
+                 max_time = 10, increment = 0.05):
+    time_spent_on_this = 0
+    has_worked = False
+    while not has_worked:
+        if time_spent_on_this > max_time:
+            raise AssertionError, "Spent too long spin looping."
+        time.sleep(increment)
+        time_spent_on_this += increment
+        has_worked = socket_works('localhost', port)
+    return has_worked # should always be True
+
+TEST_APP_PROCESS = None
+TEST_APP_PORT = 5001
+def start_test_app_process():
+    # LAME copy-pasta
+    global TEST_APP_PROCESS
+    # No need to setup-app because the test module will setup-app for us
+    TEST_APP_PROCESS = subprocess.Popen(['./bin/paster', 'serve', '--reload', 'test.ini'])
+    spin_loop_until_listening_on_localhost_port(TEST_APP_PORT)
 
 SELENIUM_PROCESS = None
 SELENIUM_BROWSER = None
