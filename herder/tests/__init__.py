@@ -23,7 +23,7 @@ import paste.script.appinstall
 from paste.deploy import loadapp
 from routes import url_for
 
-__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium', 'start_test_app_process', 'stop_test_app_process']
+__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium', 'start_app_process', 'stop_app_process']
 
 here_dir = os.path.dirname(os.path.abspath(__file__))
 conf_dir = os.path.dirname(os.path.dirname(here_dir))
@@ -79,7 +79,7 @@ def spin_loop_until_listening_on_localhost_port(port,
 
 TEST_APP_PROCESS = None
 TEST_APP_PORT = 5001
-def start_test_app_process():
+def start_app_process():
     assert not socket_works('localhost', TEST_APP_PORT)
     # LAME copy-pasta
     global TEST_APP_PROCESS
@@ -87,7 +87,7 @@ def start_test_app_process():
     TEST_APP_PROCESS = subprocess.Popen(['./bin/paster', 'serve', '--reload', 'test.ini'])
     spin_loop_until_listening_on_localhost_port(TEST_APP_PORT, max_time = 60) # sometimes it takes a REALLY long time.
 
-def stop_test_app_process():
+def stop_app_process():
     global TEST_APP_PROCESS
     os.kill(TEST_APP_PROCESS.pid, signal.SIGTERM)
     time.sleep(1) # spinloop until not listening, max timeout 1
