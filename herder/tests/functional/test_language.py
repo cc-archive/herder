@@ -20,20 +20,33 @@ class TestLanguageController(TestController):
                 found_what_we_like = True
                 break
         assert found_what_we_like
-        return True # FIXME: Test something here someday
        
     def test_edit_string_as_admin(self):
         # Pretend to be admin
         self.app.extra_environ['REMOTE_USER'] = 'admin'
         # First, change it so old -> new
-        # Then, change it back (just because I feel bad)
+        i18n_key = 'country.us'
         old = 'United States'
         new = 'Untied States'
+        self.test_strings_contain(desired_key=i18n_key, desired_value=old)
+
         url_indeed = url_for(controller='language', action='edit_string',
             domain='cc_org', id='en_US')
         response = self.app.post(url_indeed, 
             params={'data': 
-            jsonlib.write({'data': {'id': 'country.us', 
+            jsonlib.write({'data': {'id': i18n_key,
                 'new_value': new, 'old_value': old}})})
+        self.test_strings_contain(desired_key=i18n_key, desired_value=new)
+        # Good, the new value stuck.
+
+        # Then, change it back (just because I feel bad)
+        response = self.app.post(url_indeed, 
+            params={'data': 
+            jsonlib.write({'data': {'id': i18n_key,
+                'new_value': old, 'old_value': new}})})
+        self.test_strings_contain(desired_key=i18n_key, desired_value=old)
+        # Good, the old value is back.
+
+        # Stop pretending to be an admin.
         del self.app.extra_environ['REMOTE_USER']
         
