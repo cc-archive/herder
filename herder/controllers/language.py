@@ -94,15 +94,15 @@ class LanguageController(BaseController):
         return self._messages(domain, id, untrans_filter)
 
     @authorize(ValidAuthKitUser())
-    def edit_string(self, domain, lang_id):
+    def edit_string(self, domain, id):
         """Edit an individual string."""
 
-        language = herder.model.DomainLanguage.by_domain_id(domain, lang_id)
+        language = herder.model.DomainLanguage.by_domain_id(domain, id)
         
         data = jsonlib.read(request.params['data'])
 
         # XXX trap an exception here that would be raised if edit conflict
-        if 'translate' in self._get_roles(domain, lang_id):
+        if 'translate' in self._get_roles(domain, id):
             # store the translation
             language.update(data['id'], data['new_value'], data['old_value'])
         else:
