@@ -17,7 +17,8 @@ import herder.model as model
 
 class BaseController(WSGIController):
 
-    def _get_roles(self, environ):
+    ### FIXME: Don't just ignore the language ID and domain!
+    def _get_roles(self, environ, domain = None, lang_id = None):
         """Return a list of roles for the current context."""
 
         authkit = environ.get('authkit.users')
