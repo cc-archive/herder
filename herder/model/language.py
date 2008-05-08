@@ -6,8 +6,37 @@ from pylons import config
 import domain
 import message
 
+class TransactionAbort(Exception):
+    pass
+
 class Language(object):
     """A specific language within a domain."""
+
+    # Suggestion storage:
+    ## for string called yourmom.txt, store in yourmom/ with
+    ## filename as user ID of user 
+
+    def update(self, i18n_key, old_value, new_value):
+        # NOTE: I don't know how to lock the model, so we'll just try
+        # our changes, and assert they stuck at the end of this.
+        # FIXME: That is still racey because someone could:
+        ## * We could correctly update i18n_key to new_value
+        ## * Another thread could change i18n_key to some_other_value
+        ## * We would check the value and think the transaction went wrong
+        # But it's only racey in a causes-false-negatives way.
+        current_value = self[i18n_key]
+        if current_value.string != old_value:
+            import pdb
+            pdb.set_trace()
+            raise TransactionAbort("The old value (%s) we were passed did not match up with the current value (%s) for key (%s)" % (old_value, current_value.string, i18n_key))
+        # Otherwise, it's safe.
+        current_value.update(new_value=new_value, old_value=old_value)
+
+        # Check that the update stuck (and e.g. that no one beat us to the race)
+        final_value = self[i18n_key]
+        if final_value.string != new_value:
+            raise TransactionAbort("The new value did not save properly. Perhaps someone beat us in a race of updating the file.")
+        # FIXME: Unlock the model
 
     @classmethod
     def by_domain_id(cls, domain_id, lang):

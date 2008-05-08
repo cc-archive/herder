@@ -59,7 +59,7 @@ class Message(object):
         if the value has not been editted in the interim."""
 
         if old_value is not None:
-            if self.value != old_value:
+            if self.string != old_value:
                 raise Exception
 
         file(self.datafile_path, 'w').write(new_value)
