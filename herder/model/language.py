@@ -26,8 +26,6 @@ class Language(object):
         # But it's only racey in a causes-false-negatives way.
         current_value = self[i18n_key]
         if current_value.string != old_value:
-            import pdb
-            pdb.set_trace()
             raise TransactionAbort("The old value (%s) we were passed did not match up with the current value (%s) for key (%s)" % (old_value, current_value.string, i18n_key))
         # Otherwise, it's safe.
         current_value.update(new_value=new_value, old_value=old_value)
