@@ -7,3 +7,6 @@
 
 * I hate Mako templating.
 ** Switch to Kid?  Was that actually good?  (Is it abandoned?)
+
+* i18n of this app itself
+** Use UI strings from Pootle, perhaps, and use their translations?
