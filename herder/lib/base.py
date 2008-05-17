@@ -53,11 +53,11 @@ class BaseController(WSGIController):
 
         # add actions
         if c.remote_user:
-            c.actions.insert(0, ('/account/profile', c.remote_user))
+            c.actions.insert(0, ('/account/profile', 'Your profile'))
             c.actions.append( ('/account/logout', 'Logout') )
         else:
             c.actions.append( ('/account/login', 'Login') )
-
+            c.actions.append( ('/account/register', 'Sign up'))
 
         # WSGIController.__call__ dispatches to the Controller method
         # the request is routed to. This routing information is
