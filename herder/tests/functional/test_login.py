@@ -20,8 +20,10 @@ class TestLoginController(TestController):
         other tests.)'''
         # claim to be admin
         self.app.extra_environ['REMOTE_USER'] = 'admin'
-        login_url = url_for(controller='login', action='login', domain = None)
+        # Go somewhere we expect to be asked to log in
+        login_url = url_for(controller='login', action='required', domain = None)
         response = self.app.get(login_url)
+        response = response.follow()
 
         assert len(response.forms) == 0
         
