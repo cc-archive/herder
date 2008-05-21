@@ -1,8 +1,5 @@
 import logging
 
-from authkit.users import UsersReadOnly
-from authkit.permissions import RequestPermission, HasAuthKitRole
-
 log = logging.getLogger(__name__)
 
 class HasContextRole(RequestPermission):

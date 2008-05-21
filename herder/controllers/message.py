@@ -3,8 +3,6 @@ import logging
 from decorator import decorator
 
 import jsonlib
-from authkit.authorize.pylons_adaptors import authorize
-from authkit.permissions import HasAuthKitRole, ValidAuthKitUser
 from pylons.decorators import jsonify
 
 import herder.model

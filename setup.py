@@ -22,7 +22,7 @@ setup(
                       'selenium',
                       ],
 
-    dependency_links=['http://authkit.org/svn/AuthKit/trunk/#egg=AuthKit-dev',
+    dependency_links=[
                       'svn://lesscode.org/pudge/trunk#egg=pudge-dev',
                       'svn://lesscode.org/buildutils/trunk#egg=buildutils-dev',
                       'http://labs.creativecommons.org/~paulproteus/eggs/',

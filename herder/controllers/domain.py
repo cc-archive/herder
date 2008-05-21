@@ -1,8 +1,5 @@
 import logging
 
-from authkit.authorize.pylons_adaptors import authorize
-from authkit.permissions import HasAuthKitRole, ValidAuthKitUser
-
 import herder.model
 from herder.lib.base import *
 

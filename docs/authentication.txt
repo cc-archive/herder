@@ -1,7 +1,7 @@
 Authentication
 ++++++++++++++
 
-Herder uses `AuthKit <http://authkit.org>`_ for authentication and
+Herder uses a homebrew setup for authentication and
 authorization.  In addition to the basic users, roles and groups,
 Herder extends the permission model to support "contextual" roles.
 Contextual roles are roles, such as ``administrater`` or
