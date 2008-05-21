@@ -3,7 +3,12 @@ import herder.model.user
 import sha
 
 class LoginController(BaseController):
-    def login(self):
+    requires_auth = ['required']
+
+    def required(self):
+        redirect_to('/')
+
+    def index(self):
         ''' Show login form.'''
         return render('/account/login.html')
     

@@ -5,8 +5,9 @@ class TestLoginController(TestController):
     
     def test_login_form_exists(self):
         '''Ensure the login page contains the form.'''
-        login_url = url_for(controller='login', action='login', domain = None)
-        response = self.app.get(login_url)
+        login_url = url_for(controller='login', action='required', domain = None)
+        response = self.app.get(login_url) # It's a 302...
+        response = response.follow()
 
         print response.body
         print self.app.post
