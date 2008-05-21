@@ -1,18 +1,13 @@
 import logging
 
-from authkit.authorize.pylons_adaptors import authorize
-from authkit.permissions import HasAuthKitRole, ValidAuthKitUser
-
 from herder.lib.base import *
 
 log = logging.getLogger(__name__)
 
 class AccountController(BaseController):
+    requries_auth = ('login', 'profile')
 
-    @authorize(ValidAuthKitUser())
-    @with_user_info
     def login(self):
-
         return render('/account/login_successful.html')
 
     def logout(self):
@@ -45,8 +40,5 @@ class AccountController(BaseController):
         else:
             return render('/account/registration/invalid.html')
 
-    @authorize(ValidAuthKitUser())
-    @with_user_info
     def profile(self):
-
         return render('/account/profile.html')

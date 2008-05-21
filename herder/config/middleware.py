@@ -10,9 +10,6 @@ from pylons.middleware import error_mapper, ErrorDocuments, ErrorHandler, \
     StaticJavascripts
 from pylons.wsgiapp import PylonsApp
 
-from authkit.users import sqlalchemy_04_driver
-import authkit.authenticate
-
 from herder.model import setup_model
 from sqlalchemymanager import SQLAlchemyManager
 
@@ -42,10 +39,8 @@ def make_app(global_conf, full_stack=True, **app_conf):
     # The Pylons WSGI app
     app = PylonsApp()
 
-    # Authentication Layer (AuthKit)
-    app = authkit.authenticate.middleware(app, app_conf)
     app = SQLAlchemyManager(app, app_conf, 
-                            [setup_model, sqlalchemy_04_driver.setup_model])
+                            [setup_model])
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
 

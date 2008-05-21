@@ -2,19 +2,15 @@ import urllib
 import logging
 
 import jsonlib
-from authkit.authorize.pylons_adaptors import (
-    authorize, authorized, authorize_request)
-from authkit.authorize import PermissionError
-from authkit.permissions import ValidAuthKitUser
 from pylons.decorators import jsonify
 
 from herder.lib.base import *
 import herder.model
-from herder.lib.authentication import HasContextRole
 
 log = logging.getLogger(__name__)
 
 class LanguageController(BaseController):
+    requires_auth = ('edit_string',)
 
     def view(self, domain, id):
         """View a specific domain language."""
@@ -24,8 +20,6 @@ class LanguageController(BaseController):
 
         return render('/language/view.html')
 
-    @authorize(HasContextRole('administer',  keys=('lang', 'domain'), 
-                              id_key='lang'))
     def admin(self, domain, id):
         """Administer a language in a domain."""
 
@@ -93,7 +87,6 @@ class LanguageController(BaseController):
 
         return self._messages(domain, id, untrans_filter)
 
-    @authorize(ValidAuthKitUser())
     def edit_string(self, domain, id):
         """Edit an individual string."""
 

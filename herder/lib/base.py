@@ -33,14 +33,14 @@ class BaseController(WSGIController):
     def _get_roles(self, environ, domain = None, lang_id = None):
         """Return a list of roles for the current context."""
 
-        authkit = environ.get('authkit.users')
-        user = environ.get('REMOTE_USER', None)
+        user = session.get('user', None)
         
         if user is None:
             # not logged in, no roles
             return []
 
-        return authkit.user_roles(user)
+        if user == 'admin':
+            return ['administer', 'translate']
 
     def _actions(self, environ):
         """Return a sequence of two-tuples describing the actions for this

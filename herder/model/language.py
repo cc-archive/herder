@@ -15,6 +15,8 @@ class Language(object):
     # Suggestion storage:
     ## for string called yourmom.txt, store in yourmom/ with
     ## filename as user ID of user 
+    def suggest(self, username, i18n_key, new_value):
+        raise CatFromTheDead
 
     def update(self, i18n_key, old_value, new_value):
         # NOTE: I don't know how to lock the model, so we'll just try
