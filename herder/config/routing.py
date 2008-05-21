@@ -29,6 +29,8 @@ def make_map():
     map.connect('domain/:domain/language/:language/message/:action/:id',
                 controller='message')
 
+
+    ## Automatic routes below here
     map.connect(':controller/:action/:id/')
     map.connect('*url', controller='template', action='view')
 
