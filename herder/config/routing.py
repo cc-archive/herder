@@ -28,6 +28,7 @@ def make_map():
 
     map.connect('domain/:domain/language/:language/message/:action/:id',
                 controller='message')
+    map.connect('login', controller='login', action='login')
 
 
     ## Automatic routes below here

@@ -20,13 +20,10 @@ def init_model(bind):
        'bind' is a SQLAlchemy engine or connection, as returned by
        sa.create_engine, sa.engine_from_config, or engine.connect().
     """
-    global engine, ctx, Session
+    global engine, Session
     engine = bind
 
-    ctx = Session = orm.scoped_session(
+    Session = orm.scoped_session(
         orm.sessionmaker(transactional=True, autoflush=True, bind=bind))
 
-    #orm.mapper(Blog, blog_table,
-    #    order_by=[blog_table.c.date.desc()])
-
-meta = metadata = sa.MetaData()
+meta = sa.MetaData()

@@ -7,7 +7,7 @@ Login
 </%def>
 
 <%def name="body()">
-${h.form(h.url(controller='login', action='login'), method='POST')}
+<form action="FORM_ACTION" method="post">
   <dl>
     <dt>Username:</dt>
     <dd><input type="text" name="username"></dd>
@@ -15,5 +15,5 @@ ${h.form(h.url(controller='login', action='login'), method='POST')}
     <dd><input type="password" name="password"></dd>
   </dl>
   <input type="submit" name="authform" value="login" />
-${h.end_form()}
+</form>
 </%def>

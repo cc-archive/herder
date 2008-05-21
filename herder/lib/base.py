@@ -58,6 +58,9 @@ class BaseController(WSGIController):
     def __call__(self, environ, start_response):
         """Invoke the Controller"""
 
+        if 'REMOTE_USER' in environ:
+            session['user'] = environ["REMOTE_USER"]
+
         # bind the actions method into the context
         c.roles = self._get_roles(environ)
         c.actions = self._actions(environ)
