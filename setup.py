@@ -14,7 +14,6 @@ setup(
                       'Pylons>=0.9.6.1', 
                       'Babel',
                       'jsonlib',
-                      'AuthKit>=dev',
                       'SQLAlchemy>=0.4.1',
                       'SQLAlchemyManager',
                       'pysqlite',
