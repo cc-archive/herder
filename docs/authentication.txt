@@ -4,7 +4,7 @@ Authentication
 Herder uses a homebrew setup for authentication and
 authorization.  In addition to the basic users, roles and groups,
 Herder extends the permission model to support "contextual" roles.
-Contextual roles are roles, such as ``administrater`` or
+Contextual roles are roles, such as ``administrator`` or
 ``translate``, applied to a specific context -- either a Domain or a
 Language.
 
