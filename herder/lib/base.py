@@ -16,6 +16,17 @@ import herder.lib.helpers as h
 import herder.model as model
 
 class BaseController(WSGIController):
+    requires_auth = False
+
+    def __before__(self):
+        ''' If authentication is required, and the user is not 
+        logged in, then redirect to login.'''
+        if self.requires_auth and 'user' not in session:
+            # Remember where we came from so that the user can be sent there
+            # after a successful login.
+            session['path_before_login'] = request.path_info
+            session.save()
+            return redirect_to(h.url_for(controller='login'))
 
     ### FIXME: Don't just ignore the language ID and domain!
     def _get_roles(self, environ, domain = None, lang_id = None):
