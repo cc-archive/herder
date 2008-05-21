@@ -8,7 +8,7 @@ class TestDomainController(TestController):
         pass
 
     def test_list(self):
-        response = self.app.get(url_for(controller='domain', action='cc_org'))
+        response = self.app.get(url_for(controller='domain', action='view', id='cc_org'))
         assert '.git' not in response.body
         assert 'fr_CA' in response.body
         assert 'mk' in response.body

@@ -18,6 +18,7 @@ class DomainController(BaseController):
 
         c.domain = herder.model.Domain.by_name(id)
         c.languages = c.domain.languages
+
         c.languages.sort()
 
         return render('/domain/view.html')

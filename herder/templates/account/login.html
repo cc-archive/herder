@@ -7,7 +7,7 @@ Login
 </%def>
 
 <%def name="body()">
-${h.form(h.url(controller='login', action='index'), method='POST')}
+${h.form(h.url(controller='account', action='login'), method='POST')}
   <dl>
     <dt>Username:</dt>
     <dd><input type="text" name="username"></dd>

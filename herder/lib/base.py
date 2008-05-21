@@ -27,7 +27,7 @@ class BaseController(WSGIController):
                 # after a successful login.
                 session['path_before_login'] = request.path_info
                 session.save()
-                return redirect_to(h.url_for(controller='login'))
+                return redirect_to(h.url_for(controller='account', action='login'))
 
     ### FIXME: Don't just ignore the language ID and domain!
     def _get_roles(self, environ, domain = None, lang_id = None):
