@@ -1,2 +1,15 @@
 herder.egg-info
+*.pyc
+*.py~
+*#
+.#*
+.installed.cfg
+bin
+data
+develop-eggs
+downloads
+eggs
+herder.db
+herder_test.db
+parts
 
