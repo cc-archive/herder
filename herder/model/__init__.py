@@ -9,21 +9,18 @@ from sqlalchemy.orm import mapper
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 import sqlalchemy as sa
+from herder.model import meta
 from sqlalchemy import orm
 from sqlalchemy import types
 
-def setup_model(model, metadata, **p):
-    pass
-
-def init_model(bind):
+def init_model(engine):
     """Call me at the beginning of the application.
-       'bind' is a SQLAlchemy engine or connection, as returned by
+       'engine' is a SQLAlchemy engine or connection, as returned by
        sa.create_engine, sa.engine_from_config, or engine.connect().
     """
-    global engine, Session
-    engine = bind
+    sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine)
 
-    Session = orm.scoped_session(
-        orm.sessionmaker(transactional=True, autoflush=True, bind=bind))
+    meta.engine = engine
+    meta.Session = orm.scoped_session(sm)
 
-meta = sa.MetaData()
+from herder.model import user

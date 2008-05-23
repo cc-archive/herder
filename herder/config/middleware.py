@@ -10,7 +10,6 @@ from pylons.middleware import error_mapper, ErrorDocuments, ErrorHandler, \
     StaticJavascripts
 from pylons.wsgiapp import PylonsApp
 
-from herder.model import setup_model
 from sqlalchemymanager import SQLAlchemyManager
 
 from herder.config.environment import load_environment
@@ -38,9 +37,6 @@ def make_app(global_conf, full_stack=True, **app_conf):
 
     # The Pylons WSGI app
     app = PylonsApp()
-
-    app = SQLAlchemyManager(app, app_conf, 
-                            [setup_model])
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
 

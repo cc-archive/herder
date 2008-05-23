@@ -3,15 +3,12 @@ import os
 import logging
 
 from pylons import config
-import sqlalchemy as sa
 from sqlalchemy import engine_from_config
-
-from sqlalchemymanager import SQLAlchemyManager
 
 import herder.lib.app_globals as app_globals
 import herder.lib.helpers
 from herder.config.routing import make_map
-from herder import model
+from herder.model import init_model
 
 log = logging.getLogger(__name__)
 
@@ -37,12 +34,12 @@ def load_environment(global_conf, app_conf):
     config['pylons.g'] = app_globals.Globals()
     config['pylons.h'] = herder.lib.helpers
 
+    # Setup SQLAlchemy database engine
+    engine = engine_from_config(config, 'sqlalchemy.')
+    init_model(engine)
+
     # Customize templating options via this variable
     tmpl_options = config['buffet.template_options']
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)
-    config['pylons.g'].sa_engine = engine = \
-        sa.engine_from_config(config, "sqlalchemy.")
-    model.init_model(engine)
-
