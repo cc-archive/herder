@@ -28,3 +28,17 @@ class TestAuthControllerTwo(TestController):
         assert len(response.forms) == 0
         del self.app.extra_environ['REMOTE_USER']
     
+class TestAuthControllerThree(TestController):
+
+    def test_can_register(self):
+        '''Ensure registration works'''
+        url = url_for(controller='account', action='register', domain = None)
+        response = self.app.get(url)
+        response.forms[0]['username'] = 'admin'
+        response.forms[0]['password_once'] = 'barbecue'
+        response.forms[0]['password_twice'] = 'barbecue'
+        response.forms[0]['human_name'] = 'Admin Guy'
+        response.forms[0].submit()
+    
+        
+
