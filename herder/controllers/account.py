@@ -44,8 +44,36 @@ class AccountController(BaseController):
 
         return render('/account/registration/index.html')
 
+    def register_success(self):
+        return render('/account/registration/success.html')
+
+    def register_failed(self):
+        return render('/account/registration/failed.html')
+
     def register_submit(self):
-        yourmom
+        success = False
+        reason = ''
+
+        # First, check password1 == password2
+        if request.params['password_once'] == request.params['password_twice']:
+            # Great, try to create the user now.
+            new_user = herder.model.user.User()
+            new_user.user_name = unicode(request.params['user_name'])
+            new_user.salt = herder.model.user.random_alphanum()
+            new_user.hashed_salted_pw = herder.model.user.hash_password(
+                            new_user.salt, request.params['password_once'])
+            herder.model.meta.Session.save(new_user)
+            herder.model.meta.Session.commit()
+            success = True
+            # Great!
+        else:
+            success = False
+            reason = "The two passwords you submitted do not match."
+
+        if success:
+            redirect_to(action='register_success')
+        else:
+            redirect_to(action='register_failed')
 
     def confirm(self):
 

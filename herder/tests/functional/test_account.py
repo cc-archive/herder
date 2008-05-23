@@ -29,15 +29,15 @@ class TestAuthControllerTwo(TestController):
         del self.app.extra_environ['REMOTE_USER']
     
 class TestAuthControllerThree(TestController):
-
-    def test_can_register(self):
+    def test_can_register(self, user_name='admin', password='barbecue',
+                human_name = 'Admin Guy'):
         '''Ensure registration works'''
         url = url_for(controller='account', action='register', domain = None)
         response = self.app.get(url)
-        response.forms[0]['username'] = 'admin'
-        response.forms[0]['password_once'] = 'barbecue'
-        response.forms[0]['password_twice'] = 'barbecue'
-        response.forms[0]['human_name'] = 'Admin Guy'
+        response.forms[0]['user_name'] = user_name
+        response.forms[0]['password_once'] = password
+        response.forms[0]['password_twice'] = password
+        response.forms[0]['human_name'] = human_name
         response.forms[0].submit()
     
         

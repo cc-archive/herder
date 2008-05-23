@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy import orm
+import random
 
 from herder.model import meta
 
@@ -14,3 +15,14 @@ class User(object):
     pass
 
 orm.mapper(User, t_user)
+
+def random_alphanum(length = 12):
+    source = 'abcdefghijklmnopqrstuvxyz' + '0123456789'
+    ret = ''
+    for n in range(length):
+        ret += random.choice(source)
+    return ret
+
+import sha
+def hash_password(salt, password):
+    return sha.sha(password + salt).hexdigest()
