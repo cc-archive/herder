@@ -44,6 +44,9 @@ class AccountController(BaseController):
 
         return render('/account/registration/index.html')
 
+    def register_submit(self):
+        yourmom
+
     def confirm(self):
 
         # get the hash from the query string
