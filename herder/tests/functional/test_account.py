@@ -29,8 +29,9 @@ class TestAuthControllerTwo(TestController):
         del self.app.extra_environ['REMOTE_USER']
     
 class TestAuthControllerThree(TestController):
+
     def test_can_register(self, user_name='admin', password='barbecue',
-                human_name = 'Admin Guy'):
+                human_name = 'Admin Guy', should_fail = False):
         '''Ensure registration works'''
         url = url_for(controller='account', action='register', domain = None)
         response = self.app.get(url)
@@ -38,7 +39,21 @@ class TestAuthControllerThree(TestController):
         response.forms[0]['password_once'] = password
         response.forms[0]['password_twice'] = password
         response.forms[0]['human_name'] = human_name
-        response.forms[0].submit()
-    
-        
+        response = response.forms[0].submit()
+        response = response.follow() # It's a redirect, either to "OK" or "FAIL"
+        if should_fail:
+            assert 'has been created' not in response
+        else:
+            assert 'has been created' in response
+        if not hasattr(self, 'admin_password'):
+            self.admin_password = password
+
+    def test_registering_same_username_fails(self):
+        # Assert there is already an admin user
+        self.test_can_register(user_name='admin', password='barbecue',
+                human_name = 'Admin Guy', should_fail = True)
+        self.test_can_register(user_name='who_cares', password='barbecue',
+                human_name = 'Admin Guy', should_fail = False)
+        self.test_can_register(user_name='who_cares', password='barbecue',
+                human_name = 'Admin Guy', should_fail = True)
 

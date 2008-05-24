@@ -2,6 +2,7 @@ import logging
 
 from herder.lib.base import *
 import herder.model.user
+import sqlalchemy.exceptions
 
 log = logging.getLogger(__name__)
 
@@ -63,8 +64,17 @@ class AccountController(BaseController):
             new_user.hashed_salted_pw = herder.model.user.hash_password(
                             new_user.salt, request.params['password_once'])
             herder.model.meta.Session.save(new_user)
-            herder.model.meta.Session.commit()
-            success = True
+            try:
+                herder.model.meta.Session.commit()
+                success = True
+            except sqlalchemy.exceptions.IntegrityError, e:
+                success = False
+                if 'column user_name is not unique' in e.message:
+                    reason = 'A user by this name already exists.'
+                    herder.model.meta.Session.rollback()
+                else:
+                    raise # I don't know why the exception was thrown
+                          # so I can't handle it.
             # Great!
         else:
             success = False
