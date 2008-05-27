@@ -53,7 +53,7 @@ YAHOO.util.Event.addListener(window, "load", function() {
         this.myDataTable = new YAHOO.widget.DataTable("strings_table", 
                 myColumnDefs, this.myDataSource, {initialRequest:""});
 
- %if c.remote_user:
+ %if c.user:
         this.myDataTable.subscribe("cellClickEvent", 
                                    this.myDataTable.onEventShowCellEditor); 
         this.myDataTable.subscribe("editorSaveEvent", function(e) {
@@ -85,7 +85,7 @@ YAHOO.util.Event.addListener(window, "load", function() {
 
 <%def name="body()">
 
-%if c.remote_user:
+%if c.user:
 <p>You can click the text in the <strong>Translation</strong> column
   to edit a translation.</p>
   %if 'translate' not in c.user_roles:

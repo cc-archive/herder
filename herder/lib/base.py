@@ -34,7 +34,7 @@ class BaseController(WSGIController):
         """Return a list of roles for the current context."""
 
         user = session.get('user', None)
-        
+
         if user is None:
             # not logged in, no roles
             return []
@@ -59,15 +59,12 @@ class BaseController(WSGIController):
     def __call__(self, environ, start_response):
         """Invoke the Controller"""
 
-        if 'REMOTE_USER' in environ:
-            session['user'] = environ["REMOTE_USER"]
-
         # bind the actions method into the context
         c.roles = self._get_roles(environ)
         c.actions = self._actions(environ)
 
         # add actions
-        if c.remote_user:
+        if c.user:
             c.actions.insert(0, ('/account/profile', 'Your profile'))
             c.actions.append( ('/account/logout', 'Logout') )
         else:

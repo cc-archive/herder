@@ -21,13 +21,12 @@ for e in config['buffet.template_engines'][1:]:
         alias=e['alias'],
         **e['template_options']
     )
+## FIXME: Is this file just stale AuthKit support?
 
 class State:
     pass
 
 c = State()
-c.user = 'None'
-c.remote_user = False
 c.actions = []
 
 def make_template():

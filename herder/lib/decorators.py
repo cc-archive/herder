@@ -7,7 +7,7 @@ def with_user_info(fn, *args, **kwargs):
     into the context."""
 
     # inject some stuff into the context
-    c.remote_user = request.environ.get("REMOTE_USER", False)
+    c.user = session.get('user', None)
 
     return fn(*args, **kwargs)
 
