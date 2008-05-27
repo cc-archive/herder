@@ -26,6 +26,12 @@ class TestAuthControllerTwo(TestController):
 
         assert 'You were successfully logged in' in response
 
+    def test_profile_says_admin_guy(self):
+        self.test_can_login_as_admin()
+        url = url_for(controller='account', action='profile')
+        response =self.app.get(url)
+        assert "Admin Guy" in response
+
 class TestAuthControllerThree(TestController):
 
     def do_register(self, user_name='admin', password='barbecue',
