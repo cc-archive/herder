@@ -3,10 +3,10 @@
 <%def name="head()"></%def>
 
 <%def name="title()">
-User information for ${c.user | x} 
+User information for ${c.user.user_name | x} 
 </%def>
 
 <%def name="body()">
-<p>Your username appears to be ${c.user | x}.</p>
-You might be Admin Guy.
+<p>Your username appears to be ${c.user.user_name | x}.</p>
+<p>Your name appears to be ${c.user.human_name | x}.</p>
 </%def>

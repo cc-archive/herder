@@ -30,6 +30,7 @@ class TestAuthControllerTwo(TestController):
         self.test_can_login_as_admin()
         url = url_for(controller='account', action='profile')
         response =self.app.get(url)
+        assert 'admin' in response
         assert "Admin Guy" in response
 
 class TestAuthControllerThree(TestController):

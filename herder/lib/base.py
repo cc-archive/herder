@@ -39,7 +39,7 @@ class BaseController(WSGIController):
             # not logged in, no roles
             return []
 
-        if user == 'admin':
+        if user.user_name == 'admin':
             return ['administer', 'translate']
 
     def _actions(self, environ):

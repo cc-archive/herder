@@ -39,7 +39,7 @@ class AccountController(BaseController):
             return render('/account/login.html', reason='Incorrect password submitted')
 
         # Great - this is for real.
-        session['user'] = form_username
+        session['user'] = db_user
         session.save()
 
         if 'path_before_login' in session:
