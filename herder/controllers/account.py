@@ -72,6 +72,7 @@ class AccountController(BaseController):
             new_user.hashed_salted_pw = herder.model.user.hash_with_salt(
                             salt=new_user.salt,
                             raw_password=request.params['password_once'])
+            new_user.human_name = request.params['human_name']
             herder.model.meta.Session.save(new_user)
             try:
                 herder.model.meta.Session.commit()

@@ -9,6 +9,7 @@ t_user = sa.Table("user", meta.metadata,
                       sa.Column('user_name', sa.types.Unicode(255), nullable = False, unique = True),
                       sa.Column('salt', sa.types.String(255), nullable = False),
                       sa.Column('hashed_salted_pw', sa.types.String(255), nullable = False),
+                      sa.Column('human_name', sa.types.Unicode(255), nullable = False),
                       )
 
 class User(object):
