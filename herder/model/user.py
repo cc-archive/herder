@@ -24,5 +24,5 @@ def random_alphanum(length = 12):
     return ret
 
 import sha
-def hash_password(salt, password):
-    return sha.sha(password + salt).hexdigest()
+def hash_with_salt(salt, raw_password):
+    return sha.sha(raw_password + salt).hexdigest()

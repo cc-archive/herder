@@ -23,8 +23,6 @@ import paste.script.appinstall
 from paste.deploy import loadapp
 from routes import url_for
 
-__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium', 'start_app_process', 'stop_app_process']
-
 here_dir = os.path.dirname(os.path.abspath(__file__))
 conf_dir = os.path.dirname(os.path.dirname(here_dir))
 
@@ -133,3 +131,12 @@ class TestController(TestCase):
         wsgiapp = loadapp('config:test.ini', relative_to=conf_dir)
         self.app = paste.fixture.TestApp(wsgiapp)
         TestCase.__init__(self, *args, **kwargs)
+
+# Also, create an admin user and store his password here.
+from herder.tests.functional import test_account
+# Monkey patching nonsense, wtf mate?
+test_account.TestAuthControllerThree.runTest = lambda self: None
+controller = test_account.TestAuthControllerThree()
+admin_password = controller.do_register()
+
+__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium', 'start_app_process', 'stop_app_process', 'admin_password']

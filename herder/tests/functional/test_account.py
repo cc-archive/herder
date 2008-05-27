@@ -1,3 +1,4 @@
+import herder.tests
 from herder.tests import *
 
 class TestAuthControllerOne(TestController):
@@ -16,21 +17,18 @@ class TestAuthControllerOne(TestController):
 
 class TestAuthControllerTwo(TestController):
 
-    def test_login_override(self, username = 'admin'):
-        '''Ensure we can appear to be logged in (since we need this for
-        other tests.)'''
-        # claim to be admin
-        self.app.extra_environ['REMOTE_USER'] = 'admin'
-        # Go somewhere we expect to be asked to log in
-        login_url = url_for(controller='account', action='profile', domain = None)
-        response = self.app.get(login_url)
+    def test_can_login_as_admin(self):
+        url = url_for(controller='account', action='login')
+        response = self.app.get(url)
+        response.forms[0]['username'] = 'admin'
+        response.forms[0]['password'] = herder.tests.admin_password
+        response = response.forms[0].submit()
 
-        assert len(response.forms) == 0
-        del self.app.extra_environ['REMOTE_USER']
-    
+        assert 'You were successfully logged in' in response
+
 class TestAuthControllerThree(TestController):
 
-    def test_can_register(self, user_name='admin', password='barbecue',
+    def do_register(self, user_name='admin', password='barbecue',
                 human_name = 'Admin Guy', should_fail = False):
         '''Ensure registration works'''
         url = url_for(controller='account', action='register', domain = None)
@@ -45,15 +43,14 @@ class TestAuthControllerThree(TestController):
             assert 'has been created' not in response
         else:
             assert 'has been created' in response
-        if not hasattr(self, 'admin_password'):
-            self.admin_password = password
+        return password
 
     def test_registering_same_username_fails(self):
         # Assert there is already an admin user
-        self.test_can_register(user_name='admin', password='barbecue',
+        self.do_register(user_name='admin', password='barbecue',
                 human_name = 'Admin Guy', should_fail = True)
-        self.test_can_register(user_name='who_cares', password='barbecue',
+        self.do_register(user_name='who_cares', password='barbecue',
                 human_name = 'Admin Guy', should_fail = False)
-        self.test_can_register(user_name='who_cares', password='barbecue',
+        self.do_register(user_name='who_cares', password='barbecue',
                 human_name = 'Admin Guy', should_fail = True)
 
