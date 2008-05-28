@@ -56,3 +56,10 @@ class TestAuthControllerThree(TestController):
         do_register(self.app, user_name='who_cares', password='barbecue',
                 human_name = 'Admin Guy', should_fail = True)
 
+    def test_login_as_non_admin_works(self):
+        # Create a new dummy
+        user_name, password, human_name = [herder.model.user.random_alphanum()
+                        for i in range(3)]
+        do_register(self.app, user_name=user_name, password=password, 
+            human_name=human_name)
+        self.login_as(user_name, password)

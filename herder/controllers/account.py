@@ -25,7 +25,7 @@ class AccountController(BaseController):
         # Get user data from database
         db_user = herder.model.meta.Session.query(herder.model.user.User).get_by(
             user_name=form_username)
-        print db_user
+
         if db_user is None:
             # FIXME: Be a redirect
             no_such_user
