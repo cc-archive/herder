@@ -1,9 +1,4 @@
 from herder.tests import *
-import herder
-import herder.tests
-print herder
-print herder.tests
-print herder.tests.admin_password
 import jsonlib
 import BeautifulSoup
 
@@ -28,11 +23,7 @@ class TestLanguageController(TestController):
        
     def test_edit_string_as_admin(self):
         # Pretend to be admin
-        login_url = url_for(controller='account', action='login')
-        response = self.app.get(login_url)
-        response.forms[0]['username'] = 'admin'
-        response.forms[0]['password'] = 'barbecue'
-        response.forms[0].submit() # throw it away and hope
+        self.login_as('admin', admin_password)
 
         # First, change it so old -> new
         i18n_key = 'country.us'
