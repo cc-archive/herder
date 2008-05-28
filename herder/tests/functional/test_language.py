@@ -78,9 +78,15 @@ class TestLanguageController(TestController):
         logout = url_for(controller='account', action='logout')
         response = self.app.get(logout)
 
-'''    def test_make_suggestion_as_non_admin(self):
-        # Pretend to be admin
-        self.app.extra_environ['REMOTE_USER'] = 'joeuser'
+    def test_make_suggestion_as_non_admin(self):
+        # Create a throwaway user
+        tc = herder.tests.functional.test_account.TestAuthControllerThree()
+        tc.do_register(user_name='dummy', human_name='Mr. Dummy')
+        # Pretend to be that user
+        url = url_for(controller='account', action='login')
+        
+        #...
+
         # First, change it so old -> new
         i18n_key = 'country.us'
         old = 'United States'
@@ -99,4 +105,4 @@ class TestLanguageController(TestController):
 
         # At least, the real string shouldn't have changed - repeat this check
         self.test_strings_contain(desired_key=i18n_key, desired_value=old)       
-'''
+
