@@ -1,6 +1,23 @@
 import herder.tests
 from herder.tests import *
 
+def do_register(app, user_name='admin', password='barbecue',
+                human_name = 'Admin Guy', should_fail = False):
+    '''Ensure registration works'''
+    url = url_for(controller='account', action='register', domain = None)
+    response = app.get(url)
+    response.forms[0]['user_name'] = user_name
+    response.forms[0]['password_once'] = password
+    response.forms[0]['password_twice'] = password
+    response.forms[0]['human_name'] = human_name
+    response = response.forms[0].submit()
+    response = response.follow() # It's a redirect, either to "OK" or "FAIL"
+    if should_fail:
+        assert 'has been created' not in response
+    else:
+        assert 'has been created' in response
+    return password
+
 class TestAuthControllerOne(TestController):
 
     def test_login_form_exists(self):
@@ -30,29 +47,12 @@ class TestAuthControllerTwo(TestController):
 
 class TestAuthControllerThree(TestController):
 
-    def do_register(self, user_name='admin', password='barbecue',
-                human_name = 'Admin Guy', should_fail = False):
-        '''Ensure registration works'''
-        url = url_for(controller='account', action='register', domain = None)
-        response = self.app.get(url)
-        response.forms[0]['user_name'] = user_name
-        response.forms[0]['password_once'] = password
-        response.forms[0]['password_twice'] = password
-        response.forms[0]['human_name'] = human_name
-        response = response.forms[0].submit()
-        response = response.follow() # It's a redirect, either to "OK" or "FAIL"
-        if should_fail:
-            assert 'has been created' not in response
-        else:
-            assert 'has been created' in response
-        return password
-
     def test_registering_same_username_fails(self):
         # Assert there is already an admin user
-        self.do_register(user_name='admin', password='barbecue',
+        do_register(self.app, user_name='admin', password='barbecue',
                 human_name = 'Admin Guy', should_fail = True)
-        self.do_register(user_name='who_cares', password='barbecue',
+        do_register(self.app, user_name='who_cares', password='barbecue',
                 human_name = 'Admin Guy', should_fail = False)
-        self.do_register(user_name='who_cares', password='barbecue',
+        do_register(self.app, user_name='who_cares', password='barbecue',
                 human_name = 'Admin Guy', should_fail = True)
 
