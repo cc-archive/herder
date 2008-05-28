@@ -35,12 +35,10 @@ class BaseController(WSGIController):
 
         user = session.get('user', None)
 
-        if user is None:
-            # not logged in, no roles
-            return []
-
-        if user.user_name == 'admin':
+        if (user is not None) and (user.user_name == 'admin'):
             return ['administer', 'translate']
+
+        return [] # no roles if not admin
 
     def _actions(self, environ):
         """Return a sequence of two-tuples describing the actions for this
