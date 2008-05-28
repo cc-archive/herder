@@ -18,16 +18,11 @@ class TestAuthControllerOne(TestController):
 class TestAuthControllerTwo(TestController):
 
     def test_can_login_as_admin(self):
-        url = url_for(controller='account', action='login')
-        response = self.app.get(url)
-        response.forms[0]['username'] = 'admin'
-        response.forms[0]['password'] = herder.tests.admin_password
-        response = response.forms[0].submit()
-
-        assert 'You were successfully logged in' in response
+        self.login_as('admin', herder.tests.admin_password)
 
     def test_profile_says_admin_guy(self):
-        self.test_can_login_as_admin()
+        self.login_as('admin', herder.tests.admin_password)
+
         url = url_for(controller='account', action='profile')
         response =self.app.get(url)
         assert 'admin' in response
