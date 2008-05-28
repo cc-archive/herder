@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from herder.tests import *
 import jsonlib
 import BeautifulSoup
@@ -28,7 +29,7 @@ class TestLanguageController(TestController):
         # First, change it so old -> new
         i18n_key = 'country.us'
         old = 'United States'
-        new = 'Untied States'
+        new = u'¿Untied States?'
         self.test_strings_contain(desired_key=i18n_key, desired_value=old)
 
         url_indeed = url_for(controller='language', action='edit_string',

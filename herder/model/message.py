@@ -58,11 +58,12 @@ class Message(object):
         """Update a string; if old_value is provided, only perform the edit
         if the value has not been editted in the interim."""
 
+        assert type(new_value) == unicode
         if old_value is not None:
             if self.string != old_value:
                 raise Exception
 
-        file(self.datafile_path, 'w').write(new_value)
+        codecs.open(self.datafile_path, mode='w', encoding='utf-8').write(new_value)
 
     def suggest(self, username, string_id, suggestion):
         """Store a suggestion for a given string."""
