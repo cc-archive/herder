@@ -1,4 +1,6 @@
 from herder.tests import *
+import herder.tests.functional.test_account
+import herder.model.user
 import jsonlib
 import BeautifulSoup
 
@@ -71,12 +73,11 @@ class TestLanguageController(TestController):
 
     def test_make_suggestion_as_non_admin(self):
         # Create a throwaway user
-        tc = herder.tests.functional.test_account.TestAuthControllerThree()
-        tc.do_register(user_name='dummy', human_name='Mr. Dummy')
+        u, p, n = [herder.model.user.random_alphanum() for k in range(3)]
+        herder.tests.functional.test_account.do_register(self.app, 
+            user_name=u, password=p, human_name=n)
         # Pretend to be that user
-        url = url_for(controller='account', action='login')
-        
-        #...
+        self.login_as(u, p)
 
         # First, change it so old -> new
         i18n_key = 'country.us'
