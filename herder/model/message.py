@@ -64,13 +64,14 @@ class Message(object):
 
         file(self.datafile_path, 'w').write(new_value)
 
-    def suggest(self, username, string_id, suggestion):
-        """Store a suggestion for a given string."""
+    def suggest(self, username, suggestion):
+        """Store a suggestion for the string we are."""
 
         # figure out where to store this suggestion
-        sugg_path = os.path.join(self.domain.path, self.lang, 'suggestions',
-                                 hash(string_id))
+        sugg_path = os.path.join(self.language.domain.path, self.language.name,
+                                 self.id + '.sugg.d')
         if not os.path.exists(sugg_path):
-            os.mkdirs(sugg_path)
+            os.makedirs(sugg_path)
 
         # write the suggestion to disk
+        pass # ;-)
