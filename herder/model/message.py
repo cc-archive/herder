@@ -70,7 +70,7 @@ class Message(object):
         if user_id is not None:
             assert(type(user_id) == int)
             user_str = str(user_id)
-            sugg_path = os.path.join(sugg_path, user_str)
+            sugg_path = os.path.join(sugg_path, user_str + '.txt')
 
         return sugg_path
 
@@ -82,7 +82,10 @@ class Message(object):
             os.makedirs(self.sugg_path())
 
         # write the suggestion to disk
-        pass # ;-)
+        fd = codecs.open(self.sugg_path(user_id), 'w', encoding='utf-8')
+        assert type(suggestion) == unicode
+        fd.write(suggestion)
+        fd.close()
 
     def get_suggestion(self, user_id, fail_if_empty = False):
         '''Return just the single lousy Unicode string that this user suggested, or None.'''
