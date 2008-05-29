@@ -64,17 +64,17 @@ class Message(object):
 
         file(self.datafile_path, 'w').write(new_value)
 
-    def sugg_path(self, username = None):
+    def sugg_path(self, user_id = None):
         sugg_path = os.path.join(self.language.domain.path, self.language.name,
                                  self.id + '.sugg.d')
-        if username is not None:
-            assert(type(username) == unicode)
-            user_utf = username.encode('utf-8')
-            sugg_path = os.path.join(sugg_path, user_utf)
+        if user_id is not None:
+            assert(type(user_id) == int)
+            user_str = str(user_id)
+            sugg_path = os.path.join(sugg_path, user_str)
 
         return sugg_path
 
-    def suggest(self, username, suggestion):
+    def suggest(self, user_id, suggestion):
         """Store a suggestion for the string we are."""
 
         # figure out where to store this suggestion
@@ -84,10 +84,10 @@ class Message(object):
         # write the suggestion to disk
         pass # ;-)
 
-    def get_suggestion(self, username, fail_if_empty = False):
+    def get_suggestion(self, user_id, fail_if_empty = False):
         '''Return just the single lousy Unicode string that this user suggested, or None.'''
         try:
-            fd = codecs.open(self.sugg_path(username), encoding='utf-8')
+            fd = codecs.open(self.sugg_path(user_id), encoding='utf-8')
         except IOError, e:
             if e.errno == 2: # No such file or directory
                 if fail_if_empty:
