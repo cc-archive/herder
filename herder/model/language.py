@@ -16,7 +16,14 @@ class Language(object):
     ## for string called yourmom.txt, store in yourmom/ with
     ## filename as user ID of user 
     def suggest(self, username, i18n_key, new_value):
-        raise CatFromTheDead
+        # Same locking story as self.update
+        cur_msg = self[i18n_key]
+        cur_msg.suggest(username, new_value)
+
+        final_value = cur_msg.get_suggestion(username)
+        if final_value != new_value:
+            raise TransactionAbort("Goign too fast...?")
+        return True
 
     def update(self, i18n_key, old_value, new_value):
         # NOTE: I don't know how to lock the model, so we'll just try

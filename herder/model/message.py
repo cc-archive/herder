@@ -65,13 +65,39 @@ class Message(object):
 
         codecs.open(self.datafile_path, mode='w', encoding='utf-8').write(new_value)
 
-    def suggest(self, username, string_id, suggestion):
-        """Store a suggestion for a given string."""
+    def sugg_path(self, user_id = None):
+        sugg_path = os.path.join(self.language.domain.path, self.language.name,
+                                 self.id + '.sugg.d')
+        if user_id is not None:
+            assert(type(user_id) == int)
+            user_str = str(user_id)
+            sugg_path = os.path.join(sugg_path, user_str + '.txt')
+
+        return sugg_path
+
+    def suggest(self, user_id, suggestion):
+        """Store a suggestion for the string we are."""
 
         # figure out where to store this suggestion
-        sugg_path = os.path.join(self.domain.path, self.lang, 'suggestions',
-                                 hash(string_id))
-        if not os.path.exists(sugg_path):
-            os.mkdirs(sugg_path)
+        if not os.path.exists(self.sugg_path()):
+            os.makedirs(self.sugg_path())
 
         # write the suggestion to disk
+        fd = codecs.open(self.sugg_path(user_id), 'w', encoding='utf-8')
+        assert type(suggestion) == unicode
+        fd.write(suggestion)
+        fd.close()
+
+    def get_suggestion(self, user_id, fail_if_empty = False):
+        '''Return just the single lousy Unicode string that this user suggested, or None.'''
+        try:
+            fd = codecs.open(self.sugg_path(user_id), encoding='utf-8')
+        except IOError, e:
+            if e.errno == 2: # No such file or directory
+                if fail_if_empty:
+                    raise
+                else:
+                    return None
+            # All other errors get raised as usual, because wtf
+            raise
+        return fd.read()

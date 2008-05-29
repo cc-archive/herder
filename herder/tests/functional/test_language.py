@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from herder.tests import *
+import herder.tests.functional.test_account
+import herder.model.user
 import jsonlib
 import BeautifulSoup
 
@@ -70,9 +72,14 @@ class TestLanguageController(TestController):
         logout = url_for(controller='account', action='logout')
         response = self.app.get(logout)
 
-'''    def test_make_suggestion_as_non_admin(self):
-        # Pretend to be admin
-        self.app.extra_environ['REMOTE_USER'] = 'joeuser'
+    def test_make_suggestion_as_non_admin(self):
+        # Create a throwaway user
+        u, p, n = [herder.model.user.random_alphanum() for k in range(3)]
+        herder.tests.functional.test_account.do_register(self.app, 
+            user_name=u, password=p, human_name=n)
+        # Pretend to be that user
+        self.login_as(u, p)
+
         # First, change it so old -> new
         i18n_key = 'country.us'
         old = 'United States'
@@ -91,4 +98,4 @@ class TestLanguageController(TestController):
 
         # At least, the real string shouldn't have changed - repeat this check
         self.test_strings_contain(desired_key=i18n_key, desired_value=old)       
-'''
+
