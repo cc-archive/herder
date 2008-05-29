@@ -64,14 +64,36 @@ class Message(object):
 
         file(self.datafile_path, 'w').write(new_value)
 
+    def sugg_path(self, username = None):
+        sugg_path = os.path.join(self.language.domain.path, self.language.name,
+                                 self.id + '.sugg.d')
+        if username is not None:
+            assert(type(username) == unicode)
+            user_utf = username.encode('utf-8')
+            sugg_path = os.path.join(sugg_path, user_utf)
+
+        return sugg_path
+
     def suggest(self, username, suggestion):
         """Store a suggestion for the string we are."""
 
         # figure out where to store this suggestion
-        sugg_path = os.path.join(self.language.domain.path, self.language.name,
-                                 self.id + '.sugg.d')
-        if not os.path.exists(sugg_path):
-            os.makedirs(sugg_path)
+        if not os.path.exists(self.sugg_path()):
+            os.makedirs(self.sugg_path())
 
         # write the suggestion to disk
         pass # ;-)
+
+    def get_suggestion(self, username, fail_if_empty = False):
+        '''Return just the single lousy Unicode string that this user suggested, or None.'''
+        try:
+            fd = codecs.open(self.sugg_path(username), encoding='utf-8')
+        except IOError, e:
+            if e.errno == 2: # No such file or directory
+                if fail_if_empty:
+                    raise
+                else:
+                    return None
+            # All other errors get raised as usual, because wtf
+            raise
+        return fd.read()
