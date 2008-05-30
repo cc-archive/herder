@@ -49,6 +49,12 @@ class LanguageController(BaseController):
 
         return self._editor(domain, id, '/language/untranslated.html')
 
+    def lame_suggestions_ui(self, domain, id):
+        c.domain = herder.model.Domain.by_name(domain)
+        c.language = c.domain.get_language(id)
+
+        return render('/language/lame_suggestions_ui.html')
+
     def _messages(self, domain, id, filter=lambda x:True):
         domain = herder.model.Domain.by_name(domain)
         langs = {id:domain.get_language(id)}

@@ -1,0 +1,20 @@
+<%inherit file="/base.html"/>
+
+<%def name="ds_url()">
+ "${h.url_for(controller='language', action='untranslated_strings', id=c.language.name, domain=c.domain.name)}"
+</%def>
+
+<%def name="title()">
+<a href="${h.url_for(controller='domain', action='view',
+	 id=c.domain.name)}">${c.domain.name}</a>: 
+<a href="${h.url_for(controller='language', action='view', id=c.language.name,
+	 domain=c.domain.name)}">${c.language}</a>:
+View suggestions
+</%def>
+
+<%def name="head()">
+</%def>
+
+<%def name="body()">
+Your mom
+</%def>
