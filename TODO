@@ -4,6 +4,9 @@
 * i18n of this app itself
 ** Use UI strings from Pootle, perhaps, and use their translations?
 
+== To let it run offline ==
+* Create a local proxy or cache of the Yahoo UI APIs we use
+
 
 == In the fullness of time ==
 * Potential security problem with storing the db_user in the session?
