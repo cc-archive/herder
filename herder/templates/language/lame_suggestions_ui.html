@@ -15,6 +15,16 @@ View suggestions
 <%def name="head()">
 </%def>
 
+<%def name="gen_list(data)">
+% for message in data:
+<h3>${message.id|x}</h3>
+<ul>
+    % for user_id in data[message]:
+    <li>${user_id|x} suggests ${data[message][user_id]} <!-- not escaped --></li>
+    % endfor
+% endfor
+</%def>
+
 <%def name="body()">
-Your mom
+${gen_list(data)}
 </%def>

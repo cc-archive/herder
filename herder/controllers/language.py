@@ -61,7 +61,8 @@ class LanguageController(BaseController):
             if user2suggestion:
                 message2user2suggestion[message] = user2suggestion
 
-        return render('/language/lame_suggestions_ui.html')
+        return render('/language/lame_suggestions_ui.html',
+            data=message2user2suggestion)
 
     def _messages(self, domain, id, filter=lambda x:True):
         domain = herder.model.Domain.by_name(domain)
