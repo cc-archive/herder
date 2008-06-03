@@ -4,6 +4,12 @@
 * i18n of this app itself
 ** Use UI strings from Pootle, perhaps, and use their translations?
 
+* show EN when editing ES
+* In "edit string" UI, show suggestions as a smaller scrollable area of drop-downs
+** Each suggestion has a (copy) (delete) button
+** Saving when there are suggestions - OK is greyed out, and instead you get
+   a note saying you have to click a "Delete all suggestions" button
+
 == To let it run offline ==
 * Create a local proxy or cache of the Yahoo UI APIs we use
 
