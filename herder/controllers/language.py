@@ -102,6 +102,15 @@ class LanguageController(BaseController):
 
         return self._messages(domain, id, untrans_filter)
 
+    def suggestion_action_unknown(self, domain, id):
+        return render('/language/suggestion_action_unknown.html')
+
+    def suggestion_action(self, domain, id):
+        if not 'delete' in request.params:
+            redirect_to(action='suggestion_action_unknown')
+        # It's safe to assume deleting is what's meant.
+        return 'You want to delete, eh?'
+
     def edit_string(self, domain, id):
         """Edit an individual string."""
 
