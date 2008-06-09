@@ -24,6 +24,7 @@ View suggestions
         <ul>
             <li>${h.form(h.url(controller='language', action='suggestion_action'))}
             <input type="hidden" name="user_id" value="${user_id|x}" />
+            <input type="hidden" name="message_id" value="${message.id|x}" />
             <input type="submit" name="delete" value="delete" />
             ${h.end_form()}
             </li>

@@ -112,12 +112,11 @@ class TestLanguageController(TestController):
             assert new in response
 
             delete_form = response.forms[0]
-            approve_form = response.forms[1]
 
             if action == 'delete':
-                delete_form.submit()
+                response = delete_form.submit()
+                response = response.follow()
 
-                response = self.app.get(url_lame)
                 assert new not in response
 
     def test_delete_suggestion(self):

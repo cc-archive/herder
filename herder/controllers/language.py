@@ -9,6 +9,7 @@ from herder.lib.base import *
 import herder.model
 
 log = logging.getLogger(__name__)
+import xml.sax.saxutils
 
 class LanguageController(BaseController):
     requires_auth = ('edit_string',)
@@ -109,7 +110,11 @@ class LanguageController(BaseController):
         if not 'delete' in request.params:
             redirect_to(action='suggestion_action_unknown')
         # It's safe to assume deleting is what's meant.
-        return 'You want to delete, eh?'
+        user_id = int(request.params['user_id'])
+        message_id = xml.sax.saxutils.unescape(request.params['message_id'])
+        domain = herder.model.DomainLanguage.by_domain_id(domain, id)
+        domain[message_id].del_suggestion(user_id)
+        redirect_to('lame_suggestions_ui', domain, id, message='Successfully deleted one suggestion.')
 
     def edit_string(self, domain, id):
         """Edit an individual string."""

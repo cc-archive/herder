@@ -2,9 +2,9 @@
 
 <%def name="title()">
 <a href="${h.url_for(controller='domain', action='view',
-	 id=c.domain.name)}">${c.domain.name}</a>: 
-<a href="${h.url_for(controller='language', action='view', id=c.language.name,
-	 domain=c.domain.name)}">${c.language}</a>:
+	 id=c.domain)}">${c.domain}</a>: 
+<a href="${h.url_for(controller='language', action='view', id=c.language,
+	 domain=c.domain)}">${c.language}</a>:
 Unknown action
 </%def>
 

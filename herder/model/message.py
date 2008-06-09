@@ -89,6 +89,19 @@ class Message(object):
         fd.write(suggestion)
         fd.close()
 
+    def del_suggestion(self, user_id, fail_if_empty = False):
+        try:
+            os.unlink(self.sugg_path(user_id))
+            return None
+        except IOError, e:
+            if e.errno == 2: # No such file or directory
+                if fail_if_empty:
+                    raise
+                else:
+                    return None
+            # All other errors get raised as usual, because wtf
+            raise
+
     def get_suggestion(self, user_id, fail_if_empty = False):
         '''Return just the single lousy Unicode string that this user suggested, or None.'''
         try:
