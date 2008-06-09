@@ -27,11 +27,6 @@ View suggestions
             <input type="submit" name="delete" value="delete" />
             ${h.end_form()}
             </li>
-            <li>${h.form(h.url(controller='language', action='suggestion_action'))}
-            <input type="hidden" name="user_id" value="${user_id|x}" />
-            <input type="submit" name="approve" value="approve" />
-            ${h.end_form()}
-            </li>
         </ul>
     </li>
     % endfor
