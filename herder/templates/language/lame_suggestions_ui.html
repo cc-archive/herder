@@ -39,7 +39,5 @@ View suggestions
 </%def>
 
 <%def name="body()">
-${h.form(h.url(controller='account', action='lame_suggestions_ui_submit'), method='POST')}
 ${gen_list(data)}
-${h.end_form()}
 </%def>
