@@ -29,14 +29,14 @@ class AccountController(BaseController):
         if db_user is None:
             # FIXME: Be a redirect
             no_such_user
-            return render('/account/login.html', reason='No such user.')
+            return redirect_to(h.url_for(action='login', reason='No such user.'))
         
         # Check the password.
         if herder.model.user.hash_with_salt(raw_password=form_password,
                           salt=db_user.salt) != db_user.hashed_salted_pw:
             # FIXME: Be a redirect
             bad_pass
-            return render('/account/login.html', reason='Incorrect password submitted')
+            return redirect_to(h.url_for(action='login', reason='Incorrect password submitted'))
 
         # Great - this is for real.
         session['user'] = db_user
@@ -47,7 +47,10 @@ class AccountController(BaseController):
             del session['path_before_login']
             redirect_to(go_here)
         else: # Nowhere to go, say hi
-            return render('/account/login_successful.html')
+            return redirect_to(h.url_for(action='login_successful'))
+
+    def login_successful(self):
+        return render('/account/login_successful.html')
 
     def register(self):
 
@@ -122,4 +125,4 @@ class AccountController(BaseController):
         if 'user' in session:
             del session['user']
             session.save()
-        return render('/account/logout.html')
+        return redirect_to('/account/logout.html')
