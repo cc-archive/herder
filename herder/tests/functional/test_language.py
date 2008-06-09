@@ -104,6 +104,8 @@ class TestLanguageController(TestController):
             domain='cc_org', id='en_US')
         response = self.app.get(url_lame)
         assert new in response
-        
-        
 
+        # Now check that we can delete it
+        self.login_as('admin', admin_password)
+        response = self.app.get(url_lame)
+        assert new in response

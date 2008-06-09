@@ -20,11 +20,16 @@ View suggestions
 <h3>${message.id|x}</h3>
 <ul>
     % for user_id in data[message]:
-    <li>${user_id|x} suggests ${data[message][user_id]|x} <!-- escaped --></li>
+    <li>${user_id|x} suggests ${data[message][user_id]|x} <!-- escaped -->
+        <ul>
+        </ul>
+    </li>
     % endfor
 % endfor
 </%def>
 
 <%def name="body()">
+${h.form(h.url(controller='account', action='lame_suggestions_ui_submit'), method='POST')}
 ${gen_list(data)}
+${h.end_form()}
 </%def>
