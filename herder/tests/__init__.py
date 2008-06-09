@@ -139,7 +139,11 @@ class TestController(TestCase):
         response.forms[0]['password'] = password
         response = response.forms[0].submit()
 
+        # Now, follow the redirect
+        response = response.follow()
+
         assert 'You were successfully logged in' in response
+        return response
 
 # Also, create an admin user and store his password here.
 from herder.tests.functional import test_account
