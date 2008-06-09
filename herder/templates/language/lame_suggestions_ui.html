@@ -22,8 +22,14 @@ View suggestions
     % for user_id in data[message]:
     <li>${user_id|x} suggests ${data[message][user_id]|x} <!-- escaped -->
         <ul>
-            <li>${h.form(h.url(controller='language', action='suggestion_delete'))}
-            <input type="submit" name="delete_${user_id|x}" value="delete" />
+            <li>${h.form(h.url(controller='language', action='suggestion_action'))}
+            <input type="hidden" name="user_id" value="${user_id|x}" />
+            <input type="submit" name="delete" value="delete" />
+            ${h.end_form()}
+            </li>
+            <li>${h.form(h.url(controller='language', action='suggestion_action'))}
+            <input type="hidden" name="user_id" value="${user_id|x}" />
+            <input type="submit" name="approve" value="approve" />
             ${h.end_form()}
             </li>
         </ul>
