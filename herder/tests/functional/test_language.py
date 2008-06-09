@@ -72,7 +72,7 @@ class TestLanguageController(TestController):
         logout = url_for(controller='account', action='logout')
         response = self.app.get(logout)
 
-    def test_make_suggestion_as_non_admin(self):
+    def test_make_suggestion_as_non_admin(self, action = 'None'):
         # Create a throwaway user
         u, p, n = [herder.model.user.random_alphanum() for k in range(3)]
         herder.tests.functional.test_account.do_register(self.app, 
@@ -105,7 +105,21 @@ class TestLanguageController(TestController):
         response = self.app.get(url_lame)
         assert new in response
 
-        # Now check that we can delete it
-        self.login_as('admin', admin_password)
-        response = self.app.get(url_lame)
-        assert new in response
+        if action in ['delete', 'approve']:
+            # Now check that we can act on it
+            self.login_as('admin', admin_password)
+            response = self.app.get(url_lame)
+            assert new in response
+
+            delete_form = response.forms[0]
+            approve_form = response.forms[1]
+
+            if action == 'delete':
+                delete_form.submit()
+
+                response = self.app.get(url_lame)
+                assert new not in response
+
+    def test_delete_suggestion(self):
+        self.test_make_suggestion_as_non_admin(action='delete')
+
