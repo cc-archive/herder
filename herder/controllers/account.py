@@ -125,4 +125,7 @@ class AccountController(BaseController):
         if 'user' in session:
             del session['user']
             session.save()
-        return redirect_to('/account/logout.html')
+        return redirect_to(h.url_for(action='logged_out'))
+
+    def logged_out(self):
+        return render('/account/logged_out.html')
