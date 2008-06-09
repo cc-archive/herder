@@ -80,7 +80,7 @@ class Language(object):
     def messages(self):
         """Return a sequence of Message objects."""
 
-        return [Message(self, m[:-4])
+        return [message.Message(self, m[:-4])
                 for m in os.listdir(self._message_store)
                 if m[-4:] == '.txt']
 

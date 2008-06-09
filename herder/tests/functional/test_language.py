@@ -97,5 +97,13 @@ class TestLanguageController(TestController):
         # And, uh, FIXME - right now we have no way of checking if it stuck
 
         # At least, the real string shouldn't have changed - repeat this check
-        self.test_strings_contain(desired_key=i18n_key, desired_value=old)       
+        self.test_strings_contain(desired_key=i18n_key, desired_value=old)
+        
+        # And check that the suggestion exists in the lame UI
+        url_lame = url_for(controller='language', action='lame_suggestions_ui',
+            domain='cc_org', id='en_US')
+        response = self.app.get(url_lame)
+        assert new in response
+        
+        
 

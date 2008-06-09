@@ -45,6 +45,11 @@ class TestAuthControllerTwo(TestController):
         assert 'admin' in response
         assert "Admin Guy" in response
 
+    def test_when_logged_in_login_goes_away(self):
+        self.login_as('admin', herder.tests.admin_password)
+        assert 'Login' not in response
+        assert 'Sign up' not in response
+
 class TestAuthControllerThree(TestController):
 
     def test_registering_same_username_fails(self):

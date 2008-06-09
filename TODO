@@ -8,6 +8,17 @@
 * Put suggestions in right place
 * Be able to grant someone permissions on a language
 
+* show EN when editing ES
+* In "edit string" UI, show suggestions as a smaller scrollable area of drop-downs
+** Each suggestion has a (copy) (delete) button
+** Saving when there are suggestions - OK is greyed out, and instead you get
+   a note saying you have to click a "Delete all suggestions" button
+
+* Actually handle "reason=" in action='login', controller='account'
+
+== To let it run offline ==
+* Create a local proxy or cache of the Yahoo UI APIs we use
+
 == In the fullness of time ==
 * Potential security problem with storing the db_user in the session?
 ** Better strategy: Store the db_user in this request, and 

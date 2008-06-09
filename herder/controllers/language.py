@@ -1,5 +1,6 @@
 import urllib
 import logging
+import collections
 
 import jsonlib
 from pylons.decorators import jsonify
@@ -48,6 +49,20 @@ class LanguageController(BaseController):
     def untranslated(self, domain, id):
 
         return self._editor(domain, id, '/language/untranslated.html')
+
+    def lame_suggestions_ui(self, domain, id):
+        c.domain = herder.model.Domain.by_name(domain)
+        c.language = c.domain.get_language(id)
+
+        message2user2suggestion = collections.defaultdict(dict)
+        # Figure out what users have suggestions for which strings
+        for message in c.language.messages():
+            user2suggestion = message.get_suggestions()
+            if user2suggestion:
+                message2user2suggestion[message] = user2suggestion
+
+        return render('/language/lame_suggestions_ui.html',
+            data=message2user2suggestion)
 
     def _messages(self, domain, id, filter=lambda x:True):
         domain = herder.model.Domain.by_name(domain)

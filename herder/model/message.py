@@ -1,4 +1,5 @@
 import os
+import exceptions
 import string
 import codecs
 
@@ -101,3 +102,22 @@ class Message(object):
             # All other errors get raised as usual, because wtf
             raise
         return fd.read()
+
+    def get_suggestions(self):
+        # Racey.  Hmm, maybe this filesystem DB thing does suck.
+        ret = {}
+        try:
+            sugg_dir_contents = os.listdir(self.sugg_path())
+        except exceptions.OSError, e:
+            if e.errno == 2: # No such file or directory
+                sugg_dir_contents = ()
+            else:
+                raise
+        for sugg_filename in sugg_dir_contents:
+            user_id = int(sugg_filename.split('.')[0])
+            suggestion = self.get_suggestion(user_id)
+            if suggestion:
+                ret[user_id] = suggestion
+
+        return ret
+
