@@ -63,7 +63,7 @@ class LanguageController(BaseController):
             me['author'] = username
             me['suggestion'] = suggestions[username]
             ret.append(me)
-        return ret
+        return {'result': ret}
 
     def lame_suggestions_ui(self, domain, id):
         c.domain = herder.model.Domain.by_name(domain)
