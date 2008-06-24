@@ -25,6 +25,8 @@ def make_map():
                 controller='language')
     map.connect('domain/:domain/language/:id/:action/',
                 controller='language')
+    map.connect('domain/:domain/language/:id/:message_id/:action/',
+                controller='language')
 
     map.connect('domain/:domain/language/:language/message/:action/:id',
                 controller='message')
