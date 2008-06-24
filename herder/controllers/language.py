@@ -51,6 +51,21 @@ class LanguageController(BaseController):
 
         return self._editor(domain, id, '/language/untranslated.html')
 
+    @jsonify
+    def suggestions_for_message(self, domain, id):
+        message_key = 'country.us'
+        domain = herder.model.Domain.by_name(domain)
+        language = domain.get_language(id)
+        message = language[message_key]
+        suggestions = message.get_suggestions()
+        ret = []
+        for username in suggestions:
+            me = {}
+            me['author'] = username
+            me['suggestion'] = suggestions[username]
+            ret.append(me)
+        return ret
+
     def lame_suggestions_ui(self, domain, id):
         c.domain = herder.model.Domain.by_name(domain)
         c.language = c.domain.get_language(id)
