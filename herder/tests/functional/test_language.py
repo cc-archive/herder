@@ -106,7 +106,7 @@ class TestLanguageController(TestController):
         assert new in response
 
         url_json = url_for(controller='language', action='suggestions_for_message',
-            domain='cc_org', id='en_US')
+            domain='cc_org', id='en_US', message_id=i18n_key)
         response = self.app.get(url_json)
         assert new in response
         assert old not in response
