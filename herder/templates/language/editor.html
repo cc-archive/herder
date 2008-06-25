@@ -31,6 +31,10 @@
     <script type="text/javascript"
     src="http://yui.yahooapis.com/2.5.0/build/datatable/datatable-beta-min.js"></script> 
 
+<!-- button -->
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/button/button-min.js"></script>
+
+
 <script type="text/javascript">
     /**
      * Enables TEXTAREA Editor, also pulling in extra data from suggestions.
@@ -54,7 +58,6 @@ YAHOO.widget.DataTable.editTextareaPlusSuggestions = function(oEditor, oSelf) {
     
     elTextbox.style.width = elCell.offsetWidth + "px";
     elTextbox.value = value;
-    alert('rofl');
 
     YAHOO.util.Event.addListener(elTextbox, "keyup", function(ev){
             oEditor.value = elTextbox.value;
@@ -67,9 +70,9 @@ YAHOO.widget.DataTable.editTextareaPlusSuggestions = function(oEditor, oSelf) {
     var callback = {
         failure: function(o) { }, /* Curious, maybe there should be error handling. */
         success: function(o) { 
-            var data = YAHOO.lang.JSON.parse(o.responseText); 
+            var data = YAHOO.lang.JSON.parse(o.responseText)['result'];
             
-            for (index in data['response']) {
+            for (index in data) {
                 o.argument.elContainer.appendChild
                     (document.createTextNode("Suggestion by "));
                 o.argument.elContainer.appendChild
@@ -109,7 +112,10 @@ YAHOO.widget.DataTable.editTextareaPlusSuggestions = function(oEditor, oSelf) {
                    elTextbox: elTextbox}
     }
     var request = YAHOO.util.Connect.asyncRequest('GET',
-        "assets/data/suggestions.json", callback);
+                  "${h.url_for(controller='language', action='suggestions_for_message',
+                   id=c.language.name, domain=c.domain.name,
+                   message_id='country.us')}",
+            callback);
 
     };
 </script>
