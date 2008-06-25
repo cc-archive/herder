@@ -23,6 +23,11 @@
   </a></li>
 
   <li><a href="${h.url_for(controller='language',
+    action='suggestions', id=c.language.name, domain=c.domain.name)}">
+      suggestions
+  </a></li>
+
+  <li><a href="${h.url_for(controller='language',
     action='lame_suggestions_ui', id=c.language.name, domain=c.domain.name)}">
       lame suggestions ui
   </a></li>

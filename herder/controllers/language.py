@@ -51,6 +51,10 @@ class LanguageController(BaseController):
 
         return self._editor(domain, id, '/language/untranslated.html')
 
+    def suggestions(self, domain, id):
+
+        return self._editor(domain, id, '/language/suggestions.html')
+
     @jsonify
     def suggestions_for_message(self, domain, id, message_id):
         domain = herder.model.Domain.by_name(domain)
@@ -116,6 +120,16 @@ class LanguageController(BaseController):
                     )
 
         return self._messages(domain, id, untrans_filter)
+
+    @jsonify
+    def suggestion_avail_strings(self, domain, id):
+
+        en = herder.model.DomainLanguage.by_domain_id(domain, 'en')
+
+        def suggestion_avail_filter(message):
+            return bool(message.get_suggestions())
+
+        return self._messages(domain, id, suggestion_avail_filter)
 
     def suggestion_action_unknown(self, domain, id):
         return render('/language/suggestion_action_unknown.html')
