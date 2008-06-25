@@ -81,6 +81,88 @@ YAHOO.util.Event.addListener(window, "load", function() {
 });
 </script>
 
+<script type="text/javascript">
+    /**
+     * Enables TEXTAREA Editor, also pulling in extra data from suggestions.
+     *
+     * @method DataTable.editTextareaPlusSuggestions
+     * @param oEditor {Object} Object literal representation of Editor values.
+     * @param oSelf {DataTable} Reference back to DataTable instance.
+     * @static
+     */
+YAHOO.widget.DataTable.editTextareaPlusSuggestions = function(oEditor, oSelf) {
+    var elCell = oEditor.cell;
+    var oRecord = oEditor.record;
+    var oColumn = oEditor.column;
+    var elContainer = oEditor.container;
+    var value = YAHOO.lang.isValue(oRecord.getData(oColumn.key)) ? oRecord.getData(oColumn.key) : "";
+
+    var elTextbox = document.createElement("textarea");
+    var div = document.createElement('div');
+    div.appendChild(elTextbox);
+    elContainer.appendChild(elTextbox);
+    
+    elTextbox.style.width = elCell.offsetWidth + "px";
+    elTextbox.value = value;
+
+    YAHOO.util.Event.addListener(elTextbox, "keyup", function(ev){
+            oEditor.value = elTextbox.value;
+        oSelf.fireEvent("editorUpdateEvent",{editor:oEditor});
+    });
+
+    elTextbox.focus();
+    elTextbox.select();
+
+    var callback = {
+        failure: function(o) { }, /* Curious, maybe there should be error handling. */
+        success: function(o) { 
+            var data = YAHOO.lang.JSON.parse(o.responseText); 
+            
+            for (index in data['response']) {
+                o.argument.elContainer.appendChild
+                    (document.createTextNode("Suggestion by "));
+                o.argument.elContainer.appendChild
+                    (document.createTextNode(data[index]['author']));
+
+                var div = document.createElement('div');
+                /* Put the textarea in a div */
+                var subdiv = document.createElement('div');
+                var elTextbox = document.createElement('textarea');
+                elTextbox.value = data[index]['suggestion'];
+                subdiv.appendChild(elTextbox);
+                div.appendChild(subdiv);
+
+                /* Create buttons ... */
+                var buttonsdiv = document.createElement('div');
+                YAHOO.util.Dom.generateId(buttonsdiv);
+                var accept_sugg_button = new YAHOO.widget.Button({
+                        label: 'Copy',
+                        container: buttonsdiv.id,
+                    });
+                accept_sugg_button.on("click", function(event) {
+                        o.argument.elTextbox.value = elTextbox.value;
+                    });
+                var delete_sugg_button = new YAHOO.widget.Button({
+                        label: 'Delete',
+                        container: buttonsdiv.id,
+                    });
+                delete_sugg_button.on("click", function(event) {
+                        alert('lol no');
+                    });
+                div.appendChild(buttonsdiv);
+                /* throw away data[index]['author'] */
+                o.argument.elContainer.appendChild(div);
+            }
+        },
+        argument: {elContainer: elContainer,
+                   elTextbox: elTextbox}
+    }
+    var request = YAHOO.util.Connect.asyncRequest('GET',
+        "assets/data/suggestions.json", callback);
+
+    };
+</script>
+
 </%def>
 
 <%def name="body()">

@@ -1,3 +1,5 @@
+show suggstion UI independent of URL but dependent on 'translate' role
+
 * I hate Mako templating.
 ** Switch to Kid?  Was that actually good?  (Is it abandoned?)
 *** Genshi is the new Kid.
