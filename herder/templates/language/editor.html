@@ -32,59 +32,6 @@
     src="http://yui.yahooapis.com/2.5.0/build/datatable/datatable-beta-min.js"></script> 
 
 <script type="text/javascript">
-YAHOO.util.Event.addListener(window, "load", function() {
-
-        var myColumnDefs = [
-            {key:"id", label:"Name", sortable:true},
-     % for l in c.addl_langs:
-            {key:"${l}", label:"${l}", sortable:true},
-     % endfor
-            {key:"value", label:"Translation", editor:"textarea"},
-        ];
-
-        this.myDataSource = new YAHOO.util.DataSource(${self.ds_url()} + "?${c.addl_langs_qs}");
-        this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-        this.myDataSource.connXhrMode = "queueRequests";
-        this.myDataSource.responseSchema = {
-            resultsList: "strings",
-            fields: ["id","value", ${c.addl_langs_list}]
-        };
- 
-        this.myDataTable = new YAHOO.widget.DataTable("strings_table", 
-                myColumnDefs, this.myDataSource, {initialRequest:""});
-
- %if c.user:
-        this.myDataTable.subscribe("cellClickEvent", 
-                                   this.myDataTable.onEventShowCellEditor); 
-        this.myDataTable.subscribe("editorSaveEvent", function(e) {
-          // create an object to post back
-
-          var edit = {id: e.editor.record.getData().id,
-                      new_value: e.newData,
-                      old_value: e.oldData};
-
-          var edit_callback = {
-             success: function(o) {
-                // FIXME: Show the user the background process succeeded
-             },
-             failure: function(o) {
-                // FIXME: Show the user the background process failed
-             },
-             argument:edit,
-             cache:false,
-          };
-
-          // FIXME: Show the user a background process has started
-          var transaction = YAHOO.util.Connect.asyncRequest('POST', 
-                  "${h.url_for(controller='language', action='edit_string', id=c.language.name, domain=c.domain.name)}",
-                  edit_callback, "data=" + YAHOO.lang.JSON.stringify(edit));
-        });
-  %endif
-
-});
-</script>
-
-<script type="text/javascript">
     /**
      * Enables TEXTAREA Editor, also pulling in extra data from suggestions.
      *
@@ -107,6 +54,7 @@ YAHOO.widget.DataTable.editTextareaPlusSuggestions = function(oEditor, oSelf) {
     
     elTextbox.style.width = elCell.offsetWidth + "px";
     elTextbox.value = value;
+    alert('rofl');
 
     YAHOO.util.Event.addListener(elTextbox, "keyup", function(ev){
             oEditor.value = elTextbox.value;
@@ -164,6 +112,61 @@ YAHOO.widget.DataTable.editTextareaPlusSuggestions = function(oEditor, oSelf) {
         "assets/data/suggestions.json", callback);
 
     };
+</script>
+
+
+
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+
+        var myColumnDefs = [
+            {key:"id", label:"Name", sortable:true},
+     % for l in c.addl_langs:
+            {key:"${l}", label:"${l}", sortable:true},
+     % endfor
+            {key:"value", label:"Translation", editor:YAHOO.widget.DataTable.editTextareaPlusSuggestions},
+        ];
+
+        this.myDataSource = new YAHOO.util.DataSource(${self.ds_url()} + "?${c.addl_langs_qs}");
+        this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+        this.myDataSource.connXhrMode = "queueRequests";
+        this.myDataSource.responseSchema = {
+            resultsList: "strings",
+            fields: ["id","value", ${c.addl_langs_list}]
+        };
+ 
+        this.myDataTable = new YAHOO.widget.DataTable("strings_table", 
+                myColumnDefs, this.myDataSource, {initialRequest:""});
+
+ %if c.user:
+        this.myDataTable.subscribe("cellClickEvent", 
+                                   this.myDataTable.onEventShowCellEditor); 
+        this.myDataTable.subscribe("editorSaveEvent", function(e) {
+          // create an object to post back
+
+          var edit = {id: e.editor.record.getData().id,
+                      new_value: e.newData,
+                      old_value: e.oldData};
+
+          var edit_callback = {
+             success: function(o) {
+                // FIXME: Show the user the background process succeeded
+             },
+             failure: function(o) {
+                // FIXME: Show the user the background process failed
+             },
+             argument:edit,
+             cache:false,
+          };
+
+          // FIXME: Show the user a background process has started
+          var transaction = YAHOO.util.Connect.asyncRequest('POST', 
+                  "${h.url_for(controller='language', action='edit_string', id=c.language.name, domain=c.domain.name)}",
+                  edit_callback, "data=" + YAHOO.lang.JSON.stringify(edit));
+        });
+  %endif
+
+});
 </script>
 
 </%def>
