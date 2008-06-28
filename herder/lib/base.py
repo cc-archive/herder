@@ -58,7 +58,7 @@ class BaseController(WSGIController):
         """Invoke the Controller"""
 
         # bind the actions method into the context
-        c.roles = self._get_roles(environ)
+        c.user_roles = self._get_roles(environ)
         c.actions = self._actions(environ)
 
         # add actions
