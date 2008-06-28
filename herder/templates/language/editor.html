@@ -114,7 +114,8 @@ YAHOO.widget.DataTable.editTextareaPlusSuggestions = function(oEditor, oSelf) {
     var request = YAHOO.util.Connect.asyncRequest('GET',
                   "${h.url_for(controller='language', action='suggestions_for_message',
                    id=c.language.name, domain=c.domain.name,
-                   message_id='country.us')}",
+                   message_id='REPLACE_ME')}".replace("REPLACE_ME",
+                     escape(oEditor.record.getData().id)),
             callback);
 
     };
