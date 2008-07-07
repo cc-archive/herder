@@ -24,3 +24,4 @@ def init_model(engine):
     meta.Session = orm.scoped_session(sm)
 
 from herder.model import user
+from herder.model import role
