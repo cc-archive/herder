@@ -1,7 +1,10 @@
 import herder.tests
 from herder.tests import *
+import herder.model.user
 import herder.model.role
 import herder.model.meta
+import herder.model.authorization
+import herder.tests.functional.test_account
 
 class TestRoles(TestController):
 
@@ -14,3 +17,40 @@ class TestRoles(TestController):
             role_name='translate')
         assert translate_role is not None
 
+class TestAuthorization(TestController):
+
+    def test_can_grant_star_to_someone(self):
+        '''Try create a new user and make him a global admin'''
+        user_name = herder.model.user.random_alphanum()
+        password = herder.model.user.random_alphanum()
+        herder.tests.functional.test_account.do_register(self.app, user_name=user_name,
+            password=password, human_name='Secret Backdoor Admin')
+
+        # Find the right user object
+        user_obj = herder.model.meta.Session.query(herder.model.user.User).get_by(
+            user_name=user_name)
+
+        # Create the all administer object
+        all_administer = herder.model.authorization.Authorization()
+        all_administer.user_id = user_obj.user_id
+        all_administer.lang_id = '*'
+        all_administer.domain_id = '*'
+        all_administer.role_id = herder.model.meta.Session.query(herder.model.role.Role).get_by(
+            role_name='administer').role_id
+        herder.model.meta.Session.save(all_administer)
+
+        # Create the all translate object
+        all_administer = herder.model.authorization.Authorization()
+        all_administer.user_id = user_obj.user_id
+        all_administer.lang_id = '*'
+        all_administer.domain_id = '*'
+        all_administer.role_id = herder.model.meta.Session.query(herder.model.role.Role).get_by(
+            role_name='translate').role_id
+        herder.model.meta.Session.save(all_administer)
+
+        # Sync
+        herder.model.meta.Session.commit()
+
+        # Grab it out again
+        assert len(herder.model.meta.Session.query(herder.model.authorization.Authorization).filter_by(
+            user_id=user_obj.user_id).all()) == 2
