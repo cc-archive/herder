@@ -12,6 +12,7 @@ setup(
                       'buildutils',
                       'BeautifulSoup',
                       'Pygments',
+                      'WebHelpers<0.4',
                       'Pylons>=0.9.6.1', 
                       'Babel',
                       'jsonlib',
