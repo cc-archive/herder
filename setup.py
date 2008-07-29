@@ -10,6 +10,7 @@ setup(
     install_requires=['setuptools',
                       'pudge',
                       'buildutils',
+                      'BeautifulSoup',
                       'Pygments',
                       'Pylons>=0.9.6.1', 
                       'Babel',
