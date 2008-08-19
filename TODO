@@ -1,31 +1,37 @@
+== Soon ==
 show suggstion UI independent of URL but dependent on 'translate' role
+* Put suggestions in right place
+* Be able to grant someone permissions on a language
+* show EN when editing ES
+* Actually handle "reason=" in action='login', controller='account'
 
-* I hate Mako templating.
-** Switch to Kid?  Was that actually good?  (Is it abandoned?)
-*** Genshi is the new Kid.
 
+== Sometime ==
 
 * i18n of this app itself
 ** Use UI strings from Pootle, perhaps, and use their translations?
 
-* UI to read suggestions
-* Put suggestions in right place
-* Be able to grant someone permissions on a language
-
-* show EN when editing ES
-* In "edit string" UI, show suggestions as a smaller scrollable area of drop-downs
-** Each suggestion has a (copy) (delete) button
-** Saving when there are suggestions - OK is greyed out, and instead you get
-   a note saying you have to click a "Delete all suggestions" button
-
-* Actually handle "reason=" in action='login', controller='account'
-
-== To let it run offline ==
-* Create a local proxy or cache of the Yahoo UI APIs we use
-
-== In the fullness of time ==
 * Potential security problem with storing the db_user in the session?
 ** Better strategy: Store the db_user in this request, and 
                     reinstantiate the db_user from session.user_id freshly
                     when the session gets loaded at the start of the request.
 
+
+=== To let it run offline ===
+* Create a local proxy or cache of the Yahoo UI APIs we use
+
+
+== Eventually ==
+* I hate Mako templating.
+** Switch to Kid?  Was that actually good?  (Is it abandoned?)
+*** Genshi is the new Kid.
+
+== Done ==
+* UI to read suggestions
+
+* In "edit string" UI, show suggestions as a smaller scrollable area of drop-downs
+** Each suggestion has a (copy) (delete) button
+** Saving when there are suggestions - OK is greyed out, and instead you get
+   a note saying you have to click a "Delete all suggestions" button
+
+== In the fullness of time ==
