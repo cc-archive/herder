@@ -25,13 +25,3 @@ show suggstion UI independent of URL but dependent on 'translate' role
 * I hate Mako templating.
 ** Switch to Kid?  Was that actually good?  (Is it abandoned?)
 *** Genshi is the new Kid.
-
-== Done ==
-* UI to read suggestions
-
-* In "edit string" UI, show suggestions as a smaller scrollable area of drop-downs
-** Each suggestion has a (copy) (delete) button
-** Saving when there are suggestions - OK is greyed out, and instead you get
-   a note saying you have to click a "Delete all suggestions" button
-
-== In the fullness of time ==
