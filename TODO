@@ -1,5 +1,4 @@
 == Soon ==
-* remove get_by deprecation warnings
 show suggstion UI independent of URL but dependent on 'translate' role
 * Put suggestions in right place
 * Be able to grant someone permissions on a language
