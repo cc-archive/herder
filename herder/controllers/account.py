@@ -95,12 +95,12 @@ class AccountController(BaseController):
 	    if success and new_user.user_name == 'admin':
 
 		# admin for *, and
-		new_admin_auth = herder.model.authorization.Authorization()
-		new_admin_auth.user_id = new_user.user_id
-		new_admin_auth.lang_id = '*'
-		new_admin_auth.domain_id = '*'
-		new_admin_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='administer').first().role_id
-		herder.model.meta.Session.save(new_admin_auth)
+		new_bureau_auth = herder.model.authorization.Authorization()
+		new_bureau_auth.user_id = new_user.user_id
+		new_bureau_auth.lang_id = '*'
+		new_bureau_auth.domain_id = '*'
+		new_bureau_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='bureaucrat').first().role_id
+		herder.model.meta.Session.save(new_bureau_auth)
 
 		# translate for *
 		new_admin_auth = herder.model.authorization.Authorization()

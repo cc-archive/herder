@@ -20,7 +20,7 @@ def setup_config(command, filename, section, vars):
     log.info("Successfully setup tables")
 
     admin_role = herder.model.role.Role()
-    admin_role.role_name = 'administer'
+    admin_role.role_name = 'bureaucrat'
     translate_role = herder.model.role.Role()
     translate_role.role_name = 'translate'
     herder.model.meta.Session.save(admin_role)
