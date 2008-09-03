@@ -103,12 +103,12 @@ class AccountController(BaseController):
 		herder.model.meta.Session.save(new_bureau_auth)
 
 		# translate for *
-		new_admin_auth = herder.model.authorization.Authorization()
-		new_admin_auth.user_id = new_user.user_id
-		new_admin_auth.lang_id = '*'
-		new_admin_auth.domain_id = '*'
-		new_admin_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='translate').first().role_id
-		herder.model.meta.Session.save(new_admin_auth)
+		new_translate_auth = herder.model.authorization.Authorization()
+		new_translate_auth.user_id = new_user.user_id
+		new_translate_auth.lang_id = '*'
+		new_translate_auth.domain_id = '*'
+		new_translate_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='translate').first().role_id
+		herder.model.meta.Session.save(new_translate_auth)
 		
 		herder.model.meta.Session.commit()
 		# Just hope it worked; it really should not fail,
