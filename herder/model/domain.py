@@ -1,5 +1,5 @@
 import os
-import babel.messages.pofile
+import shutil
 
 from pylons import config
 
@@ -51,3 +51,23 @@ class Domain(object):
 
         raise KeyError("Unknown language.")
 
+    def add_language(self, lang):
+        """Create a new language for this domain; if this is a refinement
+        (for example, "es_CO"), copy the initial values from the base
+        language ("es").  Otherwise, duplicate English."""
+
+        # get the parent language
+        parent = self.get_language('en')
+        if "_" in lang:
+            # this is a refinement; see if the parent exists
+            try:
+                parent = self.get_language(lang.split('_')[0])
+            except KeyError:
+                pass
+
+        # copy the parent
+        shutil.copytree(parent._message_store,
+                        language.Language(self, lang)._message_store)
+
+        # return the new language
+        return self.get_language(lang)
