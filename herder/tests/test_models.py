@@ -10,11 +10,11 @@ class TestRoles(TestController):
 
     def test_roles_exist(self):
         '''Ensure administer and translate roles exist'''
-        admin_role = herder.model.meta.Session.query(herder.model.role.Role).get_by(
-            role_name='administer')
+        admin_role = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
+            role_name='administer').first()
         assert admin_role is not None
-        translate_role = herder.model.meta.Session.query(herder.model.role.Role).get_by(
-            role_name='translate')
+        translate_role = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
+            role_name='translate').first()
         assert translate_role is not None
 
 class TestAuthorization(TestController):
@@ -27,16 +27,16 @@ class TestAuthorization(TestController):
             password=password, human_name='Secret Backdoor Admin')
 
         # Find the right user object
-        user_obj = herder.model.meta.Session.query(herder.model.user.User).get_by(
-            user_name=user_name)
+        user_obj = herder.model.meta.Session.query(herder.model.user.User).filter_by(
+            user_name=user_name).first()
 
         # Create the all administer object
         all_administer = herder.model.authorization.Authorization()
         all_administer.user_id = user_obj.user_id
         all_administer.lang_id = '*'
         all_administer.domain_id = '*'
-        all_administer.role_id = herder.model.meta.Session.query(herder.model.role.Role).get_by(
-            role_name='administer').role_id
+        all_administer.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
+            role_name='administer').first().role_id
         herder.model.meta.Session.save(all_administer)
 
         # Create the all translate object
@@ -44,8 +44,8 @@ class TestAuthorization(TestController):
         all_administer.user_id = user_obj.user_id
         all_administer.lang_id = '*'
         all_administer.domain_id = '*'
-        all_administer.role_id = herder.model.meta.Session.query(herder.model.role.Role).get_by(
-            role_name='translate').role_id
+        all_administer.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
+            role_name='translate').first().role_id
         herder.model.meta.Session.save(all_administer)
 
         # Sync

@@ -23,8 +23,7 @@ class AccountController(BaseController):
             no_username_submitted
         
         # Get user data from database
-        db_user = herder.model.meta.Session.query(herder.model.user.User).get_by(
-            user_name=form_username)
+        db_user = herder.model.meta.Session.query(herder.model.user.User).filter_by(user_name=form_username).first()
 
         if db_user is None:
             # FIXME: Be a redirect
