@@ -32,13 +32,16 @@ class BaseController(WSGIController):
     ### FIXME: Don't just ignore the language ID and domain!
     def _get_roles(self, environ, domain = None, lang_id = None):
         """Return a list of roles for the current context."""
+	roles = []
 
         user = session.get('user', None)
+	if user is None:
+	    return roles # empty
 
-        if (user is not None) and (user.user_name == 'admin'):
-            return ['administer', 'translate']
-
-        return [] # no roles if not admin
+	auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user.user_id).all()
+	for auth in auths:
+	    roles.append(model.meta.Session.query(model.role.Role).filter_by(role_id=auth.role_id).first().role_name)
+	return roles
 
     def _actions(self, environ):
         """Return a sequence of two-tuples describing the actions for this

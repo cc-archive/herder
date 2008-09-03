@@ -88,8 +88,35 @@ class AccountController(BaseController):
                 else:
                     raise # I don't know why the exception was thrown
                           # so I can't handle it.
+
+	    # Grant no authorizations by default, unless the username is admin.
+	    # In that case, grant some nice blanket permissions.
+
+	    if success and new_user.user_name == 'admin':
+
+		# admin for *, and
+		new_admin_auth = herder.model.authorization.Authorization()
+		new_admin_auth.user_id = new_user.user_id
+		new_admin_auth.lang_id = '*'
+		new_admin_auth.domain_id = '*'
+		new_admin_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='administer').first().role_id
+		herder.model.meta.Session.save(new_admin_auth)
+
+		# translate for *
+		new_admin_auth = herder.model.authorization.Authorization()
+		new_admin_auth.user_id = new_user.user_id
+		new_admin_auth.lang_id = '*'
+		new_admin_auth.domain_id = '*'
+		new_admin_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='translate').first().role_id
+		herder.model.meta.Session.save(new_admin_auth)
+		
+		herder.model.meta.Session.commit()
+		# Just hope it worked; it really should not fail,
+		# and I have no real way to handle the failure.
+		# (should I delete the admin user if it does fail? Geez.)
+
             # Great!
-        else:
+	else:
             success = False
             reason = "The two passwords you submitted do not match."
 
