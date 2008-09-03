@@ -20,11 +20,11 @@ class TestRoles(TestController):
 class TestAuthorization(TestController):
 
     def test_can_grant_star_to_someone(self):
-        '''Try create a new user and make him a global admin'''
+        '''Try create a new user and make him a global bureaucrat'''
         user_name = herder.model.user.random_alphanum()
         password = herder.model.user.random_alphanum()
         herder.tests.functional.test_account.do_register(self.app, user_name=user_name,
-            password=password, human_name='Secret Backdoor Admin')
+            password=password, human_name='Secret Backdoor Bureaucrat')
 
         # Find the right user object
         user_obj = herder.model.meta.Session.query(herder.model.user.User).filter_by(

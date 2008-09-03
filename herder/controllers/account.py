@@ -89,12 +89,12 @@ class AccountController(BaseController):
                     raise # I don't know why the exception was thrown
                           # so I can't handle it.
 
-	    # Grant no authorizations by default, unless the username is admin.
+	    # Grant no authorizations by default, unless the username is bureau.
 	    # In that case, grant some nice blanket permissions.
 
-	    if success and new_user.user_name == 'admin':
+	    if success and new_user.user_name == 'bureau':
 
-		# admin for *, and
+		# bureau for *, and
 		new_bureau_auth = herder.model.authorization.Authorization()
 		new_bureau_auth.user_id = new_user.user_id
 		new_bureau_auth.lang_id = '*'
@@ -113,7 +113,7 @@ class AccountController(BaseController):
 		herder.model.meta.Session.commit()
 		# Just hope it worked; it really should not fail,
 		# and I have no real way to handle the failure.
-		# (should I delete the admin user if it does fail? Geez.)
+		# (should I delete the bureau user if it does fail? Geez.)
 
             # Great!
 	else:

@@ -145,11 +145,11 @@ class TestController(TestCase):
         assert 'You were successfully logged in' in response
         return response
 
-# Also, create an admin user and store his password here.
+# Also, create a bureau user and store his password here.
 from herder.tests.functional import test_account
 # Monkey patching nonsense, wtf mate?
 test_account.TestAuthControllerThree.runTest = lambda self: None
 controller = test_account.TestAuthControllerThree()
-admin_password = test_account.do_register(controller.app)
+bureau_password = test_account.do_register(controller.app)
 
-__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium', 'start_app_process', 'stop_app_process', 'admin_password']
+__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium', 'start_app_process', 'stop_app_process', 'bureau_password']

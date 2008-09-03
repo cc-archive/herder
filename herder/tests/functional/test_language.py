@@ -24,9 +24,9 @@ class TestLanguageController(TestController):
                 break
         assert found_what_we_like
        
-    def test_edit_string_as_admin(self):
-        # Pretend to be admin
-        self.login_as('admin', admin_password)
+    def test_edit_string_as_bureau(self):
+        # Pretend to be bureau
+        self.login_as('bureau', bureau_password)
 
         # First, change it so old -> new
         i18n_key = 'country.us'
@@ -68,11 +68,11 @@ class TestLanguageController(TestController):
         # self.test_strings_contain(desired_key=i18n_key, desired_value=old)
         # Good, the old value is back.
 
-        # Stop pretending to be an admin.
+        # Stop pretending to be bureau.
         logout = url_for(controller='account', action='logout')
         response = self.app.get(logout)
 
-    def test_make_suggestion_as_non_admin(self, action = 'None'):
+    def test_make_suggestion_as_non_bureau(self, action = 'None'):
         # Create a throwaway user
         u, p, n = [herder.model.user.random_alphanum() for k in range(3)]
         herder.tests.functional.test_account.do_register(self.app, 
@@ -113,7 +113,7 @@ class TestLanguageController(TestController):
 
         if action in ['delete', 'approve']:
             # Now check that we can act on it
-            self.login_as('admin', admin_password)
+            self.login_as('bureau', bureau_password)
             response = self.app.get(url_lame)
             assert new in response
 
@@ -126,5 +126,5 @@ class TestLanguageController(TestController):
                 assert new not in response
 
     def test_delete_suggestion(self):
-        self.test_make_suggestion_as_non_admin(action='delete')
+        self.test_make_suggestion_as_non_bureau(action='delete')
 
