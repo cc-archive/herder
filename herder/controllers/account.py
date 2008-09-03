@@ -6,6 +6,28 @@ import sqlalchemy.exceptions
 
 log = logging.getLogger(__name__)
 
+def bless_user(bless_you):
+    # bureau for *, and
+    new_bureau_auth = herder.model.authorization.Authorization()
+    new_bureau_auth.user_id = bless_you.user_id
+    new_bureau_auth.lang_id = '*'
+    new_bureau_auth.domain_id = '*'
+    new_bureau_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='bureaucrat').first().role_id
+    herder.model.meta.Session.save(new_bureau_auth)
+    
+    # translator for *
+    new_translator_auth = herder.model.authorization.Authorization()
+    new_translator_auth.user_id = bless_you.user_id
+    new_translator_auth.lang_id = '*'
+    new_translator_auth.domain_id = '*'
+    new_translator_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='translator').first().role_id
+    herder.model.meta.Session.save(new_translator_auth)
+    
+    herder.model.meta.Session.commit()
+    # Just hope it worked; it really should not fail,
+    # and I have no real way to handle the failure.
+    # (should I delete the bureau user if it does fail? Geez.)
+
 class AccountController(BaseController):
     requires_auth = ['profile']
 
@@ -93,27 +115,7 @@ class AccountController(BaseController):
 	    # In that case, grant some nice blanket permissions.
 
 	    if success and new_user.user_name == 'bureau':
-
-		# bureau for *, and
-		new_bureau_auth = herder.model.authorization.Authorization()
-		new_bureau_auth.user_id = new_user.user_id
-		new_bureau_auth.lang_id = '*'
-		new_bureau_auth.domain_id = '*'
-		new_bureau_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='bureaucrat').first().role_id
-		herder.model.meta.Session.save(new_bureau_auth)
-
-		# translator for *
-		new_translator_auth = herder.model.authorization.Authorization()
-		new_translator_auth.user_id = new_user.user_id
-		new_translator_auth.lang_id = '*'
-		new_translator_auth.domain_id = '*'
-		new_translator_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='translator').first().role_id
-		herder.model.meta.Session.save(new_translator_auth)
-		
-		herder.model.meta.Session.commit()
-		# Just hope it worked; it really should not fail,
-		# and I have no real way to handle the failure.
-		# (should I delete the bureau user if it does fail? Geez.)
+                bless_user(new_user)
 
             # Great!
 	else:
