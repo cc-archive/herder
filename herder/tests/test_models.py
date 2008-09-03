@@ -10,9 +10,9 @@ class TestRoles(TestController):
 
     def test_roles_exist(self):
         '''Ensure bureaucrat and translate roles exist'''
-        admin_role = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
+        bureau_role = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
             role_name='bureaucrat').first()
-        assert admin_role is not None
+        assert bureau_role is not None
         translate_role = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
             role_name='translate').first()
         assert translate_role is not None
@@ -40,13 +40,13 @@ class TestAuthorization(TestController):
         herder.model.meta.Session.save(all_bureaucrat)
 
         # Create the all translate object
-        all_administer = herder.model.authorization.Authorization()
-        all_administer.user_id = user_obj.user_id
-        all_administer.lang_id = '*'
-        all_administer.domain_id = '*'
-        all_administer.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
+        all_translate = herder.model.authorization.Authorization()
+        all_translate.user_id = user_obj.user_id
+        all_translate.lang_id = '*'
+        all_translate.domain_id = '*'
+        all_translate.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
             role_name='translate').first().role_id
-        herder.model.meta.Session.save(all_administer)
+        herder.model.meta.Session.save(all_translate)
 
         # Sync
         herder.model.meta.Session.commit()

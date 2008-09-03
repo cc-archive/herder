@@ -19,10 +19,10 @@ def setup_config(command, filename, section, vars):
     meta.metadata.create_all(bind=meta.engine)
     log.info("Successfully setup tables")
 
-    admin_role = herder.model.role.Role()
-    admin_role.role_name = 'bureaucrat'
+    bureau_role = herder.model.role.Role()
+    bureau_role.role_name = 'bureaucrat'
     translate_role = herder.model.role.Role()
     translate_role.role_name = 'translate'
-    herder.model.meta.Session.save(admin_role)
+    herder.model.meta.Session.save(bureau_role)
     herder.model.meta.Session.save(translate_role)
     herder.model.meta.Session.commit()
