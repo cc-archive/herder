@@ -21,8 +21,8 @@ def setup_config(command, filename, section, vars):
 
     bureau_role = herder.model.role.Role()
     bureau_role.role_name = 'bureaucrat'
-    translate_role = herder.model.role.Role()
-    translate_role.role_name = 'translate'
+    translator_role = herder.model.role.Role()
+    translator_role.role_name = 'translator'
     herder.model.meta.Session.save(bureau_role)
-    herder.model.meta.Session.save(translate_role)
+    herder.model.meta.Session.save(translator_role)
     herder.model.meta.Session.commit()

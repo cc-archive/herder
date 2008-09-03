@@ -152,7 +152,7 @@ class LanguageController(BaseController):
         data = jsonlib.read(request.params['data'])
 
         # XXX trap an exception here that would be raised if edit conflict
-        if 'translate' in self._get_roles(request.environ, domain, id):
+        if 'translator' in self._get_roles(request.environ, domain, id):
             # store the translation
             language.update(data['id'], data['old_value'], data['new_value'])
         else:
