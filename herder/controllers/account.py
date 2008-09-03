@@ -76,6 +76,7 @@ class AccountController(BaseController):
                             raw_password=request.params['password_once'])
             new_user.human_name = request.params['human_name']
             herder.model.meta.Session.save(new_user)
+
             try:
                 herder.model.meta.Session.commit()
                 success = True
