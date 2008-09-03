@@ -4,7 +4,7 @@ import logging
 from paste.deploy import appconfig
 from pylons import config
 
-from herder.config.environment import load_environment, CONTEXT_ROLES
+from herder.config.environment import load_environment
 import herder
 
 log = logging.getLogger(__name__)

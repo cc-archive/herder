@@ -12,8 +12,6 @@ from herder.model import init_model
 
 log = logging.getLogger(__name__)
 
-CONTEXT_ROLES = ('administer', 'translate', )
-
 def load_environment(global_conf, app_conf):
     """Configure the Pylons environment via the ``pylons.config``
     object
