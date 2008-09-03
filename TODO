@@ -5,8 +5,10 @@ show suggstion UI independent of URL but dependent on 'translate' role
 * show EN when editing ES
 * Actually handle "reason=" in action='login', controller='account'
 
-
 == Sometime ==
+
+* UI idea for suggestions: show others' suggestions when making a suggestion (based on real
+  frustrations with Pootle)
 
 * i18n of this app itself
 ** Use UI strings from Pootle, perhaps, and use their translations?
