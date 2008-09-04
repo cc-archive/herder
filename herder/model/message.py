@@ -8,6 +8,13 @@ from pylons import config
 import domain
 import language
 
+def message_datafile_path(language, id):
+    """Return the datafile path for locating a particular message in the
+    language."""
+
+    return os.path.join(language.domain.path, language.name,
+                        id + '.txt')
+
 class Message(object):
     """A specific string in a particular language."""
 
@@ -43,8 +50,7 @@ class Message(object):
     def datafile_path(self):
         """Return the file path used to store this message."""
 
-        return os.path.join(self.language.domain.path, self.language.name,
-                            self.id + '.txt')
+        return message_datafile_path(self.language, self.id)
 
     @property
     def string(self):
