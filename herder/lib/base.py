@@ -51,8 +51,8 @@ class BaseController(WSGIController):
             ('/domain/all/list', 'Translation Domains'),
             ]
 
-        if 'administrator' in self._get_roles(environ):
-            actions.append( ('/admin', 'Administration') )
+        if 'bureaucrat' in self._get_roles(environ):
+            actions.append( ('/bureau', 'Bureaucracy') )
 
         return actions
 

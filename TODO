@@ -1,5 +1,5 @@
 == Soon ==
-show suggstion UI independent of URL but dependent on 'translate' role
+show suggstion UI independent of URL but dependent on 'translator' role
 * Put suggestions in right place
 * Be able to grant someone permissions on a language
 * show EN when editing ES

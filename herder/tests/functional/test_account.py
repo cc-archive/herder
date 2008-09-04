@@ -1,8 +1,8 @@
 import herder.tests
 from herder.tests import *
 
-def do_register(app, user_name='admin', password='barbecue',
-                human_name = 'Admin Guy', should_fail = False):
+def do_register(app, user_name='bureau', password='barbecue',
+                human_name = 'Mister Bureaucrat', should_fail = False):
     '''Ensure registration works'''
     url = url_for(controller='account', action='register', domain = None)
     response = app.get(url)
@@ -34,19 +34,19 @@ class TestAuthControllerOne(TestController):
 
 class TestAuthControllerTwo(TestController):
 
-    def test_can_login_as_admin(self):
-        self.login_as('admin', herder.tests.admin_password)
+    def test_can_login_as_bureau(self):
+        self.login_as('bureau', herder.tests.bureau_password)
 
-    def test_profile_says_admin_guy(self):
-        self.login_as('admin', herder.tests.admin_password)
+    def test_profile_says_bureau_guy(self):
+        self.login_as('bureau', herder.tests.bureau_password)
 
         url = url_for(controller='account', action='profile')
         response =self.app.get(url)
-        assert 'admin' in response
-        assert "Admin Guy" in response
+        assert 'bureau' in response
+        assert "Mister Bureaucrat" in response
 
     def test_when_logged_in_login_goes_away(self):
-        response = self.login_as('admin', herder.tests.admin_password)
+        response = self.login_as('bureau', herder.tests.bureau_password)
         assert 'Sign up' not in response
 
     def test_logout(self):
@@ -58,15 +58,15 @@ class TestAuthControllerTwo(TestController):
 class TestAuthControllerThree(TestController):
 
     def test_registering_same_username_fails(self):
-        # Assert there is already an admin user
-        do_register(self.app, user_name='admin', password='barbecue',
-                human_name = 'Admin Guy', should_fail = True)
+        # Assert there is already a bureau user
+        do_register(self.app, user_name='bureau', password='barbecue',
+                human_name = 'Poser Bureaucrat Guy', should_fail = True)
         do_register(self.app, user_name='who_cares', password='barbecue',
-                human_name = 'Admin Guy', should_fail = False)
+                human_name = 'Disposable Man', should_fail = False)
         do_register(self.app, user_name='who_cares', password='barbecue',
-                human_name = 'Admin Guy', should_fail = True)
+                human_name = 'Poser Disposable Man', should_fail = True)
 
-    def test_login_as_non_admin_works(self):
+    def test_login_as_non_bureau_works(self):
         # Create a new dummy
         user_name, password, human_name = [herder.model.user.random_alphanum()
                         for i in range(3)]

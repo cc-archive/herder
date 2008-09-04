@@ -183,7 +183,7 @@ YAHOO.util.Event.addListener(window, "load", function() {
 %if c.user:
 <p>You can click the text in the <strong>Translation</strong> column
   to edit a translation.</p>
-  %if 'translate' not in c.user_roles:
+  %if 'translator' not in c.user_roles:
   <p class="notice">Your submissions will be filed
     as <em>suggestions</em>, pending approval by a translator.</p>
   %endif
