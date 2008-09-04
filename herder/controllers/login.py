@@ -1,6 +1,5 @@
 from herder.lib.base import *
 import herder.model.user
-import sha
 
 class LoginController(BaseController):
     requires_auth = ['required']
