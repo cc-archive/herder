@@ -32,6 +32,9 @@ class Domain(object):
         self.name = name
         self.path = path
     
+    def __str__(self):
+        return self.name
+
     @property
     def languages(self):
         """Return a sequence of available languages."""
