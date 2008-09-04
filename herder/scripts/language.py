@@ -1,10 +1,12 @@
 import optparse
+import textwrap
+
 from herder.scripts import resolve_config, init_environment
 
 def get_optparser(help):
     """Construct an OptionParser for the language scripts."""
 
-    parser = optparse.OptionParser(description=help)
+    parser = optparse.OptionParser(description=textwrap.dedent(help))
 
     parser.add_option('-d', '--domain', dest='domain',
                       help='Name of the translation domain to manipulate.')
@@ -20,12 +22,13 @@ def get_optparser(help):
     return parser
 
 def add():
-    """Command line entry point for adding a language to a domain."""
+    """
+    Add a new language to a domain; if adding a refined language (ie,
+    "en-US", the base language will be copied.  Otherwise English will be
+    used as the starting point."""
 
     # parse the command line
-    help = "Add a new language to a domain."""
-
-    opts, args = get_optparser(help).parse_args()
+    opts, args = get_optparser(add.__doc__).parse_args()
 
     # set up the environment
     init_environment(resolve_config(opts.config))
