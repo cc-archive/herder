@@ -44,6 +44,9 @@ setup(
     main = pylons.util:PylonsInstaller
 
     [console_scripts]
-    addlang = herder.scripts.language:add
+    #sync     = herder.scripts.domain:sync
+    addlang  = herder.scripts.language:addg
+    #rmstring = herder.scripts.message:remove
+    #make_po  = herder.scripts.domain:make_po
     """,
 )
