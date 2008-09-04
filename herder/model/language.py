@@ -76,6 +76,9 @@ class Language(object):
         """Return True if this language contains a message with the
         given key."""
 
+        if isinstance(key, message.Message):
+            key = key.id
+
         return os.path.exists(message.message_datafile_path(self, key))
 
     def __getitem__(self, key):
