@@ -1,5 +1,5 @@
 import os
-import babel.messages.pofile
+from babel.messages import catalog
 
 from pylons import config
 
@@ -113,3 +113,19 @@ class Language(object):
                 continue
 
             yield (message.Message(self, filename[:-4]))
+
+    def get_catalog(self):
+        """Return the Language as a Babel Catalog object."""
+
+        result = catalog.Catalog(domain=self.domain.name,
+                                 locale=self.lang,
+                                 fuzzy=False)
+
+        # for each Herder Message in this language
+        for h_msg in self:
+            
+            # add a Babel Message to the result
+            result[h_msg.id] = catalog.Message(h_msg.id,
+                                               string=h_msg.string)
+
+        return result
