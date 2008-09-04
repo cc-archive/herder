@@ -72,29 +72,35 @@ class Language(object):
 
         return os.path.join(self.domain.path, self.lang)
 
-    def get_message(self, id):
-        """Return a Message in this language."""
+    def __contains__(self, key):
+        """Return True if this language contains a message with the
+        given key."""
 
-        return message.Message(self, id)
-
-    def messages(self):
-        """Return a sequence of Message objects."""
-
-        return [message.Message(self, m[:-4])
-                for m in os.listdir(self._message_store)
-                if m[-4:] == '.txt']
+        return os.path.exists(message.message_datafile_path(self, key))
 
     def __getitem__(self, key):
         """Convenience method for accessing a Message by id."""
 
-        if os.path.exists(os.path.join(self._message_store, '%s.txt' % key)):
+        if key in self:
             return message.Message(self, key)
 
         raise KeyError
 
+    def __delitem__(self, key):
+        """Remove a Message from the language."""
+
+        if key in self:
+            os.remove(message.message_datafile_path(self, key))
+
+        else:
+            raise KeyError
+
     def __len__(self):
         
-        return len(os.listdir(self._message_store))
+        return len(
+            [f for f in os.listdir(self._message_store)
+             if f[-4:] == '.txt']
+            )
 
     def __iter__(self):
 

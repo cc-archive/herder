@@ -75,7 +75,7 @@ class LanguageController(BaseController):
 
         message2user2suggestion = collections.defaultdict(dict)
         # Figure out what users have suggestions for which strings
-        for message in c.language.messages():
+        for message in c.language:
             user2suggestion = message.get_suggestions()
             if user2suggestion:
                 message2user2suggestion[message] = user2suggestion
