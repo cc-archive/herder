@@ -73,3 +73,38 @@ class TestAuthControllerThree(TestController):
         do_register(self.app, user_name=user_name, password=password, 
             human_name=human_name)
         self.login_as(user_name, password)
+
+import herder.model.user
+class TestPootleImport(TestController):
+    # Pootle import story is:
+    # Sometimes we get (username, md5_of_password) pairs to import
+    # Upon the user successfully logging in, his password hash
+    # becomes the proper salted SHA1.
+
+    def test_create_md5_user(self):
+        user_name = unicode(herder.model.user.random_alphanum())
+        password = herder.model.user.random_alphanum()
+        # lame: copy-pasta of user registration code
+        
+        new_user = herder.model.user.User()
+        new_user.user_name = user_name
+        new_user.hashed_salted_pw = herder.model.user.hash_oldskool(password)
+        new_user.salt = 'lolwtf'
+        new_user.human_name = u'Your Mom'
+        herder.model.meta.Session.save(new_user)
+        herder.model.meta.Session.commit()
+
+        # Good, now try to log in as the dude...
+        self.login_as(user_name, password)
+
+        # Good, now check that we have a salt
+        db_user = herder.model.meta.Session.query(
+            herder.model.user.User).filter_by(
+            user_name=user_name).first()
+        assert db_user.salt != 'lolwtf'
+        assert len(db_user.hashed_salted_pw) != len(
+            herder.model.user.hash_oldskool(password))
+        assert db_user.hashed_salted_pw != \
+            herder.model.user.hash_oldskool(password)
+
+            

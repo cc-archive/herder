@@ -27,3 +27,16 @@ def random_alphanum(length = 12):
 import sha
 def hash_with_salt(salt, raw_password):
     return sha.sha(raw_password + salt).hexdigest()
+
+import md5
+def hash_oldskool(raw_password):
+    return md5.md5(raw_password).hexdigest()
+
+def upgrade_password(db_user, raw_password):
+    ''' NOTE: This does not flush the session, or even save your
+    object for you.
+
+    It does modify db_user, so you should save and flush yourself.'''
+    assert db_user.hashed_salted_pw == hash_oldskool(raw_password)
+    db_user.salt = random_alphanum()
+    db_user.hashed_salted_pw = hash_with_salt(db_user.salt, raw_password)

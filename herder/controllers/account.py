@@ -54,7 +54,15 @@ class AccountController(BaseController):
         
         # Check the password.
         if herder.model.user.hash_with_salt(raw_password=form_password,
-                          salt=db_user.salt) != db_user.hashed_salted_pw:
+                          salt=db_user.salt) == db_user.hashed_salted_pw:
+            pass # keep on truckin'!
+        # We could be storing an old-style password.
+        elif herder.model.user.hash_oldskool(form_password) == \
+                db_user.hashed_salted_pw:
+            herder.model.user.upgrade_password(db_user, form_password)
+            herder.model.meta.Session.commit()
+            # success
+        else:
             # FIXME: Be a redirect
             bad_pass
             return redirect_to(h.url_for(action='login', reason='Incorrect password submitted'))
