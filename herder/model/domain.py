@@ -35,14 +35,22 @@ class Domain(object):
     def __str__(self):
         return self.name
 
+
+    def __iter__(self):
+        """Iterate over available languages."""
+
+        for dirname in os.listdir(self.path):
+            if dirname in self._IGNORE_DIRS or \
+                    not os.path.isdir(os.path.join(self.path, dirname)):
+                continue
+
+            yield language.Language(self, dirname)
+
     @property
     def languages(self):
         """Return a sequence of available languages."""
-
-        return [language.Language(self, n) 
-                for n in os.listdir(self.path)
-                if n not in self._IGNORE_DIRS and
-                   os.path.isdir(os.path.join(self.path, n))]
+        
+        return [l for l in self]
 
     def get_language(self, lang):
         """Return a specific language for this domain."""
