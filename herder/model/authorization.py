@@ -17,13 +17,3 @@ class Authorization(object):
 
 orm.mapper(Authorization, t_authorization)
 
-def random_alphanum(length = 12):
-    source = 'abcdefghijklmnopqrstuvxyz' + '0123456789'
-    ret = ''
-    for n in range(length):
-        ret += random.choice(source)
-    return ret
-
-import sha
-def hash_with_salt(salt, raw_password):
-    return sha.sha(raw_password + salt).hexdigest()
