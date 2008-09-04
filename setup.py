@@ -22,6 +22,7 @@ setup(
                       'nose',
                       'jToolkit',
                       'selenium',
+                      'zope.component'
                       ],
 
     dependency_links=[
