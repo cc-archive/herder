@@ -38,6 +38,8 @@ class LanguageController(BaseController):
         c.language = c.domain.get_language(id)
 
         c.addl_langs = request.params.getall('lang')
+        if 'en' not in c.addl_langs:
+            c.addl_langs.insert(0, 'en')
         c.addl_langs_list = ",".join(['"%s"' % n for n in c.addl_langs])
         c.addl_langs_qs = urllib.urlencode([('lang', n) for n in c.addl_langs])
 
