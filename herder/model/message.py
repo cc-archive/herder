@@ -8,6 +8,8 @@ from pylons import config
 import domain
 import language
 
+from herder import events
+
 def message_datafile_path(language, id):
     """Return the datafile path for locating a particular message in the
     language."""
@@ -70,7 +72,10 @@ class Message(object):
             if self.string != old_value:
                 raise Exception
 
-        codecs.open(self.datafile_path, mode='w', encoding='utf-8').write(new_value)
+        codecs.open(self.datafile_path, mode='w', 
+                    encoding='utf-8').write(new_value)
+
+        events.handle(events.MessageUpdateEvent.with_message(self))
 
     def sugg_path(self, user_id = None):
         sugg_path = os.path.join(self.language.domain.path, self.language.name,
