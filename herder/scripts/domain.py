@@ -4,10 +4,14 @@ import logging
 
 from herder.scripts import resolve_config, init_environment
 
-def get_optparser(help):
-    """Construct an OptionParser for the language scripts."""
+def sync():
+    """
+    Look for new strings in a given language ("en" by default) and create
+    empty translations in other languages if they do not exist.
+    """
 
-    parser = optparse.OptionParser(description=textwrap.dedent(help))
+    # set up the option parser
+    parser = optparse.OptionParser(description=textwrap.dedent(sync.__doc__))
 
     parser.add_option('-d', '--domain', dest='domain',
                       help='Name of the translation domain to sync.')
@@ -21,16 +25,9 @@ def get_optparser(help):
                         language='en',
                         config='development.ini')
 
-    return parser
-
-def sync():
-    """
-    Look for new strings in a given language ("en" by default) and create
-    empty translations in other languages if they do not exist.
-    """
 
     # parse the command line
-    opts, args = get_optparser(sync.__doc__).parse_args()
+    opts, args = parser.parse_args()
 
     # set up the environment
     init_environment(resolve_config(opts.config))
@@ -53,3 +50,4 @@ def sync():
 
             if not message in lang:
                 model.Message(lang, message.id).update(u'')
+
