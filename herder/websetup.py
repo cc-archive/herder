@@ -28,14 +28,20 @@ def setup_config(command, filename, section, vars,
     herder.model.meta.Session.save(bureau_role)
     herder.model.meta.Session.save(translator_role)
     herder.model.meta.Session.commit()
+    if 'first_bureaucrat.username' in conf.local_conf:
+	bureaucrat_username = unicode(conf.local_conf['first_bureaucrat.username'])
+    else:
+        bureaucrat_username = unicode(raw_input(
+            'Hey there.  What username do you want for your bureaucrat user? > '))
+    if 'first_bureaucrat.realname' in conf.local_conf:
+	bureaucrat_realname = unicode(conf.local_conf['first_bureaucrat.realname'])
+    else:
+        bureaucrat_realname = unicode(raw_input(
+            'Great.  What is the actual name of this person? > '))
 
-    if bureaucrat_username is None:
-        bureaucrat_username = raw_input(
-            'Hey there.  What username do you want for your bureaucrat user? > ')
-        bureaucrat_realname = raw_input(
-            'Great.  What is the actual name of this person? > ')
-
-    if bureaucrat_password is None:
+    if 'first_bureaucrat.password' in conf.local_conf:
+        bureaucrat_password = unicode(conf.local_conf['first_bureaucrat.password'])
+    else:
         bureaucrat_password = herder.model.user.random_alphanum()
     
     # make the new bureaucrat user
