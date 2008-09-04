@@ -46,7 +46,7 @@ setup(
     [console_scripts]
     #sync     = herder.scripts.domain:sync
     addlang  = herder.scripts.language:add
-    #rmstring = herder.scripts.message:remove
+    rmstring = herder.scripts.message:remove
     #make_po  = herder.scripts.domain:make_po
     """,
 )
