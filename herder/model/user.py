@@ -40,3 +40,13 @@ def upgrade_password(db_user, raw_password):
     assert db_user.hashed_salted_pw == hash_oldskool(raw_password)
     db_user.salt = random_alphanum()
     db_user.hashed_salted_pw = hash_with_salt(db_user.salt, raw_password)
+
+def make_md5_user(user_name, hashed, human_name):
+    new_user = User()
+    new_user.user_name = user_name
+    new_user.salt = 'ignored'
+    new_user.hashed_salted_pw = hashed
+    new_user.human_name = human_name
+    return new_user
+
+    

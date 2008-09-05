@@ -86,11 +86,7 @@ class TestPootleImport(TestController):
         password = herder.model.user.random_alphanum()
         # lame: copy-pasta of user registration code
         
-        new_user = herder.model.user.User()
-        new_user.user_name = user_name
-        new_user.hashed_salted_pw = herder.model.user.hash_oldskool(password)
-        new_user.salt = 'lolwtf'
-        new_user.human_name = u'Your Mom'
+        new_user = herder.model.user.make_md5_user(user_name, herder.model.user.hash_oldskool(password), 'Your Mom')
         herder.model.meta.Session.save(new_user)
         herder.model.meta.Session.commit()
 
@@ -108,3 +104,33 @@ class TestPootleImport(TestController):
             herder.model.user.hash_oldskool(password)
 
             
+    def test_pootle_data_import(self):
+        sample_data = '''
+stepmom:
+  passwdhash = '982a6361e26b29f99f925742f6140752'
+  name = 'Your Mom'
+'''
+        import jToolkit.prefs
+        parser = jToolkit.prefs.PrefsParser()
+        parser.parse(sample_data)
+        data = parser.__root__._assignments # This *can't* be the right way...
+        assert 'stepmom.passwdhash' in data
+
+        # Groan - figure out the usernames
+        user_names = set([key.split('.')[0] for key in data])
+
+        for user_name in user_names:
+            new_user = herder.model.user.make_md5_user(user_name=unicode(user_name),
+                                                       human_name=unicode(data.get(user_name + '.name')),
+                                                       hashed=data.get(user_name + '.passwdhash'))
+            herder.model.meta.Session.save(new_user)
+            herder.model.meta.Session.commit()
+
+        
+        self.login_as('stepmom', 'goodygumdrops') # goodygumdrops
+                                                  # hashes to the
+                                                  # above
+        url = url_for(controller='account', action='profile')
+        response =self.app.get(url)
+        assert 'stepmom' in response
+        assert "Your Mom" in response
