@@ -24,9 +24,10 @@ class TestLanguageController(TestController):
                 break
         assert found_what_we_like
        
-    def test_edit_string_as_bureau(self):
-        # Pretend to be bureau
-        self.login_as('bureau', bureau_password)
+    def test_edit_string_as_bureau(self, skip_login_step = False):
+        if not skip_login_step:
+            # Pretend to be bureau
+            self.login_as('bureau', bureau_password)
 
         # First, change it so old -> new
         i18n_key = 'country.us'
@@ -72,13 +73,14 @@ class TestLanguageController(TestController):
         logout = url_for(controller='account', action='logout')
         response = self.app.get(logout)
 
-    def test_make_suggestion_as_non_bureau(self, action = 'None'):
-        # Create a throwaway user
-        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
-        herder.tests.functional.test_account.do_register(self.app, 
-            user_name=u, password=p, email=e + '@example.com', human_name=n)
-        # Pretend to be that user
-        self.login_as(u, p)
+    def test_make_suggestion_as_non_bureau(self, action = 'None', skip_login_step = False):
+        if not skip_login_step:
+            # Create a throwaway user
+            u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
+            herder.tests.functional.test_account.do_register(self.app, 
+                                                             user_name=u, password=p, email=e + '@example.com', human_name=n)
+            # Pretend to be that user
+            self.login_as(u, p)
 
         # First, change it so old -> new
         i18n_key = 'country.us'
