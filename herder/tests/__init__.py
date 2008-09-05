@@ -132,17 +132,26 @@ class TestController(TestCase):
         self.app = paste.fixture.TestApp(wsgiapp)
         TestCase.__init__(self, *args, **kwargs)
 
-    def login_as(self, username, password):
+    def login_as(self, username, password, should_fail = False):
         url = url_for(controller='account', action='login')
         response = self.app.get(url)
         response.forms[0]['username'] = username
         response.forms[0]['password'] = password
-        response = response.forms[0].submit()
 
-        # Now, follow the redirect
-        response = response.follow()
-
-        assert 'You were successfully logged in' in response
+        if should_fail:
+            try:
+                response = response.forms[0].submit()
+            except:
+                # Great!  A failure.
+                return True
+            # That's a shame, no exception.
+            assert False, "Login should have failed."
+        else:
+            response = response.forms[0].submit()
+            
+            # Now, follow the redirect
+            response = response.follow()
+            assert 'You were successfully logged in' in response
         return response
 
 # Also, create a bureau user and store his password here.

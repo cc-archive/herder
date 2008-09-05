@@ -171,3 +171,37 @@ class AccountController(BaseController):
         '''Show a simple text box asking for the Pootle users file.'''
         return render('/account/import_pootle_users.html')
 
+    def import_pootle_users_submit(self):
+        '''Create new users based on the Pootle users.prefs file.'''
+        # First, check that we have the * bureaucrat privilege
+        if 'bureaucrat' not in self._get_roles(request.environ):
+            return redirect_to(h.url_for(action='login', 
+                                         reason='You tried to do something that requires being a bureaucrat.  Would you like to log in as one?'))
+        
+        # We must be okay at this point.
+        pootle_users_prefs = request.params['pootle_users_prefs_data']
+        pootle_users_prefs_as_utf8 = pootle_users_prefs.encode('utf-8')
+        import jToolkit.prefs
+        parser = jToolkit.prefs.PrefsParser()
+        parser.parse(pootle_users_prefs_as_utf8)
+        data = parser.__root__._assignments # This *can't* be the right way...
+        
+        # Groan - figure out the usernames
+        user_names = set([key.split('.')[0] for key in data])
+        
+        for user_name in user_names:
+            new_user = herder.model.user.make_md5_user(user_name=unicode(user_name),
+                                                       human_name=unicode(data.get(user_name + '.name'), 'utf-8'),
+                                                       hashed=data.get(user_name + '.passwdhash'))
+            herder.model.meta.Session.save(new_user)
+            herder.model.meta.Session.commit()
+
+        # That seemed to go okay.
+        return redirect_to(h.url_for(action='import_pootle_users_successful'))
+
+    def import_pootle_users_successful(self):
+        '''Tell the user the import went okay, but frustratingly
+        provide no information on what users got imported.'''
+        return render('/account/import_pootle_users_successful.html')
+
+        
