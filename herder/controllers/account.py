@@ -166,3 +166,8 @@ class AccountController(BaseController):
 
     def logged_out(self):
         return render('/account/logged_out.html')
+
+    def import_pootle_users(self):
+        '''Show a simple text box asking for the Pootle users file.'''
+        return render('/account/import_pootle_users.html')
+

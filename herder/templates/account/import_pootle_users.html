@@ -1,0 +1,22 @@
+<%inherit file="/base.html"/>
+
+<%def name="head()"></%def>
+
+<%def name="title()">
+Import users from Pootle
+</%def>
+
+<%def name="body()">
+<p>You want to import users from Pootle?</p>
+
+<p>Just paste the Pootle users.prefs file in this box:</p>
+
+${h.form(h.url(controller='account', action='import_pootle_users_submit'), method='POST')}
+
+<div>
+<textarea rows="10" cols="30" name="pootle_users_prefs_data"></textarea>
+</div>
+
+<input type="submit" value="Import!" />
+${h.end_form()}
+</%def>
