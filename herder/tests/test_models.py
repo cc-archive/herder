@@ -24,7 +24,7 @@ class TestAuthorization(TestController):
         user_name = herder.model.user.random_alphanum()
         password = herder.model.user.random_alphanum()
         herder.tests.functional.test_account.do_register(self.app, user_name=user_name,
-            password=password, human_name='Secret Backdoor Bureaucrat')
+            password=password, email=user_name + '@example.com', human_name='Secret Backdoor Bureaucrat')
 
         # Find the right user object
         user_obj = herder.model.meta.Session.query(herder.model.user.User).filter_by(

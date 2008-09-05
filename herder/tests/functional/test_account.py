@@ -2,8 +2,8 @@
 import herder.tests
 from herder.tests import *
 
-def do_register(app, user_name='bureau', password='barbecue',
-                human_name = 'Mister Bureaucrat', should_fail = False):
+def do_register(app, user_name, password,
+                human_name, email, should_fail = False):
     '''Ensure registration works'''
     url = url_for(controller='account', action='register', domain = None)
     response = app.get(url)
@@ -11,6 +11,7 @@ def do_register(app, user_name='bureau', password='barbecue',
     response.forms[0]['password_once'] = password
     response.forms[0]['password_twice'] = password
     response.forms[0]['human_name'] = human_name
+    response.forms[0]['email'] = email
     response = response.forms[0].submit()
     response = response.follow() # It's a redirect, either to "OK" or "FAIL"
     if should_fail:
@@ -61,17 +62,21 @@ class TestAuthControllerThree(TestController):
     def test_registering_same_username_fails(self):
         # Assert there is already a bureau user
         do_register(self.app, user_name='bureau', password='barbecue',
-                human_name = 'Poser Bureaucrat Guy', should_fail = True)
+                human_name = 'Poser Bureaucrat Guy', email='bureau@example.com',
+                    should_fail = True)
         do_register(self.app, user_name='who_cares', password='barbecue',
-                human_name = 'Disposable Man', should_fail = False)
+                human_name = 'Disposable Man', 
+                    email='who_cares@example.com', should_fail = False)
         do_register(self.app, user_name='who_cares', password='barbecue',
-                human_name = 'Poser Disposable Man', should_fail = True)
+                human_name = 'Poser Disposable Man', 
+                    email='who_cares@example.com', should_fail = True)
 
     def test_login_as_non_bureau_works(self):
         # Create a new dummy
         user_name, password, human_name = [herder.model.user.random_alphanum()
                         for i in range(3)]
         do_register(self.app, user_name=user_name, password=password, 
+                    email=herder.model.user.random_alphanum() + '@example.com',
             human_name=human_name)
         self.login_as(user_name, password)
 
@@ -87,7 +92,7 @@ class TestPootleImport(TestController):
         password = herder.model.user.random_alphanum()
         # lame: copy-pasta of user registration code
         
-        new_user = herder.model.user.make_md5_user(user_name, herder.model.user.hash_oldskool(password), 'Your Mom')
+        new_user = herder.model.user.make_md5_user(user_name, herder.model.user.hash_oldskool(password), 'md5sucker@example.com', 'Your Mom')
         herder.model.meta.Session.save(new_user)
         herder.model.meta.Session.commit()
 

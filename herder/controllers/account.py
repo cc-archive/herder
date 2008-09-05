@@ -95,6 +95,9 @@ class AccountController(BaseController):
         success = False
         reason = ''
 
+        assert request.params['email']
+        assert '@' in request.params['email']
+
         # First, check password1 == password2
         if request.params['password_once'] == request.params['password_twice']:
             # Great, try to create the user now.
@@ -105,6 +108,7 @@ class AccountController(BaseController):
                             salt=new_user.salt,
                             raw_password=request.params['password_once'])
             new_user.human_name = request.params['human_name']
+            new_user.email = request.params['email']
             herder.model.meta.Session.save(new_user)
 
             try:
@@ -192,6 +196,7 @@ class AccountController(BaseController):
         for user_name in user_names:
             new_user = herder.model.user.make_md5_user(user_name=unicode(user_name),
                                                        human_name=unicode(data.get(user_name + '.name'), 'utf-8'),
+                                                       email=unicode(data.get(user_name + '.email', 'utf-8')),
                                                        hashed=data.get(user_name + '.passwdhash'))
             herder.model.meta.Session.save(new_user)
             herder.model.meta.Session.commit()

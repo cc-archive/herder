@@ -10,6 +10,7 @@ t_user = sa.Table("user", meta.metadata,
                       sa.Column('salt', sa.types.String(255), nullable = False),
                       sa.Column('hashed_salted_pw', sa.types.String(255), nullable = False),
                       sa.Column('human_name', sa.types.Unicode(255), nullable = False),
+                      sa.Column('email', sa.types.Unicode(255), nullable = False),
                       )
 
 class User(object):
@@ -41,12 +42,13 @@ def upgrade_password(db_user, raw_password):
     db_user.salt = random_alphanum()
     db_user.hashed_salted_pw = hash_with_salt(db_user.salt, raw_password)
 
-def make_md5_user(user_name, hashed, human_name):
+def make_md5_user(user_name, hashed, email, human_name):
     new_user = User()
     new_user.user_name = user_name
     new_user.salt = 'ignored'
     new_user.hashed_salted_pw = hashed
     new_user.human_name = human_name
+    new_user.email = email
     return new_user
 
     

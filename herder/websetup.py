@@ -43,6 +43,12 @@ def setup_config(command, filename, section, vars,
         bureaucrat_password = unicode(conf.local_conf['first_bureaucrat.password'])
     else:
         bureaucrat_password = herder.model.user.random_alphanum()
+
+    if 'first_bureaucrat.email' in conf.local_conf:
+        bureaucrat_email = conf.local_conf['first_bureaucrat.email']
+    else:
+        bureaucrat_email = raw_input(
+            'What email address for the first bureaucrat user? > ')
     
     # make the new bureaucrat user
     new_user = herder.model.user.User()
@@ -52,6 +58,7 @@ def setup_config(command, filename, section, vars,
         salt=new_user.salt,
         raw_password=bureaucrat_password)
     new_user.human_name = bureaucrat_realname
+    new_user.email = bureaucrat_email
     herder.model.meta.Session.save(new_user)
 
     # Flush the session...

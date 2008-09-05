@@ -74,9 +74,9 @@ class TestLanguageController(TestController):
 
     def test_make_suggestion_as_non_bureau(self, action = 'None'):
         # Create a throwaway user
-        u, p, n = [herder.model.user.random_alphanum() for k in range(3)]
+        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
         herder.tests.functional.test_account.do_register(self.app, 
-            user_name=u, password=p, human_name=n)
+            user_name=u, password=p, email=e + '@example.com', human_name=n)
         # Pretend to be that user
         self.login_as(u, p)
 
