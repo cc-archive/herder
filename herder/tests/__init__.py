@@ -132,6 +132,9 @@ class TestController(TestCase):
         self.app = paste.fixture.TestApp(wsgiapp)
         TestCase.__init__(self, *args, **kwargs)
 
+    def runTest(self):
+        pass
+
     def login_as(self, username, password, should_fail = False):
         url = url_for(controller='account', action='login')
         response = self.app.get(url)
@@ -156,8 +159,6 @@ class TestController(TestCase):
 
 # Also, create a bureau user and store his password here.
 from herder.tests.functional import test_account
-# Monkey patching nonsense, wtf mate?
-test_account.TestAuthControllerThree.runTest = lambda self: None
 controller = test_account.TestAuthControllerThree()
 bureau_password = 'noeffingway_coffee_roflcopter'
 
