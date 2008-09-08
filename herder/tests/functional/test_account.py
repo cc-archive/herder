@@ -174,3 +174,68 @@ stepmom:
         assert len(inputs) == 2
         for input in inputs:
             assert input['checked']
+
+    def test_permissions_change_works(self):
+        '''Test that we can create a user, grant him translate rights,
+        and have him actually do a translation.
+
+        Check further that revoking those translate rights only lets him
+        make suggestions.'''
+        # Create a throwaway user
+        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
+
+        ## Find the right user object
+        user_obj = herder.model.meta.Session.query(herder.model.user.User).filter_by(
+            user_name=u).first()
+
+        # Grant translator permission
+        all_translator = herder.model.authorization.Authorization()
+        all_translator.user_id = user_obj.user_id
+        all_translator.lang_id = '*'
+        all_translator.domain_id = '*'
+        all_translator.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
+            role_name='translator').first().role_id
+        herder.model.meta.Session.save(all_translator)
+        herder.model.meta.Session.commit()
+        
+        # log in as the guy
+        self.login_as(u, p)
+
+        # have him edit
+        gensym = herder.model.user.random_alphanum()
+        tlc = herder.tests.functional.test_language.TestLanguageController()
+        tlc.app = self.app
+        tlc.test_edit_string_as_bureau(skip_login_step=True)
+
+        # Log in as admin, so we can see the permissions page
+        self.login_as('bureau', herder.tests.bureau_password)
+        
+        # Grab the permissions page
+        url = url_for(controller='account', action='permissions')
+        response = self.app.get(url)
+
+        checkbox_prefix = 'user_n_role_%d_' % user_obj.user_id
+      
+        assert response.forms[0][checkbox_prefix + '1'].checked == False
+        assert response.forms[0][checkbox_prefix + '2'].checked == True
+        response.forms[0][checkbox_prefix + '2'].checked = False
+        response = response.forms[0].submit()
+        response = response.follow() # it's a redirect back to this page
+
+        # verify that the boxes are gone, because the user is gone
+        # from the list of people with authorizations
+        assert (checkbox_prefix + '1') not in response.forms[0].fields
+        assert (checkbox_prefix + '2') not in response.forms[0].fields
+
+        self.login_as(u,p)
+
+        # Verify that he can (only) submit suggestions
+        tlc = herder.tests.functional.test_language.TestLanguageController()
+        tlc.app = self.app
+        tlc.test_make_suggestion_as_non_bureau(skip_login_step=True)
+        tlc.test_delete_suggestion()
+
+
+        

@@ -255,3 +255,59 @@ class AccountController(BaseController):
                       general_role_info=general_role_info)
 
 
+    def permissions_submit(self):
+        '''Verify username and password.'''
+        # Both fields filled?
+        form_username = unicode(request.params.get('username'))
+        form_password = unicode(request.params.get('password'))
+        import collections
+        user2role = collections.defaultdict(set)
+        for key in request.params.keys():
+            if request.params[key].lower() == 'on':
+                user, role = map(int, key.replace('user_n_role_','').split('_'))
+                user2role[user].add(role)
+
+        # Time to mass-set the authorization table
+        domain_id = '*' # LOL, this controller sucks
+        lang_id = '*' # LOL, this controller still sucks
+
+        # Need to gather the list of user_ids with current assignments
+        # plus the ones we've been POSTed about
+        user_ids = user2role.keys()
+        user_ids.extend(
+            [c.user_id for c in 
+             model.meta.Session.query(model.authorization.Authorization).all()])
+        user_ids = set(user_ids)
+
+        for user_id in user_ids:
+            # Grab all the auths for this user ID
+            auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user_id, lang_id='*').all()
+            # Cases:
+            ## auths is empty and user2role[user_id] both empty: pass
+            if not auths and not user2role[user_id]:
+                pass
+            ## set([a.user_id for a in auths]) == user2role[user_id]: pass
+            if set([a.user_id for a in auths]) == user2role[user_id]:
+                pass
+            ## different: 
+            ### treat user2role[user_id] as a set of auths to add
+            ### so first delete the auths from there that exist
+            for auth in auths:
+                if auth in user2role[user_id]:
+                    user2role[user_id].remove(auth)
+                else:
+                    herder.model.meta.Session.delete(auth)
+            for remaining_auth in user2role[user_id]:
+                # Create the new auth that corresponds to that
+                new_auth = herder.model.authorization.Authorization()
+                new_auth.user_id = user_id
+                new_auth.lang_id = lang_id
+                new_auth.domain_id = domain_id
+                new_auth.role_id = remaining_auth
+                herder.model.meta.Session.save(new_auth)
+        
+        # Wait until the end to commit.
+        herder.model.meta.Session.commit()
+
+        return redirect_to(h.url_for(action='permissions'))
+
