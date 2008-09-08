@@ -48,6 +48,8 @@ class BaseController(WSGIController):
 	for auth in auths:
 	    roles.append(model.meta.Session.query(model.role.Role).filter_by(role_id=auth.role_id).first().role_name)
 
+        # It's true that we don't check domain at all, ever.  Oh, well.
+
 	return set(roles)
 
     def _actions(self, environ):
