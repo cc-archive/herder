@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import herder.tests
+import BeautifulSoup
 from herder.tests import *
 
 def do_register(app, user_name, password,
@@ -152,4 +153,24 @@ stepmom:
         self.login_as('evil_haxor', 'goodygumdrops', should_fail=True)
         
         
-                                       
+    def test_permissions_view_bureau_shows_up(self):
+        '''Test that bureau's boxes are checked for translator and bureaucrat'''
+        # Log in as admin, so we can see the page
+        self.login_as('bureau', herder.tests.bureau_password)
+
+        # Load the page
+        url = url_for(controller='account', action='permissions')
+        response = self.app.get(url)
+        soup = BeautifulSoup.BeautifulSoup(unicode(response))
+
+        # Check that the row about permissions includes a row about us
+        bureau_row = soup(None, {'id': 'row_user_id_1'})[0]
+        bureau_username = bureau_row('td')[0]
+        assert bureau_username.contents[0] == 'bureau'
+
+        # hope that thare are translator and bureaucrat boxes and that
+        # they're checked for us
+        inputs = bureau_row('input')
+        assert len(inputs) == 2
+        for input in inputs:
+            assert input['checked']

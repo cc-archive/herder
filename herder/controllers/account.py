@@ -209,4 +209,49 @@ class AccountController(BaseController):
         provide no information on what users got imported.'''
         return render('/account/import_pootle_users_successful.html')
 
-        
+    def permissions(self):
+        '''Show what permissions different users have, and let people
+        change them.'''
+        assert 'bureaucrat' in self._get_roles(request.environ)
+
+        # Oh my GOD, this code sucks.  I'm sorry.
+        general_role_info = herder.model.meta.Session.query(herder.model.role.Role).all()
+
+        auth_data = herder.model.meta.Session.query(herder.model.authorization.Authorization).all()
+
+        roles_data = {}
+        for auth in auth_data:
+            if auth.user_id not in roles_data:
+                roles_data[auth.user_id] = {}
+            me = roles_data[auth.user_id]
+
+            # Make sure me has a username
+            if 'username' not in me:
+                assert 'user_id' not in me
+                me['user_id'] = auth.user_id
+
+                user = herder.model.meta.Session.query(
+                    herder.model.user.User).filter_by(
+                    user_id=auth.user_id).one()
+                user_name = user.user_name
+                me['username'] = user_name
+
+            # Add this authorization to me
+            if 'role_names' not in me:
+                me['role_names'] = set()
+                assert 'role_ids' not in me
+                me['role_ids'] = set()
+            my_role_names = me['role_names']
+
+            role = herder.model.meta.Session.query(
+                herder.model.role.Role).filter_by(role_id=auth.role_id).one()
+            role_name = role.role_name
+            my_role_names.add(role_name)
+
+            me['role_ids'].add(auth.role_id)
+
+        return render('/account/permissions.html',
+                      roles_data=roles_data,
+                      general_role_info=general_role_info)
+
+

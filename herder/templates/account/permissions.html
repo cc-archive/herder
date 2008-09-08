@@ -1,0 +1,68 @@
+<%inherit file="/base.html"/>
+
+<%def name="head()"></%def>
+
+<%def name="title()">
+Grant or revoke permissions
+</%def>
+
+<%def name="gen_role_table(roles_data)">
+<table id='user2role'>
+<thead>
+  <tr>
+    <td>Username</td>
+    <td>Roles</td>
+  </tr>
+</thead>
+<tbody>
+<!-- FIXME:
+     This could cause race conditions where two people try to
+     modify the permissions at the same time.  I'm not going
+     to try to solve that right now.
+-->
+  % for datum in roles_data:
+  <tr id="row_user_id_${roles_data[datum]['user_id']}">
+    <td>${roles_data[datum]['username']|x}</td>
+    <td>
+      <table>
+	% for role in general_role_info:
+	<tr>
+	  <td>
+	    <input type="checkbox"
+	    % if role.role_id in roles_data[datum]['role_ids']:
+		   checked="checked"
+	    % endif
+		   name="user_n_role_${roles_data[datum]['user_id']}_${role.role_id}"
+	     />
+	  </td>
+	  <td>
+	    ${role.role_name|x}
+	  </td>
+	</tr>
+	% endfor
+      </table>
+    </td>
+  </tr>
+  % endfor
+</tbody>
+</table>
+
+</%def>
+
+<%def name="body()">
+${h.form(h.url(controller='account', action='permissions_submit'), method='POST')}
+<h1>Roles!</h1>
+
+<h2>People with existing roles</h2>
+
+${gen_role_table(roles_data)}
+
+<h2>People without existing roles</h2>
+
+roflcopter, FIXME
+
+<input type="submit" name="authform" value="Save permissions" />
+${h.end_form()}
+
+</%def>
+
