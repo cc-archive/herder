@@ -24,10 +24,18 @@ class TestLanguageController(TestController):
                 break
         assert found_what_we_like
        
-    def test_edit_string_as_bureau(self, skip_login_step = False):
+    def test_edit_string_as_bureau(self, skip_login_step = False, lang_id = None):
+        if lang_id is None:
+            lang_id = 'en_US'
+
         if not skip_login_step:
             # Pretend to be bureau
             self.login_as('bureau', bureau_password)
+
+        # No matter what, we must be logged in for this to have a
+        # hope of working
+        assert 'appears to be ' in self.app.get(url_for(controller='account',
+                                    action='profile'))
 
         # First, change it so old -> new
         i18n_key = 'country.us'
