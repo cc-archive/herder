@@ -38,10 +38,17 @@ class BaseController(WSGIController):
 	if user is None:
 	    return roles # empty
 
-	auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user.user_id).all()
+        # First, check for a lang_id = * role
+	auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user.user_id, lang_id='*').all()
 	for auth in auths:
 	    roles.append(model.meta.Session.query(model.role.Role).filter_by(role_id=auth.role_id).first().role_name)
-	return roles
+
+        # Then check for a lang_id = lang_id role
+        auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user.user_id, lang_id=lang_id).all()
+	for auth in auths:
+	    roles.append(model.meta.Session.query(model.role.Role).filter_by(role_id=auth.role_id).first().role_name)
+
+	return set(roles)
 
     def _actions(self, environ):
         """Return a sequence of two-tuples describing the actions for this

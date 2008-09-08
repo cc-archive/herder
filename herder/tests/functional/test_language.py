@@ -90,6 +90,10 @@ class TestLanguageController(TestController):
             # Pretend to be that user
             self.login_as(u, p)
 
+        # No matter what, we have to be logged in.
+        assert 'appears to be ' in self.app.get(url_for(controller='account',
+                                    action='profile'))
+
         # First, change it so old -> new
         i18n_key = 'country.us'
         old = 'United States'
