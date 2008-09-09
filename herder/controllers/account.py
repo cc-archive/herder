@@ -274,10 +274,6 @@ class AccountController(BaseController):
             if request.params[key].lower() == 'on':
                 user, role, lang = key.replace('user_n_role_','').split('_')
                 user, role = map(int, (user, role))
-                #if user not in user2role:
-                #    user2role[user] = {}
-                #if lang not in user2role[user]:
-                #    user2role[user][lang] = set()
                 user2role[user][lang].add(role)
 
         # Time to mass-set the authorization table
@@ -309,17 +305,15 @@ class AccountController(BaseController):
                 ## different: 
                 ### treat this_lang_user_roles as a set of auths to add
                 ### so first delete the auths from there that exist
-                for auth in auths:
+                # FIXME: BIG SECURITY HOLES HERE - we don't check bureaucratness
+                for auth in db_roles:
                     if auth in this_lang_user_roles:
                         this_lang_user_roles.remove(auth)
                     else:
-                        # FIXME: Check that the current user
-                        # is a bureaucrat in this language
-                        herder.model.meta.Session.delete(auth)
+                        for maybe_delete_me in auths:
+                            if maybe_delete_me.role_id == auth:
+                                herder.model.meta.Session.delete(maybe_delete_me)
                 for remaining_auth in this_lang_user_roles:
-                    # FIXME: Check that the current user
-                    # is a bureaucrat in this language
-
                     # Create the new auth that corresponds to that
                     new_auth = herder.model.authorization.Authorization()
                     new_auth.user_id = user_id
