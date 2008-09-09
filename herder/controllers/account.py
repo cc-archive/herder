@@ -313,8 +313,13 @@ class AccountController(BaseController):
                     if auth in this_lang_user_roles:
                         this_lang_user_roles.remove(auth)
                     else:
+                        # FIXME: Check that the current user
+                        # is a bureaucrat in this language
                         herder.model.meta.Session.delete(auth)
                 for remaining_auth in this_lang_user_roles:
+                    # FIXME: Check that the current user
+                    # is a bureaucrat in this language
+
                     # Create the new auth that corresponds to that
                     new_auth = herder.model.authorization.Authorization()
                     new_auth.user_id = user_id
