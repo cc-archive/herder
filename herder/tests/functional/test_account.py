@@ -3,6 +3,17 @@ import herder.tests
 import BeautifulSoup
 from herder.tests import *
 
+def fields2data(fields):
+    ret = {}
+    for key in fields:
+        checkboxes = fields[key]
+        assert len(checkboxes) == 1
+        checkbox = checkboxes[0]
+        if hasattr(checkbox, 'checked'):
+            checkbox_value = checkboxes[0].checked
+            ret[key] = checkbox_value
+    return ret
+
 def do_register(app, user_name, password,
                 human_name, email, should_fail = False):
     '''Ensure registration works'''
@@ -174,6 +185,26 @@ stepmom:
         assert len(inputs) == 2
         for input in inputs:
             assert input['checked']
+
+    def test_permissions_nonchange_works(self):
+        '''Test that POSTing the permissions change thing results in the
+        same form fields with the same values.'''
+        self.login_as('bureau', herder.tests.bureau_password)
+
+        # Load the page
+        url = url_for(controller='account', action='permissions')
+        response = self.app.get(url)
+
+        # Stash the data away
+        orig_fields_data = fields2data(response.forms[0].fields)
+
+        # Submit the page with no changes...
+        response = response.forms[0].submit()
+        # ...and follow the redirect back to the origina URL
+        response = response.follow()
+        
+        new_fields_data = fields2data(response.forms[0].fields)
+        assert new_fields_data == orig_fields_data
 
     def test_permissions_change_works(self):
         '''Test that we can create a user, grant him translate rights,
