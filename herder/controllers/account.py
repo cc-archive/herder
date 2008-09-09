@@ -216,14 +216,20 @@ class AccountController(BaseController):
 
         # Oh my GOD, this code sucks.  I'm sorry.
         general_role_info = herder.model.meta.Session.query(herder.model.role.Role).all()
+        all_languages_list = []
+        [all_languages_list.extend(domain.languages) for domain in herder.model.domain.Domain.all()]
+        all_languages = set(all_languages_list)
 
         auth_data = herder.model.meta.Session.query(herder.model.authorization.Authorization).all()
 
         roles_data = {}
         for auth in auth_data:
-            if auth.user_id not in roles_data:
-                roles_data[auth.user_id] = {}
-            me = roles_data[auth.user_id]
+            if auth.lang_id not in roles_data:
+                roles_data[auth.lang_id] = {}
+
+            if auth.user_id not in roles_data[auth.lang_id]:
+                roles_data[auth.lang_id][auth.user_id] = {}
+            me = roles_data[auth.lang_id][auth.user_id]
 
             # Make sure me has a username
             if 'username' not in me:
@@ -252,7 +258,8 @@ class AccountController(BaseController):
 
         return render('/account/permissions.html',
                       roles_data=roles_data,
-                      general_role_info=general_role_info)
+                      general_role_info=general_role_info,
+                      all_languages=all_languages)
 
 
     def permissions_submit(self):
@@ -261,16 +268,20 @@ class AccountController(BaseController):
         form_username = unicode(request.params.get('username'))
         form_password = unicode(request.params.get('password'))
         import collections
-        user2role = collections.defaultdict(set)
+        user2role = collections.defaultdict(lambda:
+                                                collections.defaultdict(set))
         for key in request.params.keys():
             if request.params[key].lower() == 'on':
-                user, role = map(int, key.replace('user_n_role_','').split('_'))
-                user2role[user].add(role)
+                user, role, lang = key.replace('user_n_role_','').split('_')
+                user, role = map(int, (user, role))
+                #if user not in user2role:
+                #    user2role[user] = {}
+                #if lang not in user2role[user]:
+                #    user2role[user][lang] = set()
+                user2role[user][lang].add(role)
 
         # Time to mass-set the authorization table
         domain_id = '*' # LOL, this controller sucks
-        lang_id = '*' # LOL, this controller still sucks
-
         # Need to gather the list of user_ids with current assignments
         # plus the ones we've been POSTed about
         user_ids = user2role.keys()
@@ -278,33 +289,39 @@ class AccountController(BaseController):
             [c.user_id for c in 
              model.meta.Session.query(model.authorization.Authorization).all()])
         user_ids = set(user_ids)
+        all_languages_list = ['*']
+        [all_languages_list.extend(domain.languages) for domain in herder.model.domain.Domain.all()]
+        all_languages = set(map(unicode, all_languages_list))
 
         for user_id in user_ids:
-            # Grab all the auths for this user ID
-            auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user_id, lang_id='*').all()
-            # Cases:
-            ## auths is empty and user2role[user_id] both empty: pass
-            if not auths and not user2role[user_id]:
-                pass
-            ## set([a.user_id for a in auths]) == user2role[user_id]: pass
-            if set([a.user_id for a in auths]) == user2role[user_id]:
-                pass
-            ## different: 
-            ### treat user2role[user_id] as a set of auths to add
-            ### so first delete the auths from there that exist
-            for auth in auths:
-                if auth in user2role[user_id]:
-                    user2role[user_id].remove(auth)
-                else:
-                    herder.model.meta.Session.delete(auth)
-            for remaining_auth in user2role[user_id]:
-                # Create the new auth that corresponds to that
-                new_auth = herder.model.authorization.Authorization()
-                new_auth.user_id = user_id
-                new_auth.lang_id = lang_id
-                new_auth.domain_id = domain_id
-                new_auth.role_id = remaining_auth
-                herder.model.meta.Session.save(new_auth)
+            for lang_id in all_languages:
+                this_lang_user_roles = user2role[user_id][lang_id]
+                # Grab all the auths for this user ID
+                auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user_id, lang_id=lang_id).all()
+                db_roles = set([a.role_id for a in auths])
+                # Cases:
+                ## auths is empty and this_lang_user_roles both empty: pass
+                if not auths and not this_lang_user_roles:
+                    pass
+                ## set([a.role_id for a in auths]) == this_lang_user_roles: pass
+                if set([a.role_id for a in auths]) == this_lang_user_roles:
+                    pass
+                ## different: 
+                ### treat this_lang_user_roles as a set of auths to add
+                ### so first delete the auths from there that exist
+                for auth in auths:
+                    if auth in this_lang_user_roles:
+                        this_lang_user_roles.remove(auth)
+                    else:
+                        herder.model.meta.Session.delete(auth)
+                for remaining_auth in this_lang_user_roles:
+                    # Create the new auth that corresponds to that
+                    new_auth = herder.model.authorization.Authorization()
+                    new_auth.user_id = user_id
+                    new_auth.lang_id = lang_id
+                    new_auth.domain_id = domain_id
+                    new_auth.role_id = remaining_auth
+                    herder.model.meta.Session.save(new_auth)
         
         # Wait until the end to commit.
         herder.model.meta.Session.commit()

@@ -249,16 +249,19 @@ stepmom:
 
         checkbox_prefix = 'user_n_role_%d_' % user_obj.user_id
       
-        assert response.forms[0][checkbox_prefix + '1'].checked == False
-        assert response.forms[0][checkbox_prefix + '2'].checked == True
-        response.forms[0][checkbox_prefix + '2'].checked = False
+        assert response.forms[0][checkbox_prefix + '1_*'].checked == False
+        assert response.forms[0][checkbox_prefix + '2_*'].checked == True
+        response.forms[0][checkbox_prefix + '2_*'].checked = False
         response = response.forms[0].submit()
         response = response.follow() # it's a redirect back to this page
 
-        # verify that the boxes are gone, because the user is gone
-        # from the list of people with authorizations
-        assert (checkbox_prefix + '1') not in response.forms[0].fields
-        assert (checkbox_prefix + '2') not in response.forms[0].fields
+        # verify that either the boxes are gone, because the user is
+        # gone from the list of people with authorizations
+        # or that the boxes are present but not checked
+        for should_be_empty in (checkbox_prefix + '1_*',
+                                checkbox_prefix + '2_*'):
+            if should_be_empty in response.forms[0].fields:
+                assert not response.forms[0].fields[should_be_empty][0].checked
 
         self.login_as(u,p)
 

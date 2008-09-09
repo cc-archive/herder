@@ -11,6 +11,7 @@ Grant or revoke permissions
 <thead>
   <tr>
     <td>Username</td>
+    <td>Language ID</td>
     <td>Roles</td>
   </tr>
 </thead>
@@ -20,19 +21,23 @@ Grant or revoke permissions
      modify the permissions at the same time.  I'm not going
      to try to solve that right now.
 -->
-  % for datum in roles_data:
-  <tr id="row_user_id_${roles_data[datum]['user_id']}">
-    <td>${roles_data[datum]['username']|x}</td>
+  % for lang_id in roles_data:
+  % for datum in roles_data[lang_id]:
+  <tr id="row_user_id_${roles_data[lang_id][datum]['user_id']}">
+    <td>${roles_data[lang_id][datum]['username']|x}</td>
+    <td>
+      ${lang_id|x}
+    </td>
     <td>
       <table>
 	% for role in general_role_info:
 	<tr>
 	  <td>
 	    <input type="checkbox"
-	    % if role.role_id in roles_data[datum]['role_ids']:
+	    % if role.role_id in roles_data[lang_id][datum]['role_ids']:
 		   checked="checked"
 	    % endif
-		   name="user_n_role_${roles_data[datum]['user_id']}_${role.role_id}"
+		   name="user_n_role_${roles_data[lang_id][datum]['user_id']}_${role.role_id}_${lang_id}"
 	     />
 	  </td>
 	  <td>
@@ -43,6 +48,7 @@ Grant or revoke permissions
       </table>
     </td>
   </tr>
+  % endfor
   % endfor
 </tbody>
 </table>
@@ -56,6 +62,10 @@ ${h.form(h.url(controller='account', action='permissions_submit'), method='POST'
 <h2>People with existing roles</h2>
 
 ${gen_role_table(roles_data)}
+
+<h2>Add a role easily with drop-downs</h2>
+
+Insert drop-down thing here
 
 <h2>People without existing roles</h2>
 
