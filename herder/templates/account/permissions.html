@@ -81,10 +81,22 @@ ${gen_role_table(roles_data)}
 -->
   <tr id="new_role">
     <td>
-      drop down of user IDs
+      <select name="new_role_user_id">
+	% for user in all_users:
+	<option value="${user.user_id}">
+	  ${user.user_name|x}
+	</option>
+	% endfor
+      </select>
     </td>
     <td>
-      drop down of lang IDs
+      <select name="new_role_lang_id">
+	% for lang in sorted(all_languages):
+	<option value="${lang}">
+	  ${lang|x} <!-- FIXME: Where do we do lang2name mappings? -->
+	</option>
+	% endfor
+      </select>
     </td>
     <td>
       <table>

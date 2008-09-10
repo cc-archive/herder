@@ -256,10 +256,14 @@ class AccountController(BaseController):
 
             me['role_ids'].add(auth.role_id)
 
+        all_users = herder.model.meta.Session.query(
+            herder.model.user.User)
+
         return render('/account/permissions.html',
                       roles_data=roles_data,
                       general_role_info=general_role_info,
-                      all_languages=all_languages)
+                      all_languages=all_languages,
+                      all_users = all_users)
 
 
     def permissions_submit(self):
@@ -270,7 +274,11 @@ class AccountController(BaseController):
         import collections
         user2role = collections.defaultdict(lambda:
                                                 collections.defaultdict(set))
+
+        # First, parse out the non-add requests
         for key in request.params.keys():
+            if not key.startswith('user_n_role_'):
+                continue
             if request.params[key].lower() == 'on':
                 user, role, lang = key.replace('user_n_role_','').split('_')
                 user, role = map(int, (user, role))
