@@ -61,7 +61,7 @@ class BaseController(WSGIController):
             ]
 
         if 'bureaucrat' in self._get_roles(environ):
-            actions.append( ('/bureau', 'Bureaucracy') )
+            actions.append( ('/account/permissions', 'Bureaucracy') )
 
         return actions
 
