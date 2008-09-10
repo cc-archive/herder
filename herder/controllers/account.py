@@ -277,63 +277,83 @@ class AccountController(BaseController):
 
         # First, parse out the non-add requests
         for key in request.params.keys():
-            if not key.startswith('user_n_role_'):
-                continue
-            if request.params[key].lower() == 'on':
-                user, role, lang = key.replace('user_n_role_','').split('_')
-                user, role = map(int, (user, role))
-                user2role[user][lang].add(role)
+            if key.startswith('user_n_role_'):
+                if request.params[key].lower() == 'on':
+                    user, role, lang = key.replace('user_n_role_','').split('_')
+                    user, role = map(int, (user, role))
+                    user2role[user][lang].add(role)
+            else:
+                if 'new_role_user_id' in request.params:
+                    user = int(request.params['new_role_user_id'])
+                    lang_id = request.params['new_role_lang_id']
+                    roles = set()
+                    # OMG N^2, wtf.
+                    for key in request.params:
+                        if key.startswith('new_role_'):
+                            if request.params[key].lower() == 'on':
+                                role_num = int(key.replace('new_role_', ''))
+                                user2role[user][lang_id].add(role_num)
 
         # Time to mass-set the authorization table
         domain_id = '*' # LOL, this controller sucks
         # Need to gather the list of user_ids with current assignments
         # plus the ones we've been POSTed about
+
+        # First, grab the list of user_ids from both the POSTed data
+        # and the list of authorizations in the database.
         user_ids = user2role.keys()
         user_ids.extend(
             [c.user_id for c in 
              model.meta.Session.query(model.authorization.Authorization).all()])
         user_ids = set(map(int, user_ids))
+
+        # Then, grab all the languages.
         all_languages_list = ['*']
         [all_languages_list.extend(domain.languages) for domain in herder.model.domain.Domain.all()]
         all_languages = set(map(unicode, all_languages_list))
 
         for user_id in user_ids:
             for lang_id in all_languages:
-                this_lang_user_roles = user2role[user_id][lang_id]
-                # Grab all the auths for this user ID
-                auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user_id, lang_id=lang_id).all()
-                db_roles = set([a.role_id for a in auths])
-                # Cases:
-                ## auths is empty and this_lang_user_roles both empty: pass
-                if not auths and not this_lang_user_roles:
-                    pass
-                ## set([a.role_id for a in auths]) == this_lang_user_roles: pass
-                if set([a.role_id for a in auths]) == this_lang_user_roles:
-                    pass
-                ## different: 
-                ### treat this_lang_user_roles as a set of auths to add
-                ### so first delete the auths from there that exist
-                # FIXME: BIG SECURITY HOLES HERE - we don't check bureaucratness
-                for auth in db_roles:
-                    if auth in this_lang_user_roles:
-                        this_lang_user_roles.remove(auth)
-                    else:
-                        for maybe_delete_me in auths:
-                            if maybe_delete_me.role_id == auth:
-                                assert 'bureaucrat' in self._get_roles(request.environ,
+                # for each user ID we know about
+                # look up its language entry and see what was POSTed there.
+                role_ids_from_POST = user2role[user_id][lang_id]
+
+                # Grab all the existing authorizations for this user ID
+                db_auth_objs = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user_id, lang_id=lang_id).all()
+                role_ids_from_DB = set([a.role_id for a in db_auth_objs])
+                
+                role_ids_to_add = set()
+                role_ids_to_remove = set()
+                # For every role ID assigned in the DB, check if it was POSTed.
+                # If it was not POSTed, then remove it later.
+                for role_id_from_DB in role_ids_from_DB:
+                    if role_id_from_DB not in role_ids_from_POST:
+                        role_ids_to_remove.add(role_id_from_DB)
+
+                # For every role ID that was POSTed, if it is not in the DB,
+                # mark it to be added.
+                for role_id_from_POST in role_ids_from_POST:
+                    if role_id_from_POST not in role_ids_from_DB:
+                        role_ids_to_add.add(role_id_from_POST)
+
+                # Great, now act on that.
+                for db_auth_obj in db_auth_objs:
+                    if db_auth_obj.role_id in role_ids_to_remove:
+                        assert 'bureaucrat' in self._get_roles(request.environ,
                                                                lang_id=lang_id)
-                                herder.model.meta.Session.delete(maybe_delete_me)
-                for remaining_auth in this_lang_user_roles:
+                        herder.model.meta.Session.delete(db_auth_obj)
+
+                for role_id_to_add in role_ids_to_add:
                     # Create the new auth that corresponds to that
                     new_auth = herder.model.authorization.Authorization()
                     new_auth.user_id = user_id
                     new_auth.lang_id = lang_id
                     new_auth.domain_id = domain_id
-                    new_auth.role_id = remaining_auth
+                    new_auth.role_id = role_id_to_add
                     assert 'bureaucrat' in self._get_roles(request.environ,
                                                            lang_id=lang_id)
                     herder.model.meta.Session.save(new_auth)
-        
+
         # Wait until the end to commit.
         herder.model.meta.Session.commit()
 

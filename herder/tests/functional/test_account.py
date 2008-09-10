@@ -314,6 +314,46 @@ stepmom:
         except AssertionError, ae:
             return True # w00t, it failed
         assert 0, "Sad, the random h4x0r can change the permissions of bureau."
+
+    def test_add_role(self):
+        '''Try using the permissions page to promote a new user
+        to a translator of en_US, and then make sure he can edit.'''
+        # Create a throwaway user
+        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
+
+        self.login_as('bureau', herder.tests.bureau_password)
+
+        ## Find the right user object
+        user_obj = herder.model.meta.Session.query(herder.model.user.User).filter_by(
+            user_name=u).first()
+
+        # Grab the permissions page
+        url = url_for(controller='account', action='permissions')
+        response = self.app.get(url)
+
+        response.forms[0]['new_role_user_id'] = str(user_obj.user_id)
+        response.forms[0]['new_role_lang_id'] = 'en'
+        response.forms[0]['new_role_1'].checked = True
+        response.forms[0]['new_role_2'].checked = True
+
+        # Debug print
+        print response.forms[0].fields
+
+        # Stubmit, and then see if he shows up with the new permissions
+        response = response.forms[0].submit()
+        response = response.follow()
+
+        # Debug print
+        print response.forms[0].fields
+
+        for role_id in (1, 2):
+            assert response.forms[0]['user_n_role_%d_%d_en' % (
+                    user_obj.user_id, role_id)].checked == True
+
+        
+
         
 
 
