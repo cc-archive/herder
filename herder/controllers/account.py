@@ -292,7 +292,7 @@ class AccountController(BaseController):
         user_ids.extend(
             [c.user_id for c in 
              model.meta.Session.query(model.authorization.Authorization).all()])
-        user_ids = set(user_ids)
+        user_ids = set(map(int, user_ids))
         all_languages_list = ['*']
         [all_languages_list.extend(domain.languages) for domain in herder.model.domain.Domain.all()]
         all_languages = set(map(unicode, all_languages_list))
