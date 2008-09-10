@@ -312,6 +312,8 @@ class AccountController(BaseController):
                     else:
                         for maybe_delete_me in auths:
                             if maybe_delete_me.role_id == auth:
+                                assert 'bureaucrat' in self._get_roles(request.environ,
+                                                               lang_id=lang_id)
                                 herder.model.meta.Session.delete(maybe_delete_me)
                 for remaining_auth in this_lang_user_roles:
                     # Create the new auth that corresponds to that
@@ -320,6 +322,8 @@ class AccountController(BaseController):
                     new_auth.lang_id = lang_id
                     new_auth.domain_id = domain_id
                     new_auth.role_id = remaining_auth
+                    assert 'bureaucrat' in self._get_roles(request.environ,
+                                                           lang_id=lang_id)
                     herder.model.meta.Session.save(new_auth)
         
         # Wait until the end to commit.

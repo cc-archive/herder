@@ -235,7 +235,6 @@ stepmom:
         self.login_as(u, p)
 
         # have him edit
-        gensym = herder.model.user.random_alphanum()
         tlc = herder.tests.functional.test_language.TestLanguageController()
         tlc.app = self.app
         tlc.test_edit_string_as_bureau(skip_login_step=True)
@@ -271,5 +270,50 @@ stepmom:
         tlc.test_make_suggestion_as_non_bureau(skip_login_step=True)
         tlc.test_delete_suggestion()
 
+    def test_only_a_global_bureaucrat_can_revoke_bureau_translator_permission(self):
+        '''As the global bureau, revoke bureau's translator role (then give it back).
+        As some n00b user with en bureaucrat, try to revoke bureau's translator and watch it fail.'''
+        # Create a throwaway user
+        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
 
+        ## Find the right user object
+        user_obj = herder.model.meta.Session.query(herder.model.user.User).filter_by(
+            user_name=u).first()
+
+        # Grant en bureau permission
+        en_translator = herder.model.authorization.Authorization()
+        en_translator.user_id = user_obj.user_id
+        en_translator.lang_id = 'en'
+        en_translator.domain_id = '*'
+        en_translator.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(
+            role_name='bureaucrat').first().role_id
+        herder.model.meta.Session.save(en_translator)
+        herder.model.meta.Session.commit()
         
+        # log in as bureau and make a request that would revoke bureau's translator privileges
+        self.login_as('bureau', herder.tests.bureau_password)
+        
+        # Grab the permissions page
+        url = url_for(controller='account', action='permissions')
+        response = self.app.get(url)
+
+        checkbox_prefix = 'user_n_role_%d_' % 1
+      
+        assert response.forms[0][checkbox_prefix + '1_*'].checked == True
+        assert response.forms[0][checkbox_prefix + '2_*'].checked == True
+        response.forms[0][checkbox_prefix + '2_*'].checked = False
+
+        saved_form = response.forms[0]
+
+        # switch to our new friend, the non-bureaucrat
+        self.login_as(u, p)
+        try:
+            saved_form.submit()
+        except AssertionError, ae:
+            return True # w00t, it failed
+        assert 0, "Sad, the random h4x0r can change the permissions of bureau."
+        
+
+
