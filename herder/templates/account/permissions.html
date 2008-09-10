@@ -65,14 +65,51 @@ ${gen_role_table(roles_data)}
 
 <h2>Add a role easily with drop-downs</h2>
 
-Insert drop-down thing here
+<table id='new_user2role'>
+<thead>
+  <tr>
+    <td>Username</td>
+    <td>Language ID</td>
+    <td>Roles</td>
+  </tr>
+</thead>
+<tbody>
+<!-- FIXME:
+     This could cause race conditions where two people try to
+     modify the permissions at the same time.  I'm not going
+     to try to solve that right now.
+-->
+  <tr id="new_role">
+    <td>
+      drop down of user IDs
+    </td>
+    <td>
+      drop down of lang IDs
+    </td>
+    <td>
+      <table>
+	% for role in general_role_info:
+	<tr>
+	  <td>
+	    <input type="checkbox"
+		   name="new_role_${role.role_id}"
+	     />
+	  </td>
+	  <td>
+	    ${role.role_name|x}
+	  </td>
+	</tr>
+	% endfor
+      </table>
+    </td>
+  </tr>
+</tbody>
+</table>
 
-<h2>People without existing roles</h2>
-
-roflcopter, FIXME
-
+<div>
 <input type="submit" name="authform" value="Save permissions" />
 ${h.end_form()}
+</div>
 
 </%def>
 
