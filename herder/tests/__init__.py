@@ -123,7 +123,7 @@ def stop_selenium():
     SELENIUM_BROWSER = None
 
 # Now, trace things we know we're interested in seeing more about:
-url_for = trace(url_for)
+#url_for = trace(url_for)
 
 class TestController(TestCase):
 
