@@ -15,6 +15,7 @@ setup(
                       'WebHelpers>0.3',
                       'Pylons>=0.9.6', 
                       'Babel',
+                      'MiniMock',
                       'jsonlib',
                       'SQLAlchemy>=0.4.0,<=0.4.99',
                       'SQLAlchemyManager',
