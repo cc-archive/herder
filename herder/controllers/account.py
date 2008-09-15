@@ -71,7 +71,7 @@ class AccountController(BaseController):
         # Great - this is for real.
         session['_user_id'] = db_user.user_id
         session['user'] = db_user # FIXME: One day this should get out of 
-                                  # the session since it is truly transient
+                                  # the session since it is truly transient.
         session.save()
 
         if 'path_before_login' in session:
@@ -125,12 +125,6 @@ class AccountController(BaseController):
                 else:
                     raise # I don't know why the exception was thrown
                           # so I can't handle it.
-
-	    # Grant no authorizations by default, unless the username is bureau.
-	    # In that case, grant some nice blanket permissions.
-
-	    if success and new_user.user_name == 'bureau':
-                bless_user(new_user)
 
             # Great!
 	else:

@@ -49,18 +49,18 @@ class TestAuthControllerOne(TestController):
 class TestAuthControllerTwo(TestController):
 
     def test_can_login_as_bureau(self):
-        self.login_as('bureau', herder.tests.bureau_password)
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
 
     def test_profile_says_bureau_guy(self):
-        self.login_as('bureau', herder.tests.bureau_password)
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
 
         url = url_for(controller='account', action='profile')
         response =self.app.get(url)
-        assert 'bureau' in response
+        assert herder.tests.bureau_username in response
         assert "Mister Bureaucrat" in response
 
     def test_when_logged_in_login_goes_away(self):
-        response = self.login_as('bureau', herder.tests.bureau_password)
+        response = self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
         assert 'Sign up' not in response
 
     def test_logout(self):
@@ -73,7 +73,7 @@ class TestAuthControllerThree(TestController):
 
     def test_registering_same_username_fails(self):
         # Assert there is already a bureau user
-        do_register(self.app, user_name='bureau', password='barbecue',
+        do_register(self.app, user_name=herder.tests.bureau_username, password='barbecue',
                 human_name = 'Poser Bureaucrat Guy', email='bureau@example.com',
                     should_fail = True)
         do_register(self.app, user_name='who_cares', password='barbecue',
@@ -129,7 +129,7 @@ stepmom:
 '''.encode('utf-8')
 
     def test_pootle_data_import(self):
-        self.login_as('bureau', herder.tests.bureau_password)
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
         
         url = url_for(controller='account', action='import_pootle_users', domain=None)
         response = self.app.get(url)
@@ -167,7 +167,7 @@ stepmom:
     def test_permissions_view_bureau_shows_up(self):
         '''Test that bureau's boxes are checked for translator and bureaucrat'''
         # Log in as admin, so we can see the page
-        self.login_as('bureau', herder.tests.bureau_password)
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
 
         # Load the page
         url = url_for(controller='account', action='permissions')
@@ -177,7 +177,7 @@ stepmom:
         # Check that the row about permissions includes a row about us
         bureau_row = soup(None, {'id': 'row_user_id_1'})[0]
         bureau_username = bureau_row('td')[0]
-        assert bureau_username.contents[0] == 'bureau'
+        assert bureau_username.contents[0] == herder.tests.bureau_username
 
         # hope that thare are translator and bureaucrat boxes and that
         # they're checked for us
@@ -189,7 +189,7 @@ stepmom:
     def test_permissions_nonchange_works(self):
         '''Test that POSTing the permissions change thing results in the
         same form fields with the same values.'''
-        self.login_as('bureau', herder.tests.bureau_password)
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
 
         # Load the page
         url = url_for(controller='account', action='permissions')
@@ -240,7 +240,7 @@ stepmom:
         tlc.test_edit_string_as_bureau(skip_login_step=True)
 
         # Log in as admin, so we can see the permissions page
-        self.login_as('bureau', herder.tests.bureau_password)
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
         
         # Grab the permissions page
         url = url_for(controller='account', action='permissions')
@@ -293,7 +293,7 @@ stepmom:
         herder.model.meta.Session.commit()
         
         # log in as bureau and make a request that would revoke bureau's translator privileges
-        self.login_as('bureau', herder.tests.bureau_password)
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
         
         # Grab the permissions page
         url = url_for(controller='account', action='permissions')
@@ -323,7 +323,7 @@ stepmom:
         herder.tests.functional.test_account.do_register(self.app, 
                                                          user_name=u, password=p, email=e + '@example.com', human_name=n)
 
-        self.login_as('bureau', herder.tests.bureau_password)
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
 
         ## Find the right user object
         user_obj = herder.model.meta.Session.query(herder.model.user.User).filter_by(
@@ -385,3 +385,22 @@ stepmom:
         self.login_as(u, new_password)
         assert u in self.app.get(url_for(controller='account',
                                          action='profile'))
+
+    def test_no_bureau_backdoor(self):
+        # Create a throwaway user named bureau!
+        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
+        u = 'bureau'
+
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
+        
+        self.login_as(u, p)
+
+        # have him edit
+        tlc = herder.tests.functional.test_language.TestLanguageController()
+        tlc.app = self.app
+        tlc.test_make_suggestion_as_non_bureau(skip_login_step=True)
+        tlc.test_delete_suggestion()
+

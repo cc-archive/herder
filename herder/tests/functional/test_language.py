@@ -30,7 +30,7 @@ class TestLanguageController(TestController):
 
         if not skip_login_step:
             # Pretend to be bureau
-            self.login_as('bureau', bureau_password)
+            self.login_as(bureau_username, bureau_password)
 
         # No matter what, we must be logged in for this to have a
         # hope of working
@@ -127,7 +127,7 @@ class TestLanguageController(TestController):
 
         if action in ['delete', 'approve']:
             # Now check that we can act on it
-            self.login_as('bureau', bureau_password)
+            self.login_as(bureau_username, bureau_password)
             response = self.app.get(url_lame)
             assert new in response
 

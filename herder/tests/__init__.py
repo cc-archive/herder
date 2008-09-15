@@ -161,5 +161,6 @@ class TestController(TestCase):
 from herder.tests.functional import test_account
 controller = test_account.TestAuthControllerThree()
 bureau_password = 'noeffingway_coffee_roflcopter'
+bureau_username = 'oX2Pohxu'
 
-__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium', 'start_app_process', 'stop_app_process', 'bureau_password']
+__all__ = ['url_for', 'TestController', 'start_selenium', 'stop_selenium', 'start_app_process', 'stop_app_process', 'bureau_password', 'bureau_username']
