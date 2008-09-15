@@ -15,12 +15,6 @@ show suggstion UI independent of URL but dependent on 'translator' role
 * i18n of this app itself
 ** Use UI strings from Pootle, perhaps, and use their translations?
 
-* Potential security problem with storing the db_user in the session?
-** Better strategy: Store the db_user in this request, and 
-                    reinstantiate the db_user from session.user_id freshly
-                    when the session gets loaded at the start of the request.
-
-
 === To let it run offline ===
 * Create a local proxy or cache of the Yahoo UI APIs we use
 

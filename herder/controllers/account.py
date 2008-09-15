@@ -29,7 +29,8 @@ def bless_user(bless_you):
     # (should I delete the bureau user if it does fail? Geez.)
 
 class AccountController(BaseController):
-    requires_auth = ['profile']
+    requires_auth = ['profile', 'change_password',
+                     'change_password_submit',]
 
     def login(self):
         return render('/account/login.html')
@@ -68,6 +69,7 @@ class AccountController(BaseController):
             return redirect_to(h.url_for(action='login', reason='Incorrect password submitted'))
 
         # Great - this is for real.
+        session['_user_id'] = db_user.user_id
         session['user'] = db_user
         session.save()
 
@@ -165,6 +167,7 @@ class AccountController(BaseController):
         '''Log the user out and display a confirmation message'''
         if 'user' in session:
             del session['user']
+            del session['_user_id']
             session.save()
         return redirect_to(h.url_for(action='logged_out'))
 
@@ -358,4 +361,29 @@ class AccountController(BaseController):
         herder.model.meta.Session.commit()
 
         return redirect_to(h.url_for(action='permissions'))
+
+    def change_password(self):
+        return render('/account/change_password.html')
+
+    def change_password_submit(self):
+        form_password = unicode(request.params.get('old_password'))
+        # Zeroth, check if the user's password matches
+        if herder.model.user.hash_with_salt(raw_password=form_password,
+                                            salt=session['user'].salt) != \
+                                            session['user'].hashed_salted_pw:
+            redirect_to(action='change_password', reason='Bad password given.')
+
+        # First, check password1 == password2
+        if request.params['password_once'] == request.params['password_twice']:
+            # Great, set the dude's password to that.
+            session['user'].salt = herder.model.user.random_alphanum()
+            session['user'].hashed_salted_pw = herder.model.user.hash_with_salt(
+                salt=session['user'].salt,
+                raw_password=request.params['password_once'])
+            herder.model.meta.Session.commit()
+            redirect_to(action='profile', message='Password successfully changed.')
+        else:
+            redirect_to(action='change_password_failed', reason = "The two passwords you submitted do not match.")
+
+
 

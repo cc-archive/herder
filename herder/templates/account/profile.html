@@ -7,6 +7,9 @@ User information for ${c.user.user_name | x}
 </%def>
 
 <%def name="body()">
+<h1>User info</h1>
 <p>Your username appears to be ${c.user.user_name | x}.</p>
 <p>Your name appears to be ${c.user.human_name | x}.</p>
+<p>Your <a href="${h.url_for(action='change_password')}">password can be changed</a>.</p>
+
 </%def>

@@ -352,8 +352,36 @@ stepmom:
             assert response.forms[0]['user_n_role_%d_%d_en' % (
                     user_obj.user_id, role_id)].checked == True
 
+    def test_password_change(self):
+        # Create a throwaway user
+        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
+
+        new_password = herder.model.user.random_alphanum()
         
+        self.login_as(u, p)
+         
+        # Grab the permissions page
+        url = url_for(controller='account', action='change_password')
+        response = self.app.get(url)
 
+        # fill in ze form
+        response.forms[0]['old_password'] = p
+        response.forms[0]['password_once'] = new_password
+        response.forms[0]['password_twice'] = new_password
+
+        # submit and follow redirect
+        response = response.forms[0].submit()
+
+        # First log out, then...
+        response = self.app.get(url_for(controller='account', action='logout'))
+        response = response.follow()
+        assert 'Sign up' in response
         
+        # Check that we can't log in with the old password
+        self.login_as(u, p, should_fail = True)
 
-
+        self.login_as(u, new_password)
+        assert u in self.app.get(url_for(controller='account',
+                                         action='profile'))

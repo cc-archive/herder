@@ -21,6 +21,9 @@ class BaseController(WSGIController):
     def __before__(self, action):
         ''' If authentication is required, and the user is not 
         logged in, then redirect to login.'''
+        if session.get('_user_id'):
+            session['user'] = model.meta.Session.query(model.user.User).filter_by(user_id=session['_user_id']).first()
+
         if action in self.requires_auth:
             if 'user' not in session:
                 # Remember where we came from so that the user can be sent there
@@ -87,6 +90,8 @@ class BaseController(WSGIController):
         try:
             return WSGIController.__call__(self, environ, start_response)
         finally:
+            if 'user' in session:
+                del session['user']
             model.meta.Session.remove()
 
 # Include the '_' function in the public names
