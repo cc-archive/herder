@@ -6,8 +6,6 @@ show suggstion UI independent of URL but dependent on 'translator' role
 == Sometime ==
 
 * Provide UI for adding a domain
-* UI idea for suggestions: show others' suggestions when making a suggestion (based on real
-  frustrations with Pootle)
 
 * i18n of this app itself
 ** Use UI strings from Pootle, perhaps, and use their translations?
