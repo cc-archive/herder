@@ -45,6 +45,9 @@ setup(
     [paste.app_install]
     main = pylons.util:PylonsInstaller
 
+    [herder.register_handlers]
+    herder = herder.events.handlers:register
+
     [console_scripts]
     sync     = herder.scripts.domain:sync
     addlang  = herder.scripts.language:add

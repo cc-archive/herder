@@ -1,6 +1,7 @@
 """Pylons environment configuration"""
 import os
 import logging
+import pkg_resources
 
 from pylons import config
 from sqlalchemy import engine_from_config
@@ -41,3 +42,11 @@ def load_environment(global_conf, app_conf):
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)
+
+
+    # Call event registration code
+    for entry_point in pkg_resources.iter_entry_points(
+        'herder.register_handlers'):
+
+        entry_point.load()()
+
