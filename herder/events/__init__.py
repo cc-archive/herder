@@ -1,7 +1,7 @@
 import zope.component
 
 import handlers
-from events import MessageUpdateEvent
+from events import HerderEvent, MessageUpdateEvent
 
 def handle(event):
     """Convenience method to dispatch events into the "real" event 

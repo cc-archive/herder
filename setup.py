@@ -53,5 +53,6 @@ setup(
     addlang  = herder.scripts.language:add
     rmstring = herder.scripts.message:remove
     make_po  = herder.scripts.domain:make_po
+    cron     = herder.events.cron.cli:cron
     """,
 )
