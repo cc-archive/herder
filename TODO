@@ -14,7 +14,7 @@ show suggstion UI independent of URL but dependent on 'translator' role
 
 === To let it run offline ===
 * Create a local proxy or cache of the Yahoo UI APIs we use
-
+** Make a configuration parameter for the path to the YUI APIs
 
 == Eventually ==
 * I hate Mako templating.
