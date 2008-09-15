@@ -1,7 +1,7 @@
 import optparse
 
-from herder import events
-from herder.events import cron
+from herder.events import handle
+from herder.events.cron import events
 
 def cron():
     """Command line interface for triggering time-based Herder events."""
@@ -31,11 +31,11 @@ def cron():
 
     # trigger specified events
     if opts.monthly:
-        events.handle(cron.events.HerderMonthlyEvent())
+        handle(events.HerderMonthlyEvent())
 
     if opts.weekly:
-        events.handle(cron.events.HerderWeeklyEvent())
+        handle(events.HerderWeeklyEvent())
 
     if opts.daily:
-        events.handle(cron.events.HerderDailyEvent())
+        handle(events.HerderDailyEvent())
 
