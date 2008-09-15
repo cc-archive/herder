@@ -12,4 +12,18 @@ User information for ${c.user.user_name | x}
 <p>Your name appears to be ${c.user.human_name | x}.</p>
 <p>Your <a href="${h.url_for(action='change_password')}">password can be changed</a>.</p>
 
+${h.form(h.url(controller='account', action='profile_submit'), method='POST')}
+  <dl>
+    <dt>Want to receive emails?</dt>
+    <dd><input type="checkbox" name="pref_receive_emails"
+	       % if 'receive_emails' in prefs_data and prefs_data['receive_emails']:
+	       
+	       checked="checked"
+	       % endif
+	       /></dd>
+  </dl>
+  <input type="submit" name="profileform" value="Update" />
+${h.end_form()}
+
+
 </%def>

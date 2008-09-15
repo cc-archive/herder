@@ -3,6 +3,7 @@ import logging
 from herder.lib.base import *
 import herder.model.user
 import sqlalchemy.exceptions
+import collections
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +31,9 @@ def bless_user(bless_you):
 
 class AccountController(BaseController):
     requires_auth = ['profile', 'change_password',
-                     'change_password_submit',]
+                     'change_password_submit',
+                     'profile_submit',
+                     ]
 
     def login(self):
         return render('/account/login.html')
@@ -156,7 +159,15 @@ class AccountController(BaseController):
             return render('/account/registration/invalid.html')
 
     def profile(self):
-        return render('/account/profile.html')
+        lang_id = '*'
+        domain_id = '*'
+        prefs_keys = [ pref.pref_name for pref in herder.model.meta.Session.query(
+                herder.model.pref.Pref).filter_by(
+                user_id=session['_user_id'], lang_id=lang_id, domain_id=domain_id)]
+        prefs_data = dict( [
+                (key, herder.model.pref.get_pref(user_id=session['_user_id'],
+                                                 lang_id=lang_id, domain_id=domain_id, pref_name=key).pref_value ) for key in prefs_keys])
+        return render('/account/profile.html', prefs_data=prefs_data)
 
     def logout(self):
         '''Log the user out and display a confirmation message'''
@@ -380,5 +391,26 @@ class AccountController(BaseController):
         else:
             redirect_to(action='change_password_failed', reason = "The two passwords you submitted do not match.")
 
+    def profile_submit(self):
+        user_id = session['_user_id']
+        lang_id = '*'
+        domain_id = '*'
+        key2value = collections.defaultdict(bool)
+        for key in request.params.keys():
+            if key.startswith('pref_'):
+                if request.params[key].lower() == 'on':
+                    key2value[key.split('pref_', 1)[1]] = True
+        # The false ones usually don't get submitted, so we have to
+        # figure out their names from the DB.
+        keys = key2value.keys()
+        keys.extend( [
+                pref.pref_name for pref in herder.model.meta.Session.query(
+                    herder.model.pref.Pref).filter_by(
+                    user_id=user_id, lang_id=lang_id, domain_id=domain_id)])
 
-
+        for key in set(keys):
+            herder.model.pref.set_pref(user_id=user_id, lang_id=lang_id,
+                                       domain_id=domain_id, pref_name=key,
+                                       pref_value=key2value[key])
+        herder.model.meta.Session.commit()
+        redirect_to(action='profile')

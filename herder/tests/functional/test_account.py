@@ -404,3 +404,15 @@ stepmom:
         tlc.test_make_suggestion_as_non_bureau(skip_login_step=True)
         tlc.test_delete_suggestion()
 
+    def test_profile_pref_mails(self):
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
+        url = url_for(controller='account', action='profile')
+        response = self.app.get(url)
+        response.forms[0]['pref_receive_emails'].checked = True
+        response = response.forms[0].submit()
+        response = response.follow()
+        assert response.forms[0]['pref_receive_emails'].checked
+        response.forms[0]['pref_receive_emails'].checked = False
+        response = response.forms[0].submit()
+        response = response.follow()
+        assert not response.forms[0]['pref_receive_emails'].checked

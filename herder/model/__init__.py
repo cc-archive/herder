@@ -26,3 +26,4 @@ def init_model(engine):
 from herder.model import user
 from herder.model import role
 from herder.model import authorization
+from herder.model import pref
