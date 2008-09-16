@@ -15,8 +15,8 @@ User information for ${c.user.user_name | x}
 ${h.form(h.url(controller='account', action='profile_submit'), method='POST')}
   <dl>
     <dt>Want to receive emails?</dt>
-    <dd><input type="checkbox" name="pref_receive_emails"
-	       % if 'receive_emails' in prefs_data and prefs_data['receive_emails']:
+    <dd><input type="checkbox" name="pref_email_enabled"
+	       % if 'email_enabled' in prefs_data and prefs_data['email_enabled']:
 	       
 	       checked="checked"
 	       % endif

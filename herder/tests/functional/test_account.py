@@ -408,11 +408,11 @@ stepmom:
         self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
         url = url_for(controller='account', action='profile')
         response = self.app.get(url)
-        response.forms[0]['pref_receive_emails'].checked = True
+        response.forms[0]['pref_email_enabled'].checked = True
         response = response.forms[0].submit()
         response = response.follow()
-        assert response.forms[0]['pref_receive_emails'].checked
-        response.forms[0]['pref_receive_emails'].checked = False
+        assert response.forms[0]['pref_email_enabled'].checked
+        response.forms[0]['pref_email_enabled'].checked = False
         response = response.forms[0].submit()
         response = response.follow()
-        assert not response.forms[0]['pref_receive_emails'].checked
+        assert not response.forms[0]['pref_email_enabled'].checked
