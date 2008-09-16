@@ -167,7 +167,20 @@ class AccountController(BaseController):
         prefs_data = dict( [
                 (key, herder.model.pref.get_pref(user_id=session['_user_id'],
                                                  lang_id=lang_id, domain_id=domain_id, pref_name=key).pref_value ) for key in prefs_keys])
-        return render('/account/profile.html', prefs_data=prefs_data)
+
+        # show what we are opted-in to get email notifications for
+        email_notify_list = [ pref.lang_id for pref in
+                              herder.model.meta.Session.query(
+                herder.model.pref.Pref).filter_by(
+                user_id=session['_user_id'], domain_id=domain_id, pref_name='email_notify', pref_value=True)]
+
+        # provide a list of all languages
+        all_languages = set()
+        for domain in herder.model.domain.Domain.all():
+             all_languages.update(map(unicode,domain.languages))
+
+        return render('/account/profile.html', prefs_data=prefs_data,
+                      email_notify_list=email_notify_list, all_languages=sorted(all_languages))
 
     def logout(self):
         '''Log the user out and display a confirmation message'''
@@ -395,11 +408,14 @@ class AccountController(BaseController):
         user_id = session['_user_id']
         lang_id = '*'
         domain_id = '*'
+
+        # First, handle lang-independent boolean preferences
         key2value = collections.defaultdict(bool)
         for key in request.params.keys():
             if key.startswith('pref_'):
                 if request.params[key].lower() == 'on':
                     key2value[key.split('pref_', 1)[1]] = True
+
         # The false ones usually don't get submitted, so we have to
         # figure out their names from the DB.
         keys = key2value.keys()
@@ -412,5 +428,55 @@ class AccountController(BaseController):
             herder.model.pref.set_pref(user_id=user_id, lang_id=lang_id,
                                        domain_id=domain_id, pref_name=key,
                                        pref_value=key2value[key])
+
+        # Then, handle lang-dependent boolean preferences
+        key2langs = collections.defaultdict(set)
+        for by_lang_key in filter(lambda k: k.startswith('by_lang_'),
+                                  request.params):
+            short_key = by_lang_key.split('by_lang_pref_', 1)[1]
+            key2langs[short_key].update(
+                request.params.getall(by_lang_key))
+
+        # need to pull keys from DB, lamesauce
+        for pref in herder.model.meta.Session.query(
+            herder.model.pref.Pref):
+            if pref.lang_id != '*': # FIXME: Move this to the SELECT
+                if pref.pref_name not in key2langs:
+                    key2langs[pref.pref_name] = set()
+
+        # To make things false, we actually remove the pref from the DB
+        for key in key2langs:
+            these_should_be_true = key2langs[key]
+            # This gives us the set of languages that are true,
+            # we need to query the prefs table to see what languages
+            # are set to True that should be cleared.
+            these_were_in_db = [ pref.lang_id for pref in 
+                                 herder.model.meta.Session.query(
+                    herder.model.pref.Pref).filter_by(
+                    pref_name=key, user_id=session['_user_id'], domain_id='*')]
+
+            # First, go through what's in the DB and set what should
+            # be true to true.  If we have any remaining lang_ids in
+            # these_should_be_true, we set them to true at the end.
+
+            # The performance of this isn't great.
+
+            for lang_id in these_were_in_db:
+                if lang_id in these_should_be_true:
+                    herder.model.pref.set_pref(
+                        user_id=session['_user_id'], lang_id=lang_id,
+                        domain_id='*', pref_name=key, pref_value=True)
+                    these_should_be_true.remove(lang_id)
+                else:
+                    herder.model.pref.set_pref(
+                        user_id=session['_user_id'], lang_id=lang_id,
+                        domain_id='*', pref_name=key, pref_value=False)
+            
+            # Finally, set the remaining ones to True
+            for lang_id in these_should_be_true:
+                herder.model.pref.set_pref(
+                    user_id=session['_user_id'], lang_id=lang_id,
+                    domain_id='*', pref_name=key, pref_value=True)
+
         herder.model.meta.Session.commit()
         redirect_to(action='profile')

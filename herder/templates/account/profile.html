@@ -22,6 +22,17 @@ ${h.form(h.url(controller='account', action='profile_submit'), method='POST')}
 	       % endif
 	       /></dd>
   </dl>
+
+<h2>Notify me when someone edits these languages</h2>
+
+% for lang_id in all_languages:
+<input name="by_lang_pref_email_notify" value="${lang_id|x}" type="checkbox"
+	% if lang_id in email_notify_list:
+	checked="checked"
+	% endif
+	>${lang_id|x}</input> <br />
+
+%endfor
   <input type="submit" name="profileform" value="Update" />
 ${h.end_form()}
 
