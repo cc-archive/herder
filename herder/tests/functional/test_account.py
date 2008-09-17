@@ -167,8 +167,6 @@ class TestBureauBackdoor(TestController):
     def test_no_bureau_backdoor(self):
         # Create a throwaway user named bureau!
         u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
-        herder.tests.functional.test_account.do_register(self.app, 
-                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
         u = 'bureau'
 
         herder.tests.functional.test_account.do_register(self.app, 

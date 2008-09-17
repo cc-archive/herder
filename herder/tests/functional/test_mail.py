@@ -4,6 +4,7 @@ from minimock import Mock
 from herder.tests import *
 import herder.tests.functional.test_account
 from herder.tests.functional.test_language import TestLanguageController
+from herder.tests.functional.test_account import TestAccountControllerNineOrSomething
 
 class TestMail(TestController):
     def test_your_mom(self):
