@@ -163,6 +163,8 @@ stepmom:
                                        self.sample_pootle_users_prefs.replace('stepmom', 'evil_haxor')})
         self.login_as('evil_haxor', 'goodygumdrops', should_fail=True)
         
+
+class TestAccountControllerNineOrSomething(TestController):
         
     def test_permissions_view_bureau_shows_up(self):
         '''Test that bureau's boxes are checked for translator and bureaucrat'''
@@ -417,37 +419,41 @@ stepmom:
         response = response.follow()
         assert not response.forms[0]['pref_email_enabled'].checked
 
-    def test_profile_pref_language_specific_mail(self):
+    def test_profile_pref_language_specific_mail(self, do_set = True,
+                                                 do_unset = True):
         self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
         url = url_for(controller='account', action='profile')
         response = self.app.get(url)
-        # they all start out unchecked
-        for field in response.forms[0].fields['by_lang_pref_email_notify']:
-            assert not field.checked
 
-        # find the en_US one and check it
-        for field in response.forms[0].fields['by_lang_pref_email_notify']:
-            if field._value == 'en_US':
-                field.checked = True
-
-        response = response.forms[0].submit()
-        response = response.follow() # the redirect back...
-
-        # Check that en_US and only en_US is checked
-        found_one = False
-        for field in response.forms[0].fields['by_lang_pref_email_notify']:
-            if field._value == 'en_US':
-                assert not found_one
-                found_one = True
-                assert field.checked
-            else:
+        if do_set:
+            # they all start out unchecked
+            for field in response.forms[0].fields['by_lang_pref_email_notify']:
                 assert not field.checked
-        assert found_one
 
-        # remove that check and resubmit
-        for field in response.forms[0].fields['by_lang_pref_email_notify']:
-            field.checked = False
-        response = response.forms[0].submit()
-        response = response.follow()
-        for field in response.forms[0].fields['by_lang_pref_email_notify']:
-            assert field.checked == False
+            # find the en_US one and check it
+            for field in response.forms[0].fields['by_lang_pref_email_notify']:
+                if field._value == 'en_US':
+                    field.checked = True
+
+            response = response.forms[0].submit()
+            response = response.follow() # the redirect back...
+
+            # Check that en_US and only en_US is checked
+            found_one = False
+            for field in response.forms[0].fields['by_lang_pref_email_notify']:
+                if field._value == 'en_US':
+                    assert not found_one
+                    found_one = True
+                    assert field.checked
+                else:
+                    assert not field.checked
+            assert found_one
+
+        if do_unset:
+            # remove that check and resubmit
+            for field in response.forms[0].fields['by_lang_pref_email_notify']:
+                field.checked = False
+            response = response.forms[0].submit()
+            response = response.follow()
+            for field in response.forms[0].fields['by_lang_pref_email_notify']:
+                assert field.checked == False
