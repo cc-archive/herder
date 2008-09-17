@@ -2,8 +2,45 @@ import logging
 import smtplib
 import herder.model
 
+import PyRSS2Gen
+from pylons import config
 import zope.component
 from herder.events.events import HerderEvent
+import os.path
+
+@zope.component.adapter(HerderEvent)
+def feed_handler(event):
+    dest_dir = os.path.join(config.get('herder.feed_dir'), event.domain_id, event.lang_id)
+    os.makedirs(dest_dir, mode=0755)
+    dest_file = os.path.join(dest_dir, 'index.xml')
+
+    # Create an item for right now
+    previous_entries = [
+        PyRSS2Gen.RSSItem(
+            title="Someone updated string %s" % event.message_id,
+            pubDate = datetime.datetime.now())]
+
+    # Take the existing file, and pull out the past into previous_entries
+    if os.path.exist(dest_file):
+        previous_entries.append(
+            feedparser.whatever())
+
+    # Set up our usual header
+    rss = PyRSS2Gen.RSS2(
+        title='Translation tool feed for language %s in domain %s' % \
+            (event.lang_id, event.domain_id),
+        link = 'http://example.com/', # FIXME
+        description  = "Just what the title says",
+        # No GUID...
+        pubDate = datetime.datetime.now(),
+        items=items)
+
+    # Jam it onto disk.
+    # FIXME: Use some trivial AtomicFile class that you put on PyPI.
+    fd = open(dest_file + '.tmp', 'w')
+    rss.write(fd)
+    fd.close()
+    os.rename(dest_file + '.tmp', dest_file)
 
 @zope.component.adapter(HerderEvent)
 def logging_handler(event):
@@ -52,3 +89,4 @@ def register():
         # register basic logging handler
         zope.component.provideHandler(logging_handler)
         zope.component.provideHandler(email_handler)
+        zope.component.provideHandler(feed_handler)
