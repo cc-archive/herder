@@ -418,6 +418,8 @@ class TestAccountControllerNineOrSomething(TestController):
         response = response.follow()
         assert not response.forms[0]['pref_email_enabled'].checked
 
+class TestProfilePrefLangSpecificMail(TestController):
+
     def test_profile_pref_language_specific_mail(self, do_set = True,
                                                  do_unset = True):
         self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
