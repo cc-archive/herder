@@ -301,7 +301,7 @@ class AccountController(BaseController):
         for key in request.params.keys():
             if key.startswith('user_n_role_'):
                 if request.params[key].lower() == 'on':
-                    user, role, lang = key.replace('user_n_role_','').split('_')
+                    user, role, lang = key.replace('user_n_role_','').split('_', 2)
                     user, role = map(int, (user, role))
                     user2role[user][lang].add(role)
             else:
