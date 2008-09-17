@@ -3,6 +3,8 @@ import smtplib
 import herder.model
 
 import PyRSS2Gen
+import datetime
+import feedparser
 from pylons import config
 import zope.component
 from herder.events.events import HerderEvent
@@ -11,19 +13,25 @@ import os.path
 @zope.component.adapter(HerderEvent)
 def feed_handler(event):
     dest_dir = os.path.join(config.get('herder.feed_dir'), event.domain_id, event.lang_id)
-    os.makedirs(dest_dir, mode=0755)
+    if not os.path.isdir(dest_dir):
+        os.makedirs(dest_dir, mode=0755)
     dest_file = os.path.join(dest_dir, 'index.xml')
 
     # Create an item for right now
-    previous_entries = [
+    items = [
         PyRSS2Gen.RSSItem(
             title="Someone updated string %s" % event.message_id,
             pubDate = datetime.datetime.now())]
 
     # Take the existing file, and pull out the past into previous_entries
-    if os.path.exist(dest_file):
-        previous_entries.append(
-            feedparser.whatever())
+    if os.path.exists(dest_file):
+        parsed = feedparser.parse(open(dest_file))
+        for entry in parsed.entries:
+            entry_as_item = PyRSS2Gen.RSSItem(
+                title=entry.title,
+                pubDate = datetime.datetime(
+                    *entry.updated_parsed[:7]))
+            items.append(entry_as_item)
 
     # Set up our usual header
     rss = PyRSS2Gen.RSS2(
@@ -38,7 +46,7 @@ def feed_handler(event):
     # Jam it onto disk.
     # FIXME: Use some trivial AtomicFile class that you put on PyPI.
     fd = open(dest_file + '.tmp', 'w')
-    rss.write(fd)
+    rss.write_xml(fd)
     fd.close()
     os.rename(dest_file + '.tmp', dest_file)
 

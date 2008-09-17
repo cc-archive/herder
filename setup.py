@@ -11,7 +11,7 @@ setup(
                       'pudge',
                        'Paste>=dev',
                       'buildutils',
-#                      'BeautifulSoup',
+                      'BeautifulSoup',
                       'Pygments',
                       'feedparser',
                       'WebHelpers>0.3',
