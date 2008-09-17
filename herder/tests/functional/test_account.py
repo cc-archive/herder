@@ -162,6 +162,25 @@ stepmom:
         response = self.app.post(url, params={'pootle_users_prefs_data':
                                        self.sample_pootle_users_prefs.replace('stepmom', 'evil_haxor')})
         self.login_as('evil_haxor', 'goodygumdrops', should_fail=True)
+
+class TestBureauBackdoor(TestController):
+    def test_no_bureau_backdoor(self):
+        # Create a throwaway user named bureau!
+        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
+        u = 'bureau'
+
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
+        
+        self.login_as(u, p)
+
+        # have him edit
+        tlc = herder.tests.functional.test_language.TestLanguageController()
+        tlc.app = self.app
+        tlc.test_make_suggestion_as_non_bureau(skip_login_step=True)
+        tlc.test_delete_suggestion()
         
 
 class TestAccountControllerNineOrSomething(TestController):
@@ -387,24 +406,6 @@ class TestAccountControllerNineOrSomething(TestController):
         self.login_as(u, new_password)
         assert u in self.app.get(url_for(controller='account',
                                          action='profile'))
-
-    def test_no_bureau_backdoor(self):
-        # Create a throwaway user named bureau!
-        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
-        herder.tests.functional.test_account.do_register(self.app, 
-                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
-        u = 'bureau'
-
-        herder.tests.functional.test_account.do_register(self.app, 
-                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
-        
-        self.login_as(u, p)
-
-        # have him edit
-        tlc = herder.tests.functional.test_language.TestLanguageController()
-        tlc.app = self.app
-        tlc.test_make_suggestion_as_non_bureau(skip_login_step=True)
-        tlc.test_delete_suggestion()
 
     def test_profile_pref_mails(self):
         self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
