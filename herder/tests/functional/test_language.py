@@ -24,7 +24,7 @@ class TestLanguageController(TestController):
                 break
         assert found_what_we_like
        
-    def test_edit_string_as_bureau(self, skip_login_step = False, lang_id = None):
+    def test_edit_string_as_bureau(self, skip_login_step = False, lang_id = None, new_value=None, should_fail = False):
         if lang_id is None:
             lang_id = 'en_US'
 
@@ -40,7 +40,11 @@ class TestLanguageController(TestController):
         # First, change it so old -> new
         i18n_key = 'country.us'
         old = 'United States'
-        new = u'¿Untied States?'
+        if new_value is None:
+            new = u'¿Untied States?'
+        else:
+            new = unicode(new_value)
+
         self.test_strings_contain(desired_key=i18n_key, desired_value=old)
 
         url_indeed = url_for(controller='language', action='edit_string',
@@ -53,7 +57,12 @@ class TestLanguageController(TestController):
         import herder.model.language 
         lang = herder.model.language.Language.by_domain_id(domain_id='cc_org',
                                                            lang='en_US')
-        assert lang[i18n_key].string == new
+        if should_fail:
+            assert lang[i18n_key].string == old
+            # FIXME: Would be nice to scrape out the given error message
+            return # This function can end now; no need to change it back
+        else:
+            assert lang[i18n_key].string == new
        
         # Check that the write took with a UI-level test
         
