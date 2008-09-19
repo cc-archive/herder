@@ -58,7 +58,17 @@ class TestLanguageController(TestController):
         lang = herder.model.language.Language.by_domain_id(domain_id='cc_org',
                                                            lang='en_US')
         if should_fail:
-            assert lang[i18n_key].string == old
+            try:
+                assert lang[i18n_key].string == old
+            except AssertionError:
+                # We should undo the damage, I suppose, then re-raise
+                url_indeed = url_for(controller='language', action='edit_string',
+                                     domain='cc_org', id='en_US')
+                response = self.app.post(url_indeed, 
+                                         params={'data': 
+                                                 jsonlib.write({'id': i18n_key,
+                                                                'new_value': old, 'old_value': new})})
+                raise
             # FIXME: Would be nice to scrape out the given error message
             return # This function can end now; no need to change it back
         else:
