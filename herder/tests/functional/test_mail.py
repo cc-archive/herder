@@ -19,8 +19,8 @@ class TestMail(TestController):
         >>> import smtplib
         >>> smtplib.SMTP = Mock('smtplib.SMTP', returns = Mock('smtp_connection'))
         >>> tlc.test_edit_string_as_bureau()
-        cc_org: en_US: country.us updated
-        cc_org: en_US: country.us updated
+        cc_org: en_US: country.us updated from <United States> to <¿Untied States?> by 1
+        cc_org: en_US: country.us updated from <¿Untied States?> to <United States> by 1
         >>>
         '''
 
@@ -41,14 +41,14 @@ class TestMail(TestController):
         >>> import smtplib
         >>> smtplib.SMTP = Mock('smtplib.SMTP', returns = Mock('smtp_connection'))
         >>> tlc.test_edit_string_as_bureau()
-        cc_org: en_US: country.us updated
+        cc_org: en_US: country.us updated from <United States> to <¿Untied States?> by 1
         Called smtplib.SMTP('localhost')
         Called smtp_connection.sendmail(
             'herder-bounces@localhost',
             [u'bureau@example.com'],
             u'From: herder-bounces@localhost\nSubject: Message update for country.us\n\nJust so you know, the message country.us changed in the language en_US.')
         Called smtp_connection.quit()
-        cc_org: en_US: country.us updated
+        cc_org: en_US: country.us updated from <¿Untied States?> to <United States> by 1
         Called smtplib.SMTP('localhost')
         Called smtp_connection.sendmail(
             'herder-bounces@localhost',
@@ -58,8 +58,8 @@ class TestMail(TestController):
         >>> tpm.test_profile_pref_language_specific_mail(do_set=False)
         >>>
         >>> tlc.test_edit_string_as_bureau()
-        cc_org: en_US: country.us updated
-        cc_org: en_US: country.us updated
+        cc_org: en_US: country.us updated from <United States> to <¿Untied States?> by 1
+        cc_org: en_US: country.us updated from <¿Untied States?> to <United States> by 1
         >>>
         '''
         pass

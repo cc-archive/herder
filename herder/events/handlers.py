@@ -52,7 +52,11 @@ def feed_handler(event):
 
 @zope.component.adapter(HerderEvent)
 def logging_handler(event):
-    print event
+    # omg unicode bbq
+    import sys
+    import codecs
+    unicode_out = codecs.getwriter('utf-8')(sys.stdout)
+    unicode_out.write(unicode(event) + '\n')
 
 @zope.component.adapter(HerderEvent)
 def email_handler(event):

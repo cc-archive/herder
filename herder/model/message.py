@@ -75,7 +75,8 @@ class Message(object):
         codecs.open(self.datafile_path, mode='w', 
                     encoding='utf-8').write(new_value)
 
-        events.handle(events.MessageUpdateEvent.with_message(self))
+        events.handle(events.MessageUpdateEvent.with_message(self,
+                      old_value=old_value, new_value=new_value))
 
     def sugg_path(self, user_id = None):
         sugg_path = os.path.join(self.language.domain.path, self.language.name,
