@@ -1,6 +1,5 @@
 import logging
 import smtplib
-import herder.model
 
 import PyRSS2Gen
 import datetime
@@ -60,6 +59,7 @@ def logging_handler(event):
 
 @zope.component.adapter(HerderEvent)
 def email_handler(event):
+    import herder.model
     prefs_who_care = herder.model.meta.Session.query(
         herder.model.pref.Pref).filter_by(
         pref_name='email_notify', pref_value=True, lang_id=event.lang_id)
