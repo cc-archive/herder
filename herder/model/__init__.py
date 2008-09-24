@@ -2,6 +2,7 @@ from language import Language as DomainLanguage
 from language import Language
 from domain import Domain
 from message import Message
+from errors import TransactionAbort
 
 from pylons import config
 from sqlalchemy import Column, MetaData, Table, types

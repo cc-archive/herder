@@ -146,6 +146,7 @@ class LanguageController(BaseController):
         domain[message_id].del_suggestion(user_id)
         redirect_to('lame_suggestions_ui', domain, id, message='Successfully deleted one suggestion.')
 
+    @jsonify
     def edit_string(self, domain, id):
         """Edit an individual string."""
 
@@ -153,14 +154,22 @@ class LanguageController(BaseController):
         
         data = jsonlib.read(request.params['data'])
 
-        # XXX trap an exception here that would be raised if edit conflict
-        if 'translator' in self._get_roles(request.environ, domain, id):
-            # store the translation
-            language.update(data['id'], data['old_value'], data['new_value'])
-        else:
-            # store the translation as a suggestion
-            language.suggest(session['user'].user_id,
-                             data['id'], data['new_value'])
+        try:
+            if 'translator' in self._get_roles(request.environ, domain, id):
+                # store the translation
+                language.update(data['id'], data['old_value'], data['new_value'])
+                return {'result': 'success',
+                        'message': 'Translation updated'}
+
+            else:
+                # store the translation as a suggestion
+                language.suggest(session['user'].user_id,
+                                 data['id'], data['new_value'])
+                return {'result': 'success',
+                        'message': 'Suggestion filed'}
+        except herder.model.TransactionAbort, e:
+            return {'result': 'error',
+                    'message': e.message}
 
 
 

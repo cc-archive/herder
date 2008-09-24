@@ -24,7 +24,7 @@ class TestLanguageController(TestController):
                 break
         assert found_what_we_like
        
-    def test_edit_string_as_bureau(self, skip_login_step = False, lang_id = None, new_value=None, should_fail = False):
+    def test_edit_string_as_bureau(self, skip_login_step = False, lang_id = None, new_value=None, should_fail = False, error_string=''):
         if lang_id is None:
             lang_id = 'en_US'
 

@@ -9,6 +9,7 @@ import domain
 import language
 
 from herder import events
+from herder import validation
 from errors import *
 
 def message_datafile_path(language, id):
@@ -78,10 +79,10 @@ class Message(object):
         event = events.MessageUpdateEvent.with_message(
             self, old_value=old_value, new_value=new_value)
 
-        validation_problems = []
+        validation_problems = validation.validate(event)
         
         if validation_problems:
-            raise TransactionError('\n'.join(validation_problems))
+            raise TransactionAbort('\n'.join(validation_problems))
 
         # Otherwise, we're great!
         codecs.open(self.datafile_path, mode='w', 

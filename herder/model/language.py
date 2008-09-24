@@ -5,9 +5,7 @@ from pylons import config
 
 import domain
 import message
-
-class TransactionAbort(Exception):
-    pass
+from errors import *
 
 class Language(object):
     """A specific language within a domain."""
