@@ -218,7 +218,7 @@ class AccountController(BaseController):
         for user_name in user_names:
             new_user = herder.model.user.make_md5_user(user_name=unicode(user_name),
                                                        human_name=unicode(data.get(user_name + '.name'), 'utf-8'),
-                                                       email=unicode(data.get(user_name + '.email', 'utf-8')),
+                                                       email=unicode(data.get(user_name + '.email', ''), 'utf-8'),
                                                        hashed=data.get(user_name + '.passwdhash'))
             herder.model.meta.Session.save(new_user)
             herder.model.meta.Session.commit()
