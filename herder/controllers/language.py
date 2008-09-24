@@ -17,7 +17,7 @@ class LanguageController(BaseController):
     def view(self, domain, id):
         """View a specific domain language."""
 
-        c.domain = herder.model.Domain.by_name(domain)
+        c.domain = herder.model.domain.Domain.by_name(domain)
         c.language = c.domain.get_language(id)
 
         return render('/language/view.html')
@@ -26,7 +26,7 @@ class LanguageController(BaseController):
         """Administer a language in a domain."""
 
         # get the Domain and Language objects and render the template
-        c.domain = herder.model.Domain.by_name(domain)
+        c.domain = herder.model.domain.Domain.by_name(domain)
         c.language = c.domain.get_language(id)
 
         return render('/language/admin.html')
@@ -34,7 +34,7 @@ class LanguageController(BaseController):
     def _editor(self, domain, id, template_fn):
         """Abstraction of the editor view."""
 
-        c.domain = herder.model.Domain.by_name(domain)
+        c.domain = herder.model.domain.Domain.by_name(domain)
         c.language = c.domain.get_language(id)
 
         c.addl_langs = request.params.getall('lang')
@@ -59,7 +59,7 @@ class LanguageController(BaseController):
 
     @jsonify
     def suggestions_for_message(self, domain, id, message_id):
-        domain = herder.model.Domain.by_name(domain)
+        domain = herder.model.domain.Domain.by_name(domain)
         language = domain.get_language(id)
         message = language[message_id]
         suggestions = message.get_suggestions()
@@ -78,7 +78,7 @@ class LanguageController(BaseController):
     def lame_suggestions_ui(self, domain, id):
         user_id2user_name = {}
 
-        c.domain = herder.model.Domain.by_name(domain)
+        c.domain = herder.model.domain.Domain.by_name(domain)
         c.language = c.domain.get_language(id)
 
         message2user2suggestion = collections.defaultdict(dict)
@@ -98,7 +98,7 @@ class LanguageController(BaseController):
                       user_id2user_name=user_id2user_name)
 
     def _messages(self, domain, id, filter=lambda x:True):
-        domain = herder.model.Domain.by_name(domain)
+        domain = herder.model.domain.Domain.by_name(domain)
         langs = {id:domain.get_language(id)}
     
         for l_id in request.params.getall('lang'):
@@ -126,7 +126,7 @@ class LanguageController(BaseController):
     @jsonify
     def untranslated_strings(self, domain, id):
 
-        en = herder.model.DomainLanguage.by_domain_id(domain, 'en')
+        en = herder.model.language.Language.by_domain_id(domain, 'en')
 
         def untrans_filter(message):
             return (message.id and ( not(message.string) or 
@@ -138,7 +138,7 @@ class LanguageController(BaseController):
     @jsonify
     def suggestion_avail_strings(self, domain, id):
 
-        en = herder.model.DomainLanguage.by_domain_id(domain, 'en')
+        en = herder.model.language.Language.by_domain_id(domain, 'en')
 
         def suggestion_avail_filter(message):
             return bool(message.get_suggestions())
@@ -154,7 +154,7 @@ class LanguageController(BaseController):
         # It's safe to assume deleting is what's meant.
         user_id = int(request.params['user_id'])
         message_id = xml.sax.saxutils.unescape(request.params['message_id'])
-        domain = herder.model.DomainLanguage.by_domain_id(domain, id)
+        domain = herder.model.language.Language.by_domain_id(domain, id)
         domain[message_id].del_suggestion(user_id)
         redirect_to('lame_suggestions_ui', domain, id, message='Successfully deleted one suggestion.')
 
@@ -162,7 +162,7 @@ class LanguageController(BaseController):
     def edit_string(self, domain, id):
         """Edit an individual string."""
 
-        language = herder.model.DomainLanguage.by_domain_id(domain, id)
+        language = herder.model.language.Language.by_domain_id(domain, id)
         
         data = jsonlib.read(request.params['data'])
 

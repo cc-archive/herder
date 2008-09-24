@@ -1,13 +1,12 @@
-from language import Language as DomainLanguage
-from language import Language
-from domain import Domain
-from message import Message
-from errors import TransactionAbort
-
 from pylons import config
 from sqlalchemy import Column, MetaData, Table, types
 from sqlalchemy.orm import mapper
 from sqlalchemy.orm import scoped_session, sessionmaker
+
+import domain
+import language
+import message
+from errors import TransactionAbort
 
 import sqlalchemy as sa
 from herder.model import meta
