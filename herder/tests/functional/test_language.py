@@ -108,8 +108,10 @@ class TestLanguageController(TestController):
         logout = url_for(controller='account', action='logout')
         response = self.app.get(logout)
 
-    def test_make_suggestion_as_non_bureau(self, action = 'None', skip_login_step = False):
-        if not skip_login_step:
+    def test_make_suggestion_as_non_bureau(self, action = 'None', already_logged_in_as=None):
+        if already_logged_in_as:
+            u = already_logged_in_as
+        else:
             # Create a throwaway user
             u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
             herder.tests.functional.test_account.do_register(self.app, 
@@ -151,6 +153,7 @@ class TestLanguageController(TestController):
         response = self.app.get(url_json)
         assert new in response
         assert old not in response
+        assert u in response.body
 
         if action in ['delete', 'approve']:
             # Now check that we can act on it

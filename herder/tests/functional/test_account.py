@@ -177,7 +177,7 @@ class TestBureauBackdoor(TestController):
         # have him edit
         tlc = herder.tests.functional.test_language.TestLanguageController()
         tlc.app = self.app
-        tlc.test_make_suggestion_as_non_bureau(skip_login_step=True)
+        tlc.test_make_suggestion_as_non_bureau(already_logged_in_as=u)
         tlc.test_delete_suggestion()
         
 
@@ -286,7 +286,7 @@ class TestAccountControllerNineOrSomething(TestController):
         # Verify that he can (only) submit suggestions
         tlc = herder.tests.functional.test_language.TestLanguageController()
         tlc.app = self.app
-        tlc.test_make_suggestion_as_non_bureau(skip_login_step=True)
+        tlc.test_make_suggestion_as_non_bureau(already_logged_in_as=u)
         tlc.test_delete_suggestion()
 
     def test_only_a_global_bureaucrat_can_revoke_bureau_translator_permission(self):

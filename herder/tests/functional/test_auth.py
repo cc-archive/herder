@@ -112,5 +112,5 @@ class TestAuthBackend(TestController):
         self.login_as(u, p)
         tlc = herder.tests.functional.test_language.TestLanguageController()
         tlc.app = self.app
-        tlc.test_make_suggestion_as_non_bureau(skip_login_step=True)
+        tlc.test_make_suggestion_as_non_bureau(already_logged_in_as=u)
         tlc.test_delete_suggestion()

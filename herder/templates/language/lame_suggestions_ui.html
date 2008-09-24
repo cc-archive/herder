@@ -15,12 +15,12 @@ View suggestions
 <%def name="head()">
 </%def>
 
-<%def name="gen_list(data)">
+<%def name="gen_list(data, user_id2user_name)">
 % for message in data:
 <h3>${message.id|x}</h3>
 <ul>
     % for user_id in data[message]:
-    <li>${user_id|x} suggests ${data[message][user_id]|x} <!-- escaped -->
+    <li>${user_id2user_name[user_id]|x} suggests ${data[message][user_id]|x} <!-- escaped -->
         <ul>
             <li>${h.form(h.url(controller='language', action='suggestion_action'))}
             <input type="hidden" name="user_id" value="${user_id|x}" />
@@ -35,5 +35,5 @@ View suggestions
 </%def>
 
 <%def name="body()">
-${gen_list(data)}
+${gen_list(data, user_id2user_name)}
 </%def>

@@ -64,14 +64,20 @@ class LanguageController(BaseController):
         message = language[message_id]
         suggestions = message.get_suggestions()
         ret = []
-        for username in suggestions:
+        for user_id in suggestions:
             me = {}
-            me['author'] = username
-            me['suggestion'] = suggestions[username]
+            me['user_id'] = user_id
+            me['author'] = herder.model.meta.Session.query(
+                herder.model.user.User).filter_by(
+                user_id=user_id).one().user_name
+            me['suggestion'] = suggestions[user_id]
             ret.append(me)
+
         return {'result': ret}
 
     def lame_suggestions_ui(self, domain, id):
+        user_id2user_name = {}
+
         c.domain = herder.model.Domain.by_name(domain)
         c.language = c.domain.get_language(id)
 
@@ -79,11 +85,17 @@ class LanguageController(BaseController):
         # Figure out what users have suggestions for which strings
         for message in c.language:
             user2suggestion = message.get_suggestions()
+            # Enrich it with usernames
+            for user_id in user2suggestion:
+                user_id2user_name[user_id] = herder.model.meta.Session.query(
+                    herder.model.user.User).filter_by(
+                    user_id=user_id).one().user_name
             if user2suggestion:
                 message2user2suggestion[message] = user2suggestion
 
         return render('/language/lame_suggestions_ui.html',
-            data=message2user2suggestion)
+                      data=message2user2suggestion,
+                      user_id2user_name=user_id2user_name)
 
     def _messages(self, domain, id, filter=lambda x:True):
         domain = herder.model.Domain.by_name(domain)
