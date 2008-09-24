@@ -9,7 +9,18 @@ class TestValidation(TestController):
         r'''
         >>> tlc = TestLanguageController()
         >>> tlc.test_edit_string_as_bureau(new_value='X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*', should_fail=True, error_string='ZOMG INFEKTED')
-        >>> 
+        >>>
         '''
+
+class TestValidationTwo(TestController):
+
+    def test_invalid_change_does_not_save_requires_right_message(self):
+        tlc = TestLanguageController()
+        try:
+            tlc.test_edit_string_as_bureau(new_value='X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*', should_fail=True, error_string='wrong message')
+        except AssertionError:
+            # great, it was supposed to fail.
+            return
+        assert False, "It should have failed."
 
 
