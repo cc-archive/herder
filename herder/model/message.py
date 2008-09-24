@@ -9,6 +9,7 @@ import domain
 import language
 
 from herder import events
+from errors import *
 
 def message_datafile_path(language, id):
     """Return the datafile path for locating a particular message in the
@@ -70,13 +71,23 @@ class Message(object):
         assert type(new_value) == unicode
         if old_value is not None:
             if self.string != old_value:
-                raise Exception
+                raise TransactionAbort(
+                    "Old value and new value aren't the same!")
 
+        # Make an event and see what the validators think of it
+        event = events.MessageUpdateEvent.with_message(
+            self, old_value=old_value, new_value=new_value)
+
+        validation_problems = []
+        
+        if validation_problems:
+            raise TransactionError('\n'.join(validation_problems))
+
+        # Otherwise, we're great!
         codecs.open(self.datafile_path, mode='w', 
                     encoding='utf-8').write(new_value)
 
-        events.handle(events.MessageUpdateEvent.with_message(self,
-                      old_value=old_value, new_value=new_value))
+        events.handle(event)
 
     def sugg_path(self, user_id = None):
         sugg_path = os.path.join(self.language.domain.path, self.language.name,
