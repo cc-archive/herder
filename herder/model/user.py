@@ -44,11 +44,11 @@ def upgrade_password(db_user, raw_password):
 
 def make_md5_user(user_name, hashed, email, human_name):
     new_user = User()
-    new_user.user_name = user_name
+    new_user.user_name = unicode(user_name)
     new_user.salt = 'ignored'
     new_user.hashed_salted_pw = hashed
-    new_user.human_name = human_name
-    new_user.email = email
+    new_user.human_name = unicode(human_name)
+    new_user.email = unicode(email)
     return new_user
 
     

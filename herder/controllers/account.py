@@ -11,17 +11,17 @@ def bless_user(bless_you):
     # bureau for *, and
     new_bureau_auth = herder.model.authorization.Authorization()
     new_bureau_auth.user_id = bless_you.user_id
-    new_bureau_auth.lang_id = '*'
-    new_bureau_auth.domain_id = '*'
-    new_bureau_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='bureaucrat').first().role_id
+    new_bureau_auth.lang_id = u'*'
+    new_bureau_auth.domain_id = u'*'
+    new_bureau_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name=u'bureaucrat').first().role_id
     herder.model.meta.Session.save(new_bureau_auth)
     
     # translator for *
     new_translator_auth = herder.model.authorization.Authorization()
     new_translator_auth.user_id = bless_you.user_id
-    new_translator_auth.lang_id = '*'
-    new_translator_auth.domain_id = '*'
-    new_translator_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name='translator').first().role_id
+    new_translator_auth.lang_id = u'*'
+    new_translator_auth.domain_id = u'*'
+    new_translator_auth.role_id = herder.model.meta.Session.query(herder.model.role.Role).filter_by(role_name=u'translator').first().role_id
     herder.model.meta.Session.save(new_translator_auth)
     
     herder.model.meta.Session.commit()
@@ -113,8 +113,8 @@ class AccountController(BaseController):
             new_user.hashed_salted_pw = herder.model.user.hash_with_salt(
                             salt=new_user.salt,
                             raw_password=request.params['password_once'])
-            new_user.human_name = request.params['human_name']
-            new_user.email = request.params['email']
+            new_user.human_name = unicode(request.params['human_name'])
+            new_user.email = unicode(request.params['email'])
             herder.model.meta.Session.save(new_user)
 
             try:
