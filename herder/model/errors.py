@@ -1,0 +1,2 @@
+class TransactionAbort(Exception):
+    pass
