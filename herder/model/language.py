@@ -48,6 +48,24 @@ class Language(object):
 
         return domain.Domain.by_name(domain_id).get_language(lang)
 
+    def parent_lang_id(self):
+        '''
+        >>> domain.Domain.by_name('cc_org').get_language('en').parent_lang_id()
+        >>> domain.Domain.by_name('cc_org').get_language('es_CO').parent_lang_id()
+        'es'
+        >>> domain.Domain.by_name('cc_org').get_language('fr').parent_lang_id()
+        'en'
+        >>>
+        '''
+        # if I am 'en', then my parent is None!
+        if self.lang == 'en':
+            return None
+        # If I have underscores, my un-underscored self is my parent
+        if '_' in self.lang:
+            return self.lang.split('_')[0]
+        # otherwise, my parent is 'en'
+        return 'en'
+
     def __init__(self, domain, lang):
         self.domain = domain
         self.lang = lang
