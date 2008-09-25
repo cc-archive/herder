@@ -1,4 +1,5 @@
-import logging
+'''Store event handlers.'''
+
 import smtplib
 
 import PyRSS2Gen
@@ -9,9 +10,16 @@ import zope.component
 from herder.events.events import HerderEvent
 import os.path
 
+from email.MIMEText import MIMEText
+from email.Header import Header
+import email.encoders
+from email.Utils import parseaddr, formataddr
+
 @zope.component.adapter(HerderEvent)
 def feed_handler(event):
-    dest_dir = os.path.join(config.get('herder.feed_dir'), event.domain_id, event.lang_id)
+    '''Generate an RSS feed (pretty lamely, currently) using the event.'''
+    dest_dir = os.path.join(config.get('herder.feed_dir'), event.domain_id,
+			    event.lang_id)
     if not os.path.isdir(dest_dir):
         os.makedirs(dest_dir, mode=0755)
     dest_file = os.path.join(dest_dir, 'index.xml')
@@ -44,9 +52,9 @@ def feed_handler(event):
 
     # Jam it onto disk.
     # FIXME: Use some trivial AtomicFile class that you put on PyPI.
-    fd = open(dest_file + '.tmp', 'w')
-    rss.write_xml(fd)
-    fd.close()
+    out_fd = open(dest_file + '.tmp', 'w')
+    rss.write_xml(out_fd)
+    out_fd.close()
     os.rename(dest_file + '.tmp', dest_file)
 
 @zope.component.adapter(HerderEvent)
@@ -58,7 +66,7 @@ def logging_handler(event):
     unicode_out.write(unicode(event) + '\n')
 
 @zope.component.adapter(HerderEvent)
-def email_handler(event):
+def email_handler(event, header_charset='utf-8', body_charset='utf-8'):
     import herder.model
     prefs_who_care = herder.model.meta.Session.query(
         herder.model.pref.Pref).filter_by(
@@ -76,15 +84,53 @@ def email_handler(event):
                     user_id=pref.user_id))
 
     if email_these_dudes:
-        server = smtplib.SMTP('localhost') # hard-code this
-        # FIXME: should use MIME or something to generate the email
-        server.sendmail('herder-bounces@localhost',
-                        [dude.email for dude in email_these_dudes],
-                        '\n'.join(
-                ('From: herder-bounces@localhost',
-                 'Subject: Message update for %s' % event.message_id,
-                 '',
-                 'Just so you know, the message %s changed in the language %s.' % (event.message_id, event.lang_id))))
+	# First, make our nice Unicoded subject and body
+        subject = u'Message update for %s in %s' % (event.message_id,
+                                                    event.lang_id)
+        body = u'\n'.join([
+                u'The language %s changed for its translation of %s' % (
+                    event.lang_id, event.message_id),
+                u''
+                u'It used to be:'
+                u'',
+                event.old_value,
+                u'',
+                u'But now it is:'
+                u'',
+                event.new_value,
+                u''
+                u'Lovingly,'
+                u'',
+                u'The Translation Tool.'])
+
+	# Python Unicode sanity c/o http://mg.pov.lt/blog/unicode-emails-in-python.html
+
+	# Prepare SMTP-level sender and recipient
+        sender_name, sender_addr = parseaddr(
+            '"Translation System" <herder-bounces@localhost>')
+
+        # We must always pass Unicode strings to Header, otherwise it will
+        # use RF C2047 encoding even on plain ASCII strings.
+        sender_name = str(Header(unicode(sender_name), header_charset))
+        # no recipient_name in the header
+
+        # Make sure email addresses do not contain non-ASCII
+        # characters
+        # (FIXME: This could blow up at runtime if we don't
+        # assert this at other layers, like the DB!)
+        sender_addr = unicode(sender_addr).encode('ASCII')
+        recipient_addrs = [unicode(dude.email).encode('ascii') for dude in
+                           email_these_dudes]
+
+	# Create the message ('plain' stands for Content-Type: text/plain)
+        msg = MIMEText(body.encode(body_charset), 'plain', body_charset)
+	# FIXME: I want quoted-printable, gosh darn it
+        msg['From'] = formataddr( (sender_name, sender_addr) )
+        # Leave "To:" blank
+        msg['Subject'] = Header(unicode(subject), header_charset)
+
+        server = smtplib.SMTP('localhost') # hard-coded
+        server.sendmail(sender_addr, recipient_addrs, msg.as_string())
         server.quit()
 
 # beenhere works around an issue with nosetest + Pylons,
@@ -92,12 +138,10 @@ def email_handler(event):
 # See: http://code.creativecommons.org/issues/issue31
 
 # fine, so only let it be run once.
-beenhere = False
-def register():
+def register(beenhere = []):
     """Register included event handlers."""
-    global beenhere
     if not beenhere:
-        beenhere = True
+        beenhere.append(True)
         # register basic logging handler
         zope.component.provideHandler(logging_handler)
         zope.component.provideHandler(email_handler)
