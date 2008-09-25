@@ -153,10 +153,33 @@ YAHOO.util.Event.addListener(window, "load", function() {
 
           var edit = {id: e.editor.record.getData().id,
                       new_value: e.newData,
-                      old_value: e.oldData};
+                      old_value: e.oldData,
+                      e: e};
 
           var edit_callback = {
              success: function(o) {
+                var data = YAHOO.lang.JSON.parse(o.responseText);
+                var message = null;
+                if (data['result'] == 'success') {
+                    message = document.getElementById('success_message');
+                }
+                if (data['result'] == 'error') {
+                    message = document.getElementById('error_message');
+                }
+
+                var text = document.createTextNode(data['message']);
+                // Racey: Clear out other children
+                for (var i = 0; i < message.childNodes.length; i++) {
+                    var child = message.childNodes[i];
+                    message.removeChild(child);
+                }
+                message.appendChild(text);
+
+                if (data['result'] == 'error') { // Undo the change to the box!
+                     this.argument.e.editor.cell.firstChild.firstChild.value = this.argument.old_value;
+                     this.argument.e.editor.record.setData('value', this.argument.old_value);
+                }
+
                 // FIXME: Show the user the background process succeeded
              },
              failure: function(o) {
@@ -179,6 +202,10 @@ YAHOO.util.Event.addListener(window, "load", function() {
 </%def>
 
 <%def name="body()">
+
+<div style="text-color: blue;" id="success_message"></div>
+
+<div style="text-color: red;" id="error_message"></div>
 
 %if c.user:
 <p>You can click the text in the <strong>Translation</strong> column
