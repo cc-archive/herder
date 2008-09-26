@@ -37,6 +37,9 @@ class TestFeed(TestController):
                      datetime.datetime(*entry.updated_parsed[:7]) >=
                      now ]
         assert len(relevant) == 2
+	for entry in relevant:
+	    assert 'Untied States' in entry.summary
+
 
         
 

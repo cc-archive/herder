@@ -27,7 +27,8 @@ def feed_handler(event):
     # Create an item for right now
     items = [
         PyRSS2Gen.RSSItem(
-            title="Someone updated string %s" % event.message_id,
+            title=u"Someone updated string %s" % event.message_id,
+	    description=event.long_flowy_message(joiner='<p>'),
             pubDate = datetime.datetime.now())]
 
     # Take the existing file, and pull out the past into previous_entries
@@ -36,6 +37,7 @@ def feed_handler(event):
         for entry in parsed.entries:
             entry_as_item = PyRSS2Gen.RSSItem(
                 title=entry.title,
+		description=entry.get('summary', ''),
                 pubDate = datetime.datetime(
                     *entry.updated_parsed[:7]))
             items.append(entry_as_item)
@@ -87,21 +89,7 @@ def email_handler(event, header_charset='utf-8', body_charset='utf-8'):
 	# First, make our nice Unicoded subject and body
         subject = u'Message update for %s in %s' % (event.message_id,
                                                     event.lang_id)
-        body = u'\n'.join([
-                u'The language %s changed for its translation of %s' % (
-                    event.lang_id, event.message_id),
-                u''
-                u'It used to be:'
-                u'',
-                event.old_value,
-                u'',
-                u'But now it is:'
-                u'',
-                event.new_value,
-                u''
-                u'Lovingly,'
-                u'',
-                u'The Translation Tool.'])
+        body = event.long_flowy_message()
 
 	# Python Unicode sanity c/o http://mg.pov.lt/blog/unicode-emails-in-python.html
 

@@ -31,3 +31,22 @@ class MessageUpdateEvent(HerderEvent):
         return u"%s: %s: %s updated from <%s> to <%s> by %d" % (
             self.domain_id, self.lang_id, self.message_id,
             self.old_value, self.new_value, self.user_id)
+
+    def long_flowy_message(self, joiner='\n'):
+	return unicode(joiner).join(
+	    [
+                u'The language %s changed for its translation of %s' % (
+                    self.lang_id, self.message_id),
+                u''
+                u'It used to be:'
+                u'',
+                self.old_value,
+                u'',
+                u'But now it is:'
+                u'',
+                self.new_value,
+                u''
+                u'Lovingly,'
+                u'',
+                u'The Translation Tool.'])
+
