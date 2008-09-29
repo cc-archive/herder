@@ -110,6 +110,7 @@ def start_selenium():
     SELENIUM_BROWSER = selenium.selenium('localhost', SELENIUM_PORT,
                     '*firefox', 'http://localhost:5001')
     SELENIUM_BROWSER.start()
+    return SELENIUM_BROWSER
 
 def stop_selenium():
     global SELENIUM_PROCESS
