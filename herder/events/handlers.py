@@ -10,9 +10,9 @@ import zope.component
 from herder.events.events import HerderEvent
 import os.path
 
-from email.MIMEText import MIMEText
+import email.mime.text
+import email.charset
 from email.Header import Header
-import email.encoders
 from email.Utils import parseaddr, formataddr
 
 @zope.component.adapter(HerderEvent)
@@ -111,7 +111,17 @@ def email_handler(event, header_charset='utf-8', body_charset='utf-8'):
                            email_these_dudes]
 
 	# Create the message ('plain' stands for Content-Type: text/plain)
-        msg = MIMEText(body.encode(body_charset), 'plain', body_charset)
+        charset_obj = email.charset.Charset('utf-8')
+        charset_obj.header_encoding = email.charset.QP
+        charset_obj.body_encoding = email.charset.QP
+        
+        msg = email.mime.text.MIMEText(body.encode(body_charset), 'plain')
+        # Message class computes the wrong type from MIMEText constructor,
+        # which does not take a Charset object as initializer. Reset the
+        # encoding type to force a new, valid evaluation
+        del msg['Content-Transfer-Encoding'] # base64 by default, wtf
+        msg.set_charset(charset_obj) # QP utf-8, ahhh :-)
+
 	# FIXME: I want quoted-printable, gosh darn it
         msg['From'] = formataddr( (sender_name, sender_addr) )
         # Leave "To:" blank

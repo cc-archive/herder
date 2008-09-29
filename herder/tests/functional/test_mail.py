@@ -34,7 +34,6 @@ class TestMail(TestController):
     # Unset his desire for updates, and then make sure it does not when
     # we do another edit.
     def test_email_sending(self):
-	# FIXME: Unbreak test as per http://mail.python.org/pipermail/baypiggies/2008-September/003983.html
         r'''
 	>>> import base64
 	>>> base64.b64encode('¿Untied States?')
@@ -52,14 +51,14 @@ class TestMail(TestController):
         Called smtp_connection.sendmail(
             'herder-bounces@localhost',
             ['bureau@example.com'],
-            '...Subject: Message update for country.us in en_US...')
+            '...Subject: Message update for country.us in en_US...United States...Untied States...')
         Called smtp_connection.quit()
         cc_org: en_US: country.us updated from <¿Untied States?> to <United States> by 1
         Called smtplib.SMTP('localhost')
         Called smtp_connection.sendmail(
             'herder-bounces@localhost',
             ['bureau@example.com'],
-            '...Subject: Message update for country.us in en_US...')
+            '...Subject: Message update for country.us in en_US...Untied States...United States...')
         Called smtp_connection.quit()
         >>> tpm.test_profile_pref_language_specific_mail(do_set=False)
         >>>
