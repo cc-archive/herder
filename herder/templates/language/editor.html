@@ -192,7 +192,7 @@ YAHOO.util.Event.addListener(window, "load", function() {
           // FIXME: Show the user a background process has started
           var transaction = YAHOO.util.Connect.asyncRequest('POST', 
                   "${h.url_for(controller='language', action='edit_string', id=c.language.name, domain=c.domain.name)}",
-                  edit_callback, "data=" + YAHOO.lang.JSON.stringify(edit));
+                  edit_callback, "data=" + encodeURIComponent(YAHOO.lang.JSON.stringify(edit)));
         });
   %endif
 
