@@ -18,6 +18,13 @@ class TestValidation(TestController):
         >>>
         '''
 
+    def test_broken_html_does_not_save(self):
+        r'''
+        >>> tlc = TestLanguageController()
+        >>> tlc.test_edit_string_as_bureau(new_value='Some stupid <i>unclosed tag', should_fail=True, error_string='not valid XML')
+        >>>
+        '''
+
 class TestValidationTwo(TestController):
 
     def test_invalid_change_does_not_save_requires_right_message(self):
