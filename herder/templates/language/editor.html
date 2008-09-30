@@ -131,7 +131,7 @@ YAHOO.util.Event.addListener(window, "load", function() {
      % for l in c.addl_langs:
             {key:"${l}", label:"${l}", sortable:true},
      % endfor
-            {key:"value", label:"Translation", editor:YAHOO.widget.DataTable.editTextareaPlusSuggestions},
+    {key:"value", label:"Translation", editor:YAHOO.widget.DataTable.editTextareaPlusSuggestions, editorOptions: {validator:function(oData) { YAHOO.log("I hate you"); return null;}}},
         ];
 
         this.myDataSource = new YAHOO.util.DataSource(${self.ds_url()} + "?${c.addl_langs_qs}");
@@ -150,11 +150,11 @@ YAHOO.util.Event.addListener(window, "load", function() {
                                    this.myDataTable.onEventShowCellEditor); 
 
 	this.myDataTable.showCellEditorBtns  = function(elContainer) {
+	    // Yahoo-brand short-hand
 	    var DT = YAHOO.widget.DataTable,
-	    DS = YAHOO.util.DataSource;
-	    var Dom    = YAHOO.util.Dom;
-	    var Ev = YAHOO.util.Event;
-
+	    DS = YAHOO.util.DataSource,
+	    Dom    = YAHOO.util.Dom,
+	    Ev = YAHOO.util.Event;
 
 	    // Buttons
 	    var elBtnsDiv = elContainer.appendChild(document.createElement("div"));
@@ -176,6 +176,46 @@ YAHOO.util.Event.addListener(window, "load", function() {
 		    oSelf.onEventCancelCellEditor(oArgs, oSelf);
 		    oSelf.focusTbodyEl();
 		}, this, true);
+	};
+
+	this.myDataTable.saveCellEditor = function() {
+    if(this._oCellEditor.isActive) {
+        var newData = this._oCellEditor.value;
+        // Copy the data to pass to the event
+        var oldData = YAHOO.widget.DataTable._cloneObject(this._oCellEditor.record.getData(this._oCellEditor.column.key));
+
+        // Validate input data
+        if(this._oCellEditor.validator) {
+            newData = this._oCellEditor.value = "roflcopter"; // this._oCellEditor.validator.call(this, newData, oldData, this._oCellEditor);
+            if(newData === null ) {
+
+                this.resetCellEditor();
+                this.fireEvent("editorRevertEvent",
+                        {editor:this._oCellEditor, oldData:oldData, newData:newData});
+                YAHOO.log("Could not save Cell Editor input due to invalid data " +
+                        lang.dump(newData), "warn", this.toString());
+                return;
+            }
+        }
+        // Update the Record
+        this._oRecordSet.updateRecordValue(this._oCellEditor.record, this._oCellEditor.column.key, this._oCellEditor.value);
+        // Update the UI
+        this.formatCell(this._oCellEditor.cell.firstChild);
+        
+
+	/* NOTE: I removed some bug fixes since I could not resolve
+	 * the this._oChainRender symbol. :-( */
+
+        // Clear out the Cell Editor
+        this.resetCellEditor();
+
+        this.fireEvent("editorSaveEvent",
+                {editor:this._oCellEditor, oldData:oldData, newData:newData});
+        YAHOO.log("Cell Editor input saved", "info", this.toString());
+    }
+    else {
+        YAHOO.log("Cell Editor not active to save input", "warn", this.toString());
+    }
 	};
 	
         this.myDataTable.subscribe("editorSaveEvent", function(e) {
