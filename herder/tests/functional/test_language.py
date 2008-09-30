@@ -59,7 +59,7 @@ class TestLanguageController(TestController):
             parsed = jsonlib.read(response.body)
             assert parsed['result'] == 'error'
             if error_string:
-                assert parsed['message'] == error_string
+                assert error_string in parsed['message']
 
         # Check that the write took with a deep test
         import herder.model.language 
