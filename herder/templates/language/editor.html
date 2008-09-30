@@ -159,21 +159,19 @@ YAHOO.util.Event.addListener(window, "load", function() {
           var edit_callback = {
              success: function(o) {
                 var data = YAHOO.lang.JSON.parse(o.responseText);
-                var message = null;
-                if (data['result'] == 'success') {
-                    message = document.getElementById('success_message');
-                }
-                if (data['result'] == 'error') {
-                    message = document.getElementById('error_message');
-                }
+                var message_box = document.getElementById('result_message');
 
+		var new_message = document.createElement('div');
+		new_message.class = 'message_' + data['result'];
                 var text = document.createTextNode(data['message']);
+		new_message.appendChild(text);
+
                 // Racey: Clear out other children
-                for (var i = 0; i < message.childNodes.length; i++) {
-                    var child = message.childNodes[i];
-                    message.removeChild(child);
+                for (var i = 0; i < message_box.childNodes.length; i++) {
+                    var child = message_box.childNodes[i];
+                    message_box.removeChild(child);
                 }
-                message.appendChild(text);
+                message_box.appendChild(new_message);
 
                 if (data['result'] == 'error') { // Undo the change to the box!
                      this.argument.e.editor.cell.firstChild.firstChild.value = this.argument.old_value;
@@ -203,9 +201,7 @@ YAHOO.util.Event.addListener(window, "load", function() {
 
 <%def name="body()">
 
-<div style="text-color: blue;" id="success_message"></div>
-
-<div style="text-color: red;" id="error_message"></div>
+<div id="result_message"></div>
 
 %if c.user:
 <p>You can click the text in the <strong>Translation</strong> column
