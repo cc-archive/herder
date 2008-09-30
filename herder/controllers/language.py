@@ -149,13 +149,13 @@ class LanguageController(BaseController):
         return render('/language/suggestion_action_unknown.html')
 
     def suggestion_action(self, domain, id):
-        if not 'delete' in request.params:
+        if 'delete' not in request.params:
             redirect_to(action='suggestion_action_unknown')
         # It's safe to assume deleting is what's meant.
         user_id = int(request.params['user_id'])
         message_id = xml.sax.saxutils.unescape(request.params['message_id'])
         domain = herder.model.language.Language.by_domain_id(domain, id)
-        domain[message_id].del_suggestion(user_id)
+        domain[message_id].del_suggestion(user_id, fail_if_empty = True)
         redirect_to('lame_suggestions_ui', domain, id, message='Successfully deleted one suggestion.')
 
     @jsonify

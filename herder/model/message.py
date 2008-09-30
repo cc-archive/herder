@@ -116,13 +116,13 @@ class Message(object):
     def del_suggestion(self, user_id, fail_if_empty = False):
         try:
             os.unlink(self.sugg_path(user_id))
-            return None
+            return True
         except IOError, e:
             if e.errno == 2: # No such file or directory
                 if fail_if_empty:
                     raise
                 else:
-                    return None
+                    return True
             # All other errors get raised as usual, because wtf
             raise
 

@@ -155,19 +155,24 @@ class TestLanguageController(TestController):
         assert old not in response
         assert u in response.body
 
-        if action in ['delete', 'approve']:
-            # Now check that we can act on it
-            self.login_as(bureau_username, bureau_password)
-            response = self.app.get(url_lame)
-            assert new in response
+        # Always delete it, but maybe take some other action first
+        self.login_as(bureau_username, bureau_password)
+        response = self.app.get(url_lame)
+        assert u in response   # make sure my 
+        assert new in response # suggestion is there now
 
-            delete_form = response.forms[0]
+        if action == 'approve':
+            # FIXME: No such action anymore, really
+            pass
 
-            if action == 'delete':
-                response = delete_form.submit()
-                response = response.follow()
+        # Here goes the deletion
+        response = self.app.get(url_lame)
+        delete_form = response.forms[0]
+        response = delete_form.submit()
+        response = response.follow()
 
-                assert new not in response
+        assert u not in response
+        assert new not in response
 
     def test_delete_suggestion(self):
         self.test_make_suggestion_as_non_bureau(action='delete')
