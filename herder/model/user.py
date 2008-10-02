@@ -27,7 +27,7 @@ def random_alphanum(length = 12):
 
 import sha
 def hash_with_salt(salt, raw_password):
-    return sha.sha(salt + raw_password).hexdigest()
+    return sha.sha(salt + raw_password + salt).hexdigest()
 
 import md5
 def hash_oldskool(raw_password):
