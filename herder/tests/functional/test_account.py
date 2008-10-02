@@ -371,6 +371,70 @@ class TestAccountControllerNineOrSomething(TestController):
             assert response.forms[0]['user_n_role_%d_%d_en' % (
                     user_obj.user_id, role_id)].checked == True
 
+    def test_add_role_by_non_star_bureaucrat(self):
+        '''Start as the global bureaucrat.  Grant someone else
+        en_US bureau, and show that person can edit en_US.'''
+        # Step 1: Create a new en_US bureaucrat called u
+        u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=u, password=p, email=e + '@example.com', human_name=n)
+
+        self.login_as(herder.tests.bureau_username, herder.tests.bureau_password)
+
+        ## 1a. Find the right user object (we need his user ID)
+        user_obj = herder.model.meta.Session.query(herder.model.user.User).filter_by(
+            user_name=u).first()
+
+        ## 1b. Go to the web interface, and make u an en_US everything
+        url = url_for(controller='account', action='permissions')
+        response = self.app.get(url)
+
+        response.forms[0]['new_role_user_id'] = str(user_obj.user_id)
+        response.forms[0]['new_role_lang_id'] = 'en_US'
+        response.forms[0]['new_role_1'].checked = True # xlator
+        response.forms[0]['new_role_2'].checked = True # bureaucrat
+
+        # 1c. Stubmit, and then see if he shows up with the new permissions
+        response = response.forms[0].submit()
+        response = response.follow()
+
+        for role_id in (1, 2):
+            assert response.forms[0]['user_n_role_%d_%d_en_US' % (
+                    user_obj.user_id, role_id)].checked == True
+
+        # Step 2: Log in as u, and bless secondary_u as an en_US xlator
+        # 2a. login
+        self.login_as(u, p)
+
+        # 2b. Create secondary dude
+        secondary_u, secondary_p, e, n = [herder.model.user.random_alphanum() for k in range(4)]
+        herder.tests.functional.test_account.do_register(self.app, 
+                                                         user_name=secondary_u,
+                                                         password=secondary_p,
+                                                         email=e + '@example.com', human_name=n)
+
+        # 2c. Find secondary's UID
+        user_obj = herder.model.meta.Session.query(herder.model.user.User).filter_by(
+            user_name=secondary_u).first()
+
+        # 2d. Go to the web interface, and make secondary_u an en_US translator
+        url = url_for(controller='account', action='permissions')
+        response = self.app.get(url)
+
+        response.forms[0]['new_role_user_id'] = str(user_obj.user_id)
+        response.forms[0]['new_role_lang_id'] = 'en_US'
+        response.forms[0]['new_role_1'].checked = True # xlator
+
+        # 2e. Submit and verify
+        response = response.forms[0].submit()
+        response = response.follow()
+
+        for role_id in [1]:
+            assert response.forms[0]['user_n_role_%d_%d_en_US' % (
+                    user_obj.user_id, role_id)].checked == True
+
+        ## Sweet - if it says translator, it probably works.
+
     def test_password_change(self):
         # Create a throwaway user
         u, p, e, n = [herder.model.user.random_alphanum() for k in range(4)]

@@ -234,8 +234,6 @@ class AccountController(BaseController):
     def permissions(self):
         '''Show what permissions different users have, and let people
         change them.'''
-        assert 'bureaucrat' in self._get_roles(request.environ)
-
         # Oh my GOD, this code sucks.  I'm sorry.
         general_role_info = herder.model.meta.Session.query(herder.model.role.Role).all()
         all_languages_list = []
