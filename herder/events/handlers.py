@@ -96,7 +96,7 @@ def plus_txt(u):
 def git_commit_handler(event):
     # If no one cares, get out.
     someone_cares = config.get('herder.do_git_commits', '')
-    if not someone_cares:
+    if someone_cares != 'true':
         return
 
     # Grab the right path...
