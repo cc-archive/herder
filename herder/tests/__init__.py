@@ -22,6 +22,9 @@ import paste.fixture
 import paste.script.appinstall
 from paste.deploy import loadapp
 from routes import url_for
+import git
+import os
+from pylons import config
 
 here_dir = os.path.dirname(os.path.abspath(__file__))
 conf_dir = os.path.dirname(os.path.dirname(here_dir))
@@ -132,9 +135,32 @@ class TestController(TestCase):
         wsgiapp = loadapp('config:test.ini', relative_to=conf_dir)
         self.app = paste.fixture.TestApp(wsgiapp)
         TestCase.__init__(self, *args, **kwargs)
+        self._git_repo = None
 
     def runTest(self):
         pass
+
+    def setUp(self):
+        if config.get('herder.do_git_commits') == 'true':
+            # Store info about the git Repo - 
+            # particularly, the commit that master pointed to at the start
+            assert self._git_repo is None
+            self._git_repo = git.Repository(os.path.join(
+                    config.get('herder.po_dir'), 'cc_org'))
+            self._git_commit_at_start = self._git_repo.heads[
+                'refs/heads/master'].commit
+            assert ('example.com' not in
+                    self._git_commit_at_start.author.email)
+
+    def tearDown(self):
+        if self._git_repo:
+            # Make sure we chose a real commit to revert to
+            assert ('example.com' 
+                    not in self._git_commit_at_start.author.email)
+            ref = git.Ref(self._git_repo, 'refs/heads/master')
+            ref.update(self._git_commit_at_start)
+            self._git_repo = None
+
 
     def login_as(self, username, password, should_fail = False):
         url = url_for(controller='account', action='login')

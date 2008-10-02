@@ -16,12 +16,13 @@ class TestMail(TestController):
     def test_no_mail_gets_set_for_most_edits(self):
         r'''
         >>> tlc = TestLanguageController()
+        >>> tlc.setUp()
         >>> import smtplib
         >>> smtplib.SMTP = Mock('smtplib.SMTP', returns = Mock('smtp_connection'))
         >>> tlc.test_edit_string_as_bureau()
         cc_org: en_US: country.us updated from <United States> to <¿Untied States?> by 1
         cc_org: en_US: country.us updated from <¿Untied States?> to <United States> by 1
-        >>>
+        >>> tlc.tearDown()
         '''
 
     # Following test is brittle; it should assert things about the message,
@@ -35,14 +36,17 @@ class TestMail(TestController):
     # we do another edit.
     def test_email_sending(self):
         r'''
-	>>> import base64
-	>>> base64.b64encode('¿Untied States?')
-	'wr9VbnRpZWQgU3RhdGVzPw=='
-	>>> base64.b64encode('United States')
-	'VW5pdGVkIFN0YXRlcw=='
+        >>> import base64
+        >>> base64.b64encode('¿Untied States?')
+        'wr9VbnRpZWQgU3RhdGVzPw=='
+        >>> base64.b64encode('United States')
+        'VW5pdGVkIFN0YXRlcw=='
         >>> tpm = TestProfilePrefLangSpecificMail()
+        >>> tpm.setUp()
         >>> tpm.test_profile_pref_language_specific_mail(do_unset=False)
+        >>> tpm.tearDown()
         >>> tlc = TestLanguageController()
+        >>> tlc.setUp()
         >>> import smtplib
         >>> smtplib.SMTP = Mock('smtplib.SMTP', returns = Mock('smtp_connection'))
         >>> tlc.test_edit_string_as_bureau() #doctest: +ELLIPSIS
@@ -60,12 +64,14 @@ class TestMail(TestController):
             ['bureau@example.com'],
             '...Subject: Message update for country.us in en_US...Untied States...United States...')
         Called smtp_connection.quit()
-        >>> tpm.test_profile_pref_language_specific_mail(do_set=False)
-        >>>
+        >>> tlc.tearDown()
+        >>> tpm.setUp() ; tpm.test_profile_pref_language_specific_mail(do_set=False)
+        >>> tpm.tearDown()
+        >>> tlc.setUp()
         >>> tlc.test_edit_string_as_bureau()
         cc_org: en_US: country.us updated from <United States> to <¿Untied States?> by 1
         cc_org: en_US: country.us updated from <¿Untied States?> to <United States> by 1
-        >>>
+        >>> tlc.tearDown()
         '''
         pass
 
