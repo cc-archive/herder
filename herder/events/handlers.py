@@ -14,6 +14,10 @@ import email.mime.text
 import email.charset
 from email.Header import Header
 from email.Utils import parseaddr, formataddr
+import git
+import random
+import time
+import herder.model
 
 @zope.component.adapter(HerderEvent)
 def feed_handler(event):
@@ -58,6 +62,84 @@ def feed_handler(event):
     rss.write_xml(out_fd)
     out_fd.close()
     os.rename(dest_file + '.tmp', dest_file)
+
+class Locker:
+    def __init__(self, lock_path, timeout=5):
+        self.lock_dir = os.path.join(lock_path, '.locked')
+        self.slept = 0
+        self.timeout = timeout
+    def _lock(self):
+        os.mkdir(self.lock_dir)
+    def lock(self):
+        success = False
+        while not success:
+            try:
+                self._lock()
+                success = True
+            except OSError, e:
+                if e.errno == 17: # File exists
+                    will_sleep = (0.1 * random.random())
+                    self.slept += will_sleep
+                    if self.slept > self.timeout:
+                        raise
+                    time.sleep(will_sleep)
+                else:
+                    raise # yeah, what the heck error did we get?
+        return success
+    def unlock(self):
+        os.rmdir(self.lock_dir)
+
+def plus_txt(u):
+    return u.encode('utf-8') + '.txt'
+
+@zope.component.adapter(HerderEvent)
+def git_commit_handler(event):
+    # If no one cares, get out.
+    someone_cares = config.get('herder.do_git_commits', '')
+    if not someone_cares:
+        return
+
+    # Grab the right path...
+    repo_dir = os.path.join(config.get('herder.po_dir'), event.domain_id)
+    # lock it...
+    lock = Locker(repo_dir)
+    lock.lock()
+    # ...and now do our git operations
+    repo = git.Repository(repo_dir)
+    
+    # Grab the latest commit on master
+    commit = repo.heads['refs/heads/master'].commit
+    commitname = commit.name
+    
+    # FWIW, an event should only be able to change an already-existing path
+    new_blob = git.Blob(repo)
+    new_blob.contents = event.new_value.encode('utf-8')
+    
+    # We're always looking in the subdir that is our lang_id
+    subtree = commit.tree[event.lang_id.encode('utf-8')]
+    
+    # make sure the old blob looks like the old value,
+    assert (subtree[plus_txt(event.message_id)
+                    ].contents == event.old_value.encode('utf-8'))
+    # and squeeze in the new value:
+    subtree[plus_txt(event.message_id)] = new_blob
+    commit.tree[event.lang_id.encode('utf-8')] = subtree
+    
+    user_obj = herder.model.meta.Session.query(
+        herder.model.user.User).filter_by(user_id=event.user_id).one()
+    commit.author = git.commit.Person(user_obj.user_name.encode('utf-8'),
+                                      user_obj.email.encode('utf-8'))
+
+    assert not commit.name
+    commit.commit(message=unicode(event).encode('utf-8'))
+    assert commit.name
+
+    # Committed, but need to update the ref!
+    ref = git.Ref(repo, 'refs/heads/master')
+    ref.update(commit)
+    
+    # and unlock
+    lock.unlock()
 
 @zope.component.adapter(HerderEvent)
 def logging_handler(event):
@@ -142,5 +224,6 @@ def register(beenhere = []):
         beenhere.append(True)
         # register basic logging handler
         zope.component.provideHandler(logging_handler)
+        zope.component.provideHandler(git_commit_handler)
         zope.component.provideHandler(email_handler)
         zope.component.provideHandler(feed_handler)
