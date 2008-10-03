@@ -213,6 +213,57 @@ def email_handler(event, header_charset='utf-8', body_charset='utf-8'):
         server.sendmail(sender_addr, recipient_addrs, msg.as_string())
         server.quit()
 
+def monthly_status_reminders(event):
+    '''For all domains, for every language, email (for now) the
+    currently-pending suggestions to the translation's maintainer.'''
+    
+    import herder.model
+    domain_id = '*'
+    # Take a look at all the translators
+    translate_role = herder.model.meta.Session.query(
+        herder.model.role.Role).filter_by(
+        role_name='translate').one()
+
+    all_translate_auths = herder.model.meta.Session.query(
+        herder.model.authorization.Authorization).filter_by(
+        role_id=translate_role.role_id)
+
+    # Figure out who cares about what
+    user_id2domain2language = collections.defaultdict(
+        lambda: return collections.defaultdict(set))
+
+    # For each such authorization, add a note to user_id2email
+    # with the message to be sent out as respects that authorization
+    for auth in all_translate_auths:
+        assert auth.domain_id == domain_id
+
+        # Check for relevant pending suggestions
+        import fnmatch
+        mydomains = [d for d in herder.model.domain.Domain.all()
+                     if fnmatch.fnmatch(d, auth.domain_id)]
+
+        for mydomain in mydomains:
+            # Check what languages he cares about
+            mylangs = [l for l in herder.model.language.Language.all()
+                       if fnmatch.fnmatch(l, auth.lang_id)]
+            for mylang in mylangs: 
+                user_id2domain2language[mydomain].add(mylang)
+
+        user_id2email[translate_auth.user_id].append(
+            '
+
+    email_these_dudes = set()
+    for pref in prefs_who_care:
+        if herder.model.meta.Session.query(
+            herder.model.pref.Pref).filter_by(
+            pref_name='email_enabled', pref_value=True, lang_id='*',
+            domain_id='*', user_id=pref.user_id):
+            email_these_dudes.update(
+                herder.model.meta.Session.query(
+                    herder.model.user.User).filter_by(
+                    user_id=pref.user_id))
+
+
 # beenhere works around an issue with nosetest + Pylons,
 # where the registration gets called once per test run it seems.
 # See: http://code.creativecommons.org/issues/issue31
