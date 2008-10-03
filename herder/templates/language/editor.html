@@ -148,36 +148,6 @@ YAHOO.util.Event.addListener(window, "load", function() {
  %if c.user:
         this.myDataTable.subscribe("cellClickEvent", 
                                    this.myDataTable.onEventShowCellEditor); 
-
-	this.myDataTable.showCellEditorBtns  = function(elContainer) {
-	    var DT = YAHOO.widget.DataTable,
-	    DS = YAHOO.util.DataSource;
-	    var Dom    = YAHOO.util.Dom;
-	    var Ev = YAHOO.util.Event;
-
-
-	    // Buttons
-	    var elBtnsDiv = elContainer.appendChild(document.createElement("div"));
-	    Dom.addClass(elBtnsDiv, DT.CLASS_BUTTON);
-	    
-	    // Save button
-	    var elSaveBtn = elBtnsDiv.appendChild(document.createElement("button"));
-	    Dom.addClass(elSaveBtn, DT.CLASS_DEFAULT);
-	    elSaveBtn.innerHTML = "OK";
-	    Ev.addListener(elSaveBtn, "click", function(oArgs, oSelf) {
-		    oSelf.onEventSaveCellEditor(oArgs, oSelf);
-		    oSelf.focusTbodyEl();
-		}, this, true);
-	    
-	    // Cancel button
-	    var elCancelBtn = elBtnsDiv.appendChild(document.createElement("button"));
-	    elCancelBtn.innerHTML = "Cancel";
-	    Ev.addListener(elCancelBtn, "click", function(oArgs, oSelf) {
-		    oSelf.onEventCancelCellEditor(oArgs, oSelf);
-		    oSelf.focusTbodyEl();
-		}, this, true);
-	};
-	
         this.myDataTable.subscribe("editorSaveEvent", function(e) {
           // create an object to post back
 
