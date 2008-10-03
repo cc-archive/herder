@@ -17,10 +17,10 @@ from email.Utils import parseaddr, formataddr
 import git
 import random
 import time
-import herder.model
 
 @zope.component.adapter(HerderEvent)
 def feed_handler(event):
+    import herder.model
     '''Generate an RSS feed (pretty lamely, currently) using the event.'''
     dest_dir = os.path.join(config.get('herder.feed_dir'), event.domain_id,
 			    event.lang_id)
