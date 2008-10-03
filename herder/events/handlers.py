@@ -221,7 +221,7 @@ def email_handler(event, header_charset='utf-8', body_charset='utf-8'):
 def register(beenhere = []):
     """Register included event handlers."""
     if not beenhere:
-        beenhere.append(True)
+        beenhere.append(beenhere) # hah
         # register basic logging handler
         zope.component.provideHandler(logging_handler)
         zope.component.provideHandler(git_commit_handler)
