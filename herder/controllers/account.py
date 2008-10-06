@@ -206,6 +206,7 @@ class AccountController(BaseController):
         
         # We must be okay at this point.
         pootle_users_prefs = request.params['pootle_users_prefs_data']
+        pootle_users_prefs = unicode(pootle_users_prefs)
         pootle_users_prefs_as_utf8 = pootle_users_prefs.encode('utf-8')
         import jToolkit.prefs
         parser = jToolkit.prefs.PrefsParser()
