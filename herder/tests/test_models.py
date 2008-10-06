@@ -6,6 +6,13 @@ import herder.model.meta
 import herder.model.authorization
 import herder.tests.functional.test_account
 
+class TestLanguageModel(TestController):
+    def test_get_all_sugg(self):
+        lang = herder.model.language.Language.by_domain_id('cc_org', 'en_US')
+        lang.suggest(3, 'country.us', u'Confederate States of America')
+        assert lang.get_all_suggestions() == {
+            'country.us': {3: u'Confederate States of America'}}
+
 class TestRoles(TestController):
 
     def test_roles_exist(self):

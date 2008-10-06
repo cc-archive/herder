@@ -23,6 +23,18 @@ class Language(object):
             raise TransactionAbort("Goign too fast...?")
         return True
 
+    def get_all_suggestions(self):
+        '''Return a dictionary like:
+        { 'country.us': {3: 'Confederate States of America'},
+           ... }
+        where 3 is a user ID'''
+        ret = {}
+        for msg in self:
+            suggestions = msg.get_suggestions()
+            if suggestions:
+                ret[msg.id] = suggestions
+        return ret
+        
     def update(self, i18n_key, old_value, new_value):
         # NOTE: I don't know how to lock the model, so we'll just try
         # our changes, and assert they stuck at the end of this.
