@@ -8,12 +8,9 @@ import feedparser
 from pylons import config
 import zope.component
 from herder.events.events import HerderEvent
+from herder.events.send_email import send_email
 import os.path
 
-import email.mime.text
-import email.charset
-from email.Header import Header
-from email.Utils import parseaddr, formataddr
 import git
 import random
 import time
@@ -173,46 +170,12 @@ def email_handler(event, header_charset='utf-8', body_charset='utf-8'):
         subject = u'Message update for %s in %s' % (event.message_id,
                                                     event.lang_id)
         body = event.long_flowy_message()
+        msg_from = '"Translation System" <herder-bounces@localhost>'
 
-	# Python Unicode sanity c/o http://mg.pov.lt/blog/unicode-emails-in-python.html
-
-	# Prepare SMTP-level sender and recipient
-        sender_name, sender_addr = parseaddr(
-            '"Translation System" <herder-bounces@localhost>')
-
-        # We must always pass Unicode strings to Header, otherwise it will
-        # use RF C2047 encoding even on plain ASCII strings.
-        sender_name = str(Header(unicode(sender_name), header_charset))
-        # no recipient_name in the header
-
-        # Make sure email addresses do not contain non-ASCII
-        # characters
-        # (FIXME: This could blow up at runtime if we don't
-        # assert this at other layers, like the DB!)
-        sender_addr = unicode(sender_addr).encode('ASCII')
         recipient_addrs = [unicode(dude.email).encode('ascii') for dude in
-                           email_these_dudes]
+                  email_these_dudes]
 
-	# Create the message ('plain' stands for Content-Type: text/plain)
-        charset_obj = email.charset.Charset('utf-8')
-        charset_obj.header_encoding = email.charset.QP
-        charset_obj.body_encoding = email.charset.QP
-        
-        msg = email.mime.text.MIMEText(body.encode(body_charset), 'plain')
-        # Message class computes the wrong type from MIMEText constructor,
-        # which does not take a Charset object as initializer. Reset the
-        # encoding type to force a new, valid evaluation
-        del msg['Content-Transfer-Encoding'] # base64 by default, wtf
-        msg.set_charset(charset_obj) # QP utf-8, ahhh :-)
-
-	# FIXME: I want quoted-printable, gosh darn it
-        msg['From'] = formataddr( (sender_name, sender_addr) )
-        # Leave "To:" blank
-        msg['Subject'] = Header(unicode(subject), header_charset)
-
-        server = smtplib.SMTP('localhost') # hard-coded
-        server.sendmail(sender_addr, recipient_addrs, msg.as_string())
-        server.quit()
+        send_email(msg_from, recipient_addrs, subject, body)
 
 # beenhere works around an issue with nosetest + Pylons,
 # where the registration gets called once per test run it seems.
