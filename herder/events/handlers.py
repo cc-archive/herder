@@ -94,6 +94,7 @@ def plus_txt(u):
 
 @zope.component.adapter(HerderEvent)
 def git_commit_handler(event):
+    import herder.model
     # If no one cares, get out.
     someone_cares = config.get('herder.do_git_commits', '')
     if someone_cares != 'true':
