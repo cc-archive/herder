@@ -8,10 +8,13 @@ import herder.tests.functional.test_account
 
 class TestLanguageModel(TestController):
     def test_get_all_sugg(self):
+        '''Test get_all_suggestions() by creating a suggestion,
+        testing that it shows up in get_all, then erasing it.'''
         lang = herder.model.language.Language.by_domain_id('cc_org', 'en_US')
         lang.suggest(3, 'country.us', u'Confederate States of America')
         assert lang.get_all_suggestions() == {
             'country.us': {3: u'Confederate States of America'}}
+        lang['country.us'].del_suggestion(3, fail_if_empty = True)
 
 class TestRoles(TestController):
 
