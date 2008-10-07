@@ -6,9 +6,9 @@ from herder.model import meta
 t_pref = sa.Table("pref", meta.metadata,
                   sa.Column('pref_id', sa.types.Integer, primary_key = True, autoincrement = True),
                   sa.Column('user_id', sa.types.Integer, sa.ForeignKey("user.user_id"), nullable = False),
-                  sa.Column('lang_id', sa.types.Unicode(255), nullable = False),
-                  sa.Column('domain_id', sa.types.Unicode(255), nullable = False),
-                  sa.Column('pref_name', sa.types.Unicode(255), nullable = False),
+                  sa.Column('lang_id', meta.Unicode(255), nullable = False),
+                  sa.Column('domain_id', meta.Unicode(255), nullable = False),
+                  sa.Column('pref_name', meta.Unicode(255), nullable = False),
                   sa.Column('pref_value', sa.types.Boolean, nullable = False),
 
                   sa.UniqueConstraint('user_id', 'lang_id', 'domain_id', 'pref_name'),

@@ -6,11 +6,11 @@ from herder.model import meta
 
 t_user = sa.Table("user", meta.metadata,
                       sa.Column('user_id', sa.types.Integer, primary_key = True, autoincrement = True),
-                      sa.Column('user_name', sa.types.Unicode(255), nullable = False, unique = True),
-                      sa.Column('salt', sa.types.String(255), nullable = False),
-                      sa.Column('hashed_salted_pw', sa.types.String(255), nullable = False),
-                      sa.Column('human_name', sa.types.Unicode(255), nullable = False),
-                      sa.Column('email', sa.types.Unicode(255), nullable = False),
+                      sa.Column('user_name', meta.Unicode(255), nullable = False, unique = True),
+                      sa.Column('salt', meta.Unicode(255), nullable = False),
+                      sa.Column('hashed_salted_pw', meta.Unicode(255), nullable = False),
+                      sa.Column('human_name', meta.Unicode(255), nullable = False),
+                      sa.Column('email', meta.Unicode(255), nullable = False),
                       )
 
 class User(object):
