@@ -20,7 +20,7 @@ def feed_handler(event):
     import herder.model
     '''Generate an RSS feed (pretty lamely, currently) using the event.'''
     dest_dir = os.path.join(config.get('herder.feed_dir'), event.domain_id,
-			    event.lang_id)
+                            event.lang_id)
     if not os.path.isdir(dest_dir):
         os.makedirs(dest_dir, mode=0755)
     dest_file = os.path.join(dest_dir, 'index.xml')
@@ -29,7 +29,7 @@ def feed_handler(event):
     items = [
         PyRSS2Gen.RSSItem(
             title=u"Someone updated string %s" % event.message_id,
-	    description=event.long_flowy_message(joiner='<p>'),
+            description=event.long_flowy_message(joiner='<p>'),
             pubDate = datetime.datetime.now())]
 
     # Take the existing file, and pull out the past into previous_entries
@@ -38,7 +38,7 @@ def feed_handler(event):
         for entry in parsed.entries:
             entry_as_item = PyRSS2Gen.RSSItem(
                 title=entry.title,
-		description=entry.get('summary', ''),
+                description=entry.get('summary', ''),
                 pubDate = datetime.datetime(
                     *entry.updated_parsed[:7]))
             items.append(entry_as_item)
@@ -166,7 +166,7 @@ def email_handler(event, header_charset='utf-8', body_charset='utf-8'):
                     user_id=pref.user_id))
 
     if email_these_dudes:
-	# First, make our nice Unicoded subject and body
+        # First, make our nice Unicoded subject and body
         subject = u'Message update for %s in %s' % (event.message_id,
                                                     event.lang_id)
         body = event.long_flowy_message()

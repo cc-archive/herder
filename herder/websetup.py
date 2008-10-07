@@ -29,12 +29,12 @@ def setup_config(command, filename, section, vars,
     herder.model.meta.Session.save(translator_role)
     herder.model.meta.Session.commit()
     if 'first_bureaucrat.username' in conf.local_conf:
-	bureaucrat_username = unicode(conf.local_conf['first_bureaucrat.username'])
+        bureaucrat_username = unicode(conf.local_conf['first_bureaucrat.username'])
     else:
         bureaucrat_username = unicode(raw_input(
             'Hey there.  What username do you want for your bureaucrat user? > '))
     if 'first_bureaucrat.realname' in conf.local_conf:
-	bureaucrat_realname = unicode(conf.local_conf['first_bureaucrat.realname'])
+        bureaucrat_realname = unicode(conf.local_conf['first_bureaucrat.realname'])
     else:
         bureaucrat_realname = unicode(raw_input(
             'Great.  What is the actual name of this person? > '))

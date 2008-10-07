@@ -35,25 +35,25 @@ class BaseController(WSGIController):
     ### FIXME: Don't just ignore the language ID and domain!
     def _get_roles(self, environ, domain = None, lang_id = None):
         """Return a list of roles for the current context."""
-	roles = []
+        roles = []
 
         user = session.get('user', None)
-	if user is None:
-	    return roles # empty
+        if user is None:
+            return roles # empty
 
         # First, check for a lang_id = * role
-	auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user.user_id, lang_id='*').all()
-	for auth in auths:
-	    roles.append(model.meta.Session.query(model.role.Role).filter_by(role_id=auth.role_id).first().role_name)
+        auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user.user_id, lang_id='*').all()
+        for auth in auths:
+            roles.append(model.meta.Session.query(model.role.Role).filter_by(role_id=auth.role_id).first().role_name)
 
         # Then check for a lang_id = lang_id role
         auths = model.meta.Session.query(model.authorization.Authorization).filter_by(user_id=user.user_id, lang_id=lang_id).all()
-	for auth in auths:
-	    roles.append(model.meta.Session.query(model.role.Role).filter_by(role_id=auth.role_id).first().role_name)
+        for auth in auths:
+            roles.append(model.meta.Session.query(model.role.Role).filter_by(role_id=auth.role_id).first().role_name)
 
         # It's true that we don't check domain at all, ever.  Oh, well.
 
-	return set(roles)
+        return set(roles)
 
     def _actions(self, environ):
         """Return a sequence of two-tuples describing the actions for this

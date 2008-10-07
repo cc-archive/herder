@@ -33,8 +33,8 @@ class MessageUpdateEvent(HerderEvent):
             self.old_value, self.new_value, self.user_id)
 
     def long_flowy_message(self, joiner='\n'):
-	return unicode(joiner).join(
-	    [
+        return unicode(joiner).join(
+            [
                 u'The language %s changed for its translation of %s' % (
                     self.lang_id, self.message_id),
                 u''
