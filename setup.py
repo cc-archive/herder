@@ -53,6 +53,7 @@ setup(
 
     [herder.register_handlers]
     herder = herder.events.handlers:register
+    herder_cron = herder.events.cron.handlers:register
 
     [console_scripts]
     sync     = herder.scripts.domain:sync
