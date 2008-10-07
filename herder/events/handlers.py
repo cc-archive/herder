@@ -1,7 +1,5 @@
 '''Store event handlers.'''
 
-import smtplib
-
 import PyRSS2Gen
 import datetime
 import feedparser
