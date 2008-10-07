@@ -121,6 +121,28 @@ class TestPootleImport(TestController):
         assert db_user.hashed_salted_pw != \
             herder.model.user.hash_oldskool(password)
 
+    def test_create_unicode_md5_user(self):
+        user_name = unicode(herder.model.user.random_alphanum())
+        password = herder.model.user.random_alphanum()
+        # lame: copy-pasta of user registration code
+        
+        new_user = herder.model.user.make_md5_user(user_name, herder.model.user.hash_oldskool(password), 'md5sucker@example.com', u'Your Möm')
+        herder.model.meta.Session.save(new_user)
+        herder.model.meta.Session.commit()
+
+        # Good, now try to log in as the dude...
+        self.login_as(user_name, password)
+
+        # Good, now check that we have a salt
+        db_user = herder.model.meta.Session.query(
+            herder.model.user.User).filter_by(
+            user_name=user_name).first()
+        assert db_user.salt != 'lolwtf'
+        assert len(db_user.hashed_salted_pw) != len(
+            herder.model.user.hash_oldskool(password))
+        assert db_user.hashed_salted_pw != \
+            herder.model.user.hash_oldskool(password)
+
             
     sample_pootle_users_prefs = u'''
 stepmom:
