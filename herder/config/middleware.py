@@ -10,8 +10,6 @@ from pylons.middleware import error_mapper, ErrorDocuments, ErrorHandler, \
     StaticJavascripts
 from pylons.wsgiapp import PylonsApp
 
-from sqlalchemymanager import SQLAlchemyManager
-
 from herder.config.environment import load_environment
 
 def make_app(global_conf, full_stack=True, **app_conf):

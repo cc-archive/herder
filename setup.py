@@ -21,7 +21,6 @@ setup(
                       'MiniMock',
                       'jsonlib',
                       'SQLAlchemy>=0.4.0,<=0.4.99',
-                      'SQLAlchemyManager',
                       'pysqlite',
                       'pygit==0.1-asheesh3',
                       'nose',
