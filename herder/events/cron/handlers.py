@@ -4,7 +4,9 @@ from herder.events.cron.events import HerderMonthlyEvent
 
 @zope.component.adapter(HerderMonthlyEvent)
 def monthly_status_reminders(event):
+    print 'Emailing out monthly status reminders...'
     pass
+    print '...success.'
 
 # beenhere works around an issue with nosetest + Pylons,
 # where the registration gets called once per test run it seems.

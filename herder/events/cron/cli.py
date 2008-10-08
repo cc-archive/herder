@@ -2,6 +2,7 @@ import optparse
 
 from herder.events import handle
 from herder.events.cron import events
+from herder.scripts import resolve_config, init_environment
 
 def cron(args = None):
     """Command line interface for triggering time-based Herder events."""
@@ -22,6 +23,10 @@ def cron(args = None):
                       action='store_true',
                       help='Run hourly events.')
 
+    parser.add_option('-c', '--config', dest='config',
+                      help='Path to application configuration to load.')
+
+
     parser.set_defaults(monthly=False,
                         weekly=False,
                         daily=False)
@@ -29,12 +34,12 @@ def cron(args = None):
     # parse the command line
     opts, args = parser.parse_args(args)
 
+    # set up the environment
+    init_environment(resolve_config(opts.config))
+
     # trigger specified events
     if opts.monthly:
         handle(events.HerderMonthlyEvent())
-        # Well, for no reason that does nothing.
-        import herder.events.cron.handlers
-        herder.events.cron.handlers.monthly_status_reminders(None)
 
     if opts.weekly:
         handle(events.HerderWeeklyEvent())
