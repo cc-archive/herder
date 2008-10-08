@@ -3,7 +3,7 @@ import optparse
 from herder.events import handle
 from herder.events.cron import events
 
-def cron():
+def cron(args = None):
     """Command line interface for triggering time-based Herder events."""
 
     # create the option parser for the command-line
@@ -27,7 +27,7 @@ def cron():
                         daily=False)
 
     # parse the command line
-    opts, args = parser.parse_args()
+    opts, args = parser.parse_args(args)
 
     # trigger specified events
     if opts.monthly:
