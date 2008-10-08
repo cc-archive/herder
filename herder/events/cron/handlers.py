@@ -15,5 +15,5 @@ def register(beenhere = []):
     """Register included event handlers."""
     if not beenhere:
         beenhere.append(beenhere) # hah
-        # register basic logging handler
+        # register montly status reminder
         zope.component.provideHandler(monthly_status_reminders)
