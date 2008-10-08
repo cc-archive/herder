@@ -32,6 +32,9 @@ def cron():
     # trigger specified events
     if opts.monthly:
         handle(events.HerderMonthlyEvent())
+        # Well, for no reason that does nothing.
+        import herder.events.cron.handlers
+        herder.events.cron.handlers.monthly_status_reminders(None)
 
     if opts.weekly:
         handle(events.HerderWeeklyEvent())
