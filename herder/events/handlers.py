@@ -5,7 +5,7 @@ import datetime
 import feedparser
 from pylons import config
 import zope.component
-from herder.events.events import HerderEvent
+from herder.events.events import MessageUpdateEvent
 from herder.events.send_email import send_email
 import os.path
 
@@ -13,7 +13,7 @@ import git
 import random
 import time
 
-@zope.component.adapter(HerderEvent)
+@zope.component.adapter(MessageUpdateEvent)
 def feed_handler(event):
     import herder.model
     '''Generate an RSS feed (pretty lamely, currently) using the event.'''
@@ -87,7 +87,7 @@ class Locker:
 def plus_txt(u):
     return u.encode('utf-8') + '.txt'
 
-@zope.component.adapter(HerderEvent)
+@zope.component.adapter(MessageUpdateEvent)
 def git_commit_handler(event):
     import herder.model
     # If no one cares, get out.
@@ -137,7 +137,7 @@ def git_commit_handler(event):
     # and unlock
     lock.unlock()
 
-@zope.component.adapter(HerderEvent)
+@zope.component.adapter(MessageUpdateEvent)
 def logging_handler(event):
     # omg unicode bbq
     import sys
@@ -145,7 +145,7 @@ def logging_handler(event):
     unicode_out = codecs.getwriter('utf-8')(sys.stdout)
     unicode_out.write(unicode(event) + '\n')
 
-@zope.component.adapter(HerderEvent)
+@zope.component.adapter(MessageUpdateEvent)
 def email_handler(event, header_charset='utf-8', body_charset='utf-8'):
     import herder.model
     prefs_who_care = herder.model.meta.Session.query(
