@@ -108,7 +108,7 @@ class TestLanguageController(TestController):
         logout = url_for(controller='account', action='logout')
         response = self.app.get(logout)
 
-    def test_make_suggestion_as_non_bureau(self, action = 'None', already_logged_in_as=None):
+    def test_make_suggestion_as_non_bureau(self, action = 'None', already_logged_in_as=None, do_suggest = True, do_delete = True):
         if already_logged_in_as:
             u = already_logged_in_as
         else:
@@ -130,13 +130,15 @@ class TestLanguageController(TestController):
         # Just check that things are the way we thought
         self.test_strings_contain(desired_key=i18n_key, desired_value=old)
 
-        # Now try to do the edit
-        url_indeed = url_for(controller='language', action='edit_string',
-            domain='cc_org', id='en_US')
-        response = self.app.post(url_indeed, 
-            params={'data': 
-            jsonlib.write({'id': i18n_key,
-                'new_value': new, 'old_value': old})})
+        if do_suggest:
+            # Now try to do the edit
+            url_indeed = url_for(controller='language', action='edit_string',
+                                 domain='cc_org', id='en_US')
+            response = self.app.post(url_indeed, 
+                                     params={'data': 
+                                             jsonlib.write(
+                        {'id': i18n_key,
+                         'new_value': new, 'old_value': old})})
         # And, uh, FIXME - right now we have no way of checking if it stuck
 
         # At least, the real string shouldn't have changed - repeat this check
@@ -155,24 +157,21 @@ class TestLanguageController(TestController):
         assert old not in response
         assert u in response.body
 
-        # Always delete it, but maybe take some other action first
-        self.login_as(bureau_username, bureau_password)
-        response = self.app.get(url_lame)
-        assert u in response   # make sure my 
-        assert new in response # suggestion is there now
+        if do_delete:
+            # Now delete it, but maybe take some other action first
+            self.login_as(bureau_username, bureau_password)
+            response = self.app.get(url_lame)
+            assert u in response   # make sure my 
+            assert new in response # suggestion is there now
 
-        if action == 'approve':
-            # FIXME: No such action anymore, really
-            pass
+            # Here goes the deletion
+            response = self.app.get(url_lame)
+            delete_form = response.forms[0]
+            response = delete_form.submit()
+            response = response.follow()
 
-        # Here goes the deletion
-        response = self.app.get(url_lame)
-        delete_form = response.forms[0]
-        response = delete_form.submit()
-        response = response.follow()
-
-        assert u not in response
-        assert new not in response
+            assert u not in response
+            assert new not in response
 
     def test_delete_suggestion(self):
         self.test_make_suggestion_as_non_bureau(action='delete')
